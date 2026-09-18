@@ -1,15 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import WelcomeScreen from './Welcome Screen/WelcomeScreen';
-
+import React from 'react';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <WelcomeScreen
-        onGetStarted={() => Alert.alert('Get started pressed')}
-        onLogin={() => Alert.alert('Login pressed')}
-      />
+      <Text>DEADLINE NAA???!!!</Text>
     </View>
   );
 }
