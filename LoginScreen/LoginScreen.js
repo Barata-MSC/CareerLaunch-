@@ -14,17 +14,28 @@ const GOOGLE_ICON = require('../assets/google-icon.png');
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
-export default function LoginScreen({ onBack, onLogin, onSignUp }) {
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleLogin = () => {
+    const missingEmail = !email.trim();
+    const missingPassword = !password.trim();
+
+    setEmailError(missingEmail ? 'Please enter your email' : '');
+    setPasswordError(missingPassword ? 'Please enter your password' : '');
+
+    if (missingEmail || missingPassword) return;
+
+    // TODO: validate `email` / `password` against your auth logic
+    navigation?.navigate('Dashboard');
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      <TouchableOpacity style={styles.backButton} onPress={onBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-        <Text style={styles.backArrow}>‹</Text>
-      </TouchableOpacity>
 
       <View style={styles.headerWrapper}>
         <Text style={styles.title}>Welcome back!</Text>
@@ -34,26 +45,34 @@ export default function LoginScreen({ onBack, onLogin, onSignUp }) {
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, emailError ? styles.inputError : null]}
           placeholder="Enter your email"
           placeholderTextColor="#9A9A9A"
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (emailError) setEmailError('');
+          }}
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
       </View>
 
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Password</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, passwordError ? styles.inputError : null]}
           placeholder="Enter your password"
           placeholderTextColor="#9A9A9A"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (passwordError) setPasswordError('');
+          }}
         />
+        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       </View>
 
       <TouchableOpacity style={styles.forgotWrapper}>
@@ -63,7 +82,7 @@ export default function LoginScreen({ onBack, onLogin, onSignUp }) {
       <TouchableOpacity
         style={styles.primaryButton}
         activeOpacity={0.85}
-        onPress={() => onLogin?.({ email, password })}
+        onPress={handleLogin}
       >
         <Text style={styles.primaryButtonText}>Login</Text>
       </TouchableOpacity>
@@ -81,7 +100,7 @@ export default function LoginScreen({ onBack, onLogin, onSignUp }) {
 
       <View style={styles.signUpRow}>
         <Text style={styles.signUpText}>Don't have an account yet? </Text>
-        <TouchableOpacity onPress={onSignUp}>
+        <TouchableOpacity onPress={() => navigation?.navigate('Register')}>
           <Text style={styles.signUpLink}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -95,19 +114,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
   },
-  backButton: {
-    marginTop: 16,
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-  },
-  backArrow: {
-    fontSize: 28,
-    color: '#111111',
-  },
   headerWrapper: {
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 48,
     marginBottom: 32,
   },
   title: {
@@ -137,6 +146,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 15,
     color: '#111111',
+  },
+  inputError: {
+    borderColor: '#E5484D',
+  },
+  errorText: {
+    color: '#E5484D',
+    fontSize: 12,
+    marginTop: 6,
   },
   forgotWrapper: {
     alignSelf: 'flex-start',
@@ -198,11 +215,11 @@ const styles = StyleSheet.create({
     color: '#111111',
   },
   signUpRow: {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  marginTop: 20,
-  marginBottom: 20,
-},
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
   signUpText: {
     fontSize: 14,
     color: '#666666',

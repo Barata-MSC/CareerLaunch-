@@ -16,8 +16,7 @@ const STUDENT_ILLUSTRATION = require('../assets/student-illustration.png');
 
 export default function WelcomeScreen({ navigation }) {
   const handleGetStarted = () => {
-    // TODO: wire this up once the Sign Up screen exists, e.g.:
-    // navigation?.navigate('SignUp');
+    navigation?.navigate('Register');
   };
 
   const handleLogin = () => {
