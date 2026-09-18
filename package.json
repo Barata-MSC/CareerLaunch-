@@ -1,4 +1,5 @@
 {
+  "homepage": "https://barata-msc.github.io/CareerLaunch-/",
   "name": "finalproject",
   "version": "1.0.0",
   "main": "index.js",
@@ -17,6 +18,8 @@
     "react-native-web": "^0.21.2"
   },
   "scripts": {
+    "predeploy": "npx expo export -p web",
+    "deploy": "gh-pages --nojekyll -d dist",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -28,6 +31,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-native": "^5.0.0",
+    "gh-pages": "^6.3.0",
     "prettier": "^3.9.8"
   }
 }
