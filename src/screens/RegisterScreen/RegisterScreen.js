@@ -197,7 +197,7 @@ export default function RegisterScreen({ navigation }) {
 
           <TouchableOpacity style={styles.googleButton} activeOpacity={0.85}>
             <Image
-              source={require('../assets/google-icon.png')}
+              source={require('@assets/google-icon.png')}
               style={styles.googleIcon}
               resizeMode="contain"
             />

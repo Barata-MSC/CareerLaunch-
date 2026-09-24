@@ -10,7 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 
-const GOOGLE_ICON = require('../assets/google-icon.png');
+const GOOGLE_ICON = require('@assets/google-icon.png');
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
