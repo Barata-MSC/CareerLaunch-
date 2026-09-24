@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen } from '@screens';
+import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen } from '@screens';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <View style={styles.backdrop}>
       <View style={styles.phone}>
@@ -16,12 +18,21 @@ export default function App() {
             initialRouteName="Welcome"
             screenOptions={{ headerShown: false }}
           >
+            {/* Remove Stack.Screen name="Splash" from here */}
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+
+      
+        {showSplash && (
+          <SplashScreen 
+            appName="CareerLaunch!" 
+            onFinish={() => setShowSplash(false)} 
+          />
+        )}
       </View>
     </View>
   );
