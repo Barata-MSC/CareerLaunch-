@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 // Replace with your own asset, e.g. require('../assets/avatar.png')
-const AVATAR_PLACEHOLDER = require('../assets/icon-profile.png');
+const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
 const PROGRESS_ITEMS = [
   { id: '1', label: 'Resume completed', done: true },

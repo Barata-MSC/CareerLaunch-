@@ -2,32 +2,16 @@ import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RegisterScreen from './RegisterScreen/RegisterScreen';
 
-import WelcomeScreen from './WelcomeScreen/WelcomeScreen.js';
-import LoginScreen from './LoginScreen/LoginScreen.js';
-import DashboardScreen from './DashboardScreen/DashboardScreen.js';
+import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen } from '@screens';
 
 const Stack = createNativeStackNavigator();
 
-//Github link
-const linking = {
-  prefixes: ['https://github.io'],
-  config: {
-    screens: {
-      Welcome: '', 
-      Login: 'login',
-      Dashboard: 'dashboard',
-      Register: 'register',
-    },
-  },
-};
-
 export default function App() {
   return (
-    <View style={styles.appWrapper}>
-      <View style={styles.phoneFrame}>
-        <NavigationContainer linking={linking}>
+    <View style={styles.backdrop}>
+      <View style={styles.phone}>
+        <NavigationContainer>
           <Stack.Navigator
             initialRouteName="Welcome"
             screenOptions={{ headerShown: false }}
@@ -44,25 +28,24 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  appWrapper: {
+  backdrop: {
     flex: 1,
-    backgroundColor: Platform.OS === 'web' ? '#EDEDF2' : '#FFFFFF',
-    // Fix: Ensure the canvas fills the entire web viewport height
-    ...(Platform.OS === 'web' && {
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh', 
-      width: '100vw',
-    }),
+    backgroundColor: Platform.OS === 'web' ? '#e9eaf2' : '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  phoneFrame: {
-    flex: 1,
+
+  phone: {
     width: '100%',
-    maxWidth: Platform.OS === 'web' ? 430 : undefined,
-    backgroundColor: '#FFFFFF',
+    height: '100%',
+    backgroundColor: '#fff',
+
     ...(Platform.OS === 'web' && {
-      minHeight: '100vh', // Fix: Guarantees the frame takes full height on desktop views
-      boxShadow: '0 0 40px rgba(0,0,0,0.08)',
+      width: 390,
+      height: 844,
+      borderRadius: 40,
+      borderWidth: 8,
+      borderColor: '#111',
       overflow: 'hidden',
     }),
   },

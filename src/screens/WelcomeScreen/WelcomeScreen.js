@@ -9,10 +9,9 @@ import {
   StatusBar,
 } from 'react-native';
 
-// Update these paths to match where you place the images in your project,
-// e.g. ./assets/rocket-icon.png and ./assets/student-illustration.png
-const ROCKET_ICON = require('../assets/rocket-icon.png');
-const STUDENT_ILLUSTRATION = require('../assets/student-illustration.png');
+
+const ROCKET_ICON = require('@assets/rocket-icon.png');
+const STUDENT_ILLUSTRATION = require('@assets/student-illustration.png');
 
 export default function WelcomeScreen({ navigation }) {
   const handleGetStarted = () => {
