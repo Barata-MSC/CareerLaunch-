@@ -29,7 +29,6 @@ export default function LoginScreen({ navigation }) {
 
     if (missingEmail || missingPassword) return;
 
-    // TODO: validate `email` / `password` against your auth logic
     navigation?.navigate('Dashboard');
   };
 
@@ -39,11 +38,15 @@ export default function LoginScreen({ navigation }) {
 
       <View style={styles.headerWrapper}>
         <Text style={styles.title}>Welcome back!</Text>
-        <Text style={styles.subtitle}>Login to continue your journey</Text>
+        <Text style={styles.subtitle}>
+          Login to continue your journey
+        </Text>
       </View>
 
+      {/* Email */}
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Email</Text>
+
         <TextInput
           style={[styles.input, emailError ? styles.inputError : null]}
           placeholder="Enter your email"
@@ -56,11 +59,16 @@ export default function LoginScreen({ navigation }) {
             if (emailError) setEmailError('');
           }}
         />
-        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
+        {emailError ? (
+          <Text style={styles.errorText}>{emailError}</Text>
+        ) : null}
       </View>
 
+      {/* Password */}
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Password</Text>
+
         <TextInput
           style={[styles.input, passwordError ? styles.inputError : null]}
           placeholder="Enter your password"
@@ -72,13 +80,18 @@ export default function LoginScreen({ navigation }) {
             if (passwordError) setPasswordError('');
           }}
         />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
       </View>
 
+      {/* Forgot Password */}
       <TouchableOpacity style={styles.forgotWrapper}>
         <Text style={styles.forgotText}>Forgot password?</Text>
       </TouchableOpacity>
 
+      {/* Login Button */}
       <TouchableOpacity
         style={styles.primaryButton}
         activeOpacity={0.85}
@@ -87,21 +100,39 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.primaryButtonText}>Login</Text>
       </TouchableOpacity>
 
+      {/* Divider */}
       <View style={styles.dividerRow}>
         <View style={styles.dividerLine} />
         <Text style={styles.dividerText}>OR</Text>
         <View style={styles.dividerLine} />
       </View>
 
-      <TouchableOpacity style={styles.googleButton} activeOpacity={0.85}>
-        <Image source={GOOGLE_ICON} style={styles.googleIcon} resizeMode="contain" />
-        <Text style={styles.googleButtonText}>Continue with Google</Text>
+      {/* Google Button */}
+      <TouchableOpacity
+        style={styles.googleButton}
+        activeOpacity={0.85}
+      >
+        <Image
+          source={GOOGLE_ICON}
+          style={styles.googleIcon}
+          resizeMode="contain"
+        />
+
+        <Text style={styles.googleButtonText}>
+          Continue with Google
+        </Text>
       </TouchableOpacity>
 
+      {/* Sign Up */}
       <View style={styles.signUpRow}>
-        <Text style={styles.signUpText}>Don't have an account yet? </Text>
-        <TouchableOpacity onPress={() => navigation?.navigate('Register')}>
-          <Text style={styles.signUpLink}>Sign Up</Text>
+        <Text style={styles.signUpText}>
+          Don't have an account yet?
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => navigation?.navigate('Register')}
+        >
+          <Text style={styles.signUpLink}> Sign Up</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -114,116 +145,148 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
   },
+
   headerWrapper: {
     alignItems: 'center',
     marginTop: 48,
     marginBottom: 32,
   },
+
   title: {
     fontSize: 26,
     fontWeight: '800',
     color: '#111111',
   },
+
   subtitle: {
     fontSize: 14,
     color: '#888888',
     marginTop: 6,
   },
+
   fieldGroup: {
+    width: '90%',
+    alignSelf: 'center',
     marginBottom: 18,
   },
+
   label: {
     fontSize: 14,
     fontWeight: '600',
     color: '#111111',
     marginBottom: 8,
   },
+
   input: {
+    width: '100%',
+    height: 50,
     borderWidth: 1,
     borderColor: '#DADADA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    fontSize: 14,
     color: '#111111',
   },
+
   inputError: {
     borderColor: '#E5484D',
   },
+
   errorText: {
     color: '#E5484D',
     fontSize: 12,
     marginTop: 6,
   },
+
   forgotWrapper: {
-    alignSelf: 'flex-start',
-    marginBottom: 24,
+    width: '90%',
+    alignSelf: 'center',
+    marginBottom: 10,
   },
+
   forgotText: {
     color: PURPLE,
     fontSize: 14,
     fontWeight: '600',
   },
+
   primaryButton: {
+    width: '90%',
+    alignSelf: 'center',
     backgroundColor: PURPLE,
     borderRadius: 14,
-    paddingVertical: 16,
+    height: 52,
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: PURPLE_DARK,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 4,
   },
+
   primaryButtonText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
   },
+
   dividerRow: {
+    width: '90%',
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 28,
   },
+
   dividerLine: {
     flex: 1,
     height: 1,
     backgroundColor: '#E0E0E0',
   },
+
   dividerText: {
     marginHorizontal: 12,
     color: '#888888',
     fontSize: 13,
   },
+
   googleButton: {
+    width: '90%',
+    alignSelf: 'center',
+    height: 52,
     flexDirection: 'row',
     borderWidth: 1,
     borderColor: '#DADADA',
     borderRadius: 14,
-    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   googleIcon: {
     width: 20,
     height: 20,
   },
+
   googleButtonText: {
     marginLeft: 10,
     fontSize: 15,
     fontWeight: '600',
     color: '#111111',
   },
+
   signUpRow: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20,
   },
+
   signUpText: {
     fontSize: 14,
     color: '#666666',
   },
+
   signUpLink: {
     fontSize: 14,
     color: PURPLE,
