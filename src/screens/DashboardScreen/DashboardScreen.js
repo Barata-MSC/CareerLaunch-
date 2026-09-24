@@ -20,7 +20,7 @@ const PROGRESS_ITEMS = [
  
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
-  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
+  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE', screen: 'JobFinder' },
   { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
   { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
@@ -75,33 +75,47 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
           ))}
         </View>
  
-        {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => {
-            const isPressed = pressedId === action.id;
-            return (
-              <TouchableOpacity
-                key={action.id}
-                style={styles.quickActionWrap}
-                activeOpacity={0.8}
-                onPressIn={() => setPressedId(action.id)}
-                onPressOut={() => setPressedId(null)}
-                onPress={() => handleQuickAction(action)}
-              >
-                <View
-                  style={[
-                    styles.quickActionTile,
-                    { backgroundColor: action.color },
-                    isPressed && styles.quickActionTileActive,
-                  ]}
+          {/* Quick Actions */}
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsRow}>
+                    {QUICK_ACTIONS.map((action) => {
+              const isPressed = pressedId === action.id;
+              return (
+                <TouchableOpacity
+                  key={action.id}
+                  style={styles.quickActionWrap}
+                  activeOpacity={0.8}
+                  onPressIn={() => setPressedId(action.id)}
+                  onPressOut={() => setPressedId(null)}
+                  onPress={() => handleQuickAction(action)}
                 >
-                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                </View>
-                <Text style={styles.quickActionLabel}>{action.label}</Text>
-              </TouchableOpacity>
+                  <View
+                    style={[
+                      styles.quickActionTile,
+                      { backgroundColor: action.color },
+                      isPressed && styles.quickActionTileActive,
+                    ]}
+                  >
+                    <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                  </View>
+                  <Text style={styles.quickActionLabel}>{action.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+        </View>
+ 
+                  {/* Daily tip */}
+                  <View style={styles.tipCard}>
+                    <Text style={styles.tipTitle}>Daily tip</Text>
+                    <Text style={styles.tipBody}>
+                      Small steps today,{'\n'}big opportunities tomorrow.
+                    </Text>
+                  </View>
+                </ScrollView>
+              </SafeAreaView>
             );
-          })}
+          }
+
         </View>
  
         {/* Daily tip */}
