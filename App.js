@@ -4,6 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen, CareerRoadmapScreen} from '@screens';
+import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, ProfileScreen } from '@screens';
+import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen } from '@screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +23,7 @@ export default function App() {
             {/* Remove Stack.Screen name="Splash" from here */}
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
              <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />

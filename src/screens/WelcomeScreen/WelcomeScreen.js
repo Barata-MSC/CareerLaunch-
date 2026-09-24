@@ -129,9 +129,11 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: PURPLE,
+    width: 300,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
+    alignSelf: 'center',
     marginTop: 40,
     shadowColor: PURPLE_DARK,
     shadowOffset: { width: 0, height: 6 },

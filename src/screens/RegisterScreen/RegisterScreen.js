@@ -38,6 +38,14 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
 
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [middleNameError, setMiddleNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [contactNumberError, setContactNumberError] = useState('');
+  const [birthdayError, setBirthdayError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const pickProfileImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -56,10 +64,32 @@ export default function RegisterScreen({ navigation }) {
   };
 
   const handleRegister = () => {
-    if (!firstName || !lastName || !email || !password) {
-      Alert.alert('Missing info', 'Please fill in first name, last name, email and password.');
-      return;
-    }
+    const missingFirstName = !firstName.trim();
+    const missingLastName = !lastName.trim();
+    const missingMiddleName = !middleName.trim();
+    const missingEmail = !email.trim();
+    const missingContactNumber = !contactNumber.trim();
+    const missingBirthday = !birthday.trim();
+    const missingPassword = !password.trim();
+
+    setFirstNameError(missingFirstName ? 'Please enter your first name' : '');
+    setLastNameError(missingLastName ? 'Please enter your last name' : '');
+    setMiddleNameError(missingMiddleName ? 'Please enter your middle name' : '');
+    setEmailError(missingEmail ? 'Please enter your email' : '');
+    setContactNumberError(missingContactNumber ? 'Please enter your contact number' : '');
+    setBirthdayError(missingBirthday ? 'Please enter your birthday' : '');
+    setPasswordError(missingPassword ? 'Please create a password' : '');
+
+    if (
+      missingFirstName ||
+      missingLastName ||
+      missingMiddleName ||
+      missingEmail ||
+      missingContactNumber ||
+      missingBirthday ||
+      missingPassword
+    ) return;
+
     // Hook up to your API / auth logic
     console.log({
       firstName,
@@ -111,75 +141,117 @@ export default function RegisterScreen({ navigation }) {
 
           <Text style={styles.label}>First name</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, firstNameError ? styles.inputError : null]}
             placeholder="Enter your first name"
             placeholderTextColor={COLORS.placeholder}
             value={firstName}
-            onChangeText={setFirstName}
+            onChangeText={(text) => {
+              setFirstName(text);
+              if (firstNameError) setFirstNameError('');
+            }}
             autoCapitalize="words"
           />
+          {firstNameError ? (
+            <Text style={styles.errorText}>{firstNameError}</Text>
+          ) : null}
 
           <Text style={styles.label}>Last name</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, lastNameError ? styles.inputError : null]}
             placeholder="Enter your last name"
             placeholderTextColor={COLORS.placeholder}
             value={lastName}
-            onChangeText={setLastName}
+            onChangeText={(text) => {
+              setLastName(text);
+              if (lastNameError) setLastNameError('');
+            }}
             autoCapitalize="words"
           />
+          {lastNameError ? (
+            <Text style={styles.errorText}>{lastNameError}</Text>
+          ) : null}
 
           <Text style={styles.label}>Middle name</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, middleNameError ? styles.inputError : null]}
             placeholder="Enter your middle name"
             placeholderTextColor={COLORS.placeholder}
             value={middleName}
-            onChangeText={setMiddleName}
+            onChangeText={(text) => {
+              setMiddleName(text);
+              if (middleNameError) setMiddleNameError('');
+            }}
             autoCapitalize="words"
           />
+          {middleNameError ? (
+            <Text style={styles.errorText}>{middleNameError}</Text>
+          ) : null}
 
           <Text style={styles.label}>Email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, emailError ? styles.inputError : null]}
             placeholder="Enter your email"
             placeholderTextColor={COLORS.placeholder}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (emailError) setEmailError('');
+            }}
             keyboardType="email-address"
             autoCapitalize="none"
           />
+          {emailError ? (
+            <Text style={styles.errorText}>{emailError}</Text>
+          ) : null}
 
           <Text style={styles.label}>Contact number</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, contactNumberError ? styles.inputError : null]}
             placeholder="Enter your contact number"
             placeholderTextColor={COLORS.placeholder}
             value={contactNumber}
-            onChangeText={setContactNumber}
+            onChangeText={(text) => {
+              setContactNumber(text);
+              if (contactNumberError) setContactNumberError('');
+            }}
             keyboardType="phone-pad"
           />
+          {contactNumberError ? (
+            <Text style={styles.errorText}>{contactNumberError}</Text>
+          ) : null}
 
           <Text style={styles.label}>Birthday</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, birthdayError ? styles.inputError : null]}
             placeholder="MM/DD/YYYY"
             placeholderTextColor={COLORS.placeholder}
             value={birthday}
-            onChangeText={setBirthday}
+            onChangeText={(text) => {
+              setBirthday(text);
+              if (birthdayError) setBirthdayError('');
+            }}
             keyboardType="numbers-and-punctuation"
           />
+          {birthdayError ? (
+            <Text style={styles.errorText}>{birthdayError}</Text>
+          ) : null}
           {/* Swap for @react-native-community/datetimepicker if you want a native date-wheel */}
 
           <Text style={styles.label}>Password</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, passwordError ? styles.inputError : null]}
             placeholder="Create a password"
             placeholderTextColor={COLORS.placeholder}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (passwordError) setPasswordError('');
+            }}
             secureTextEntry
           />
+          {passwordError ? (
+            <Text style={styles.errorText}>{passwordError}</Text>
+          ) : null}
 
           <TouchableOpacity
             style={styles.registerButton}
@@ -293,6 +365,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     fontSize: 14,
     color: COLORS.text,
+  },
+  inputError: {
+    borderColor: '#E5484D',
+  },
+  errorText: {
+    color: '#E5484D',
+    fontSize: 12,
+    marginTop: 6,
   },
   registerButton: {
     height: 50,
