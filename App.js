@@ -3,9 +3,16 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen, JobFinderScreen } from '@screens';
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, ProfileScreen } from '@screens';
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen } from '@screens';
+import { 
+  WelcomeScreen, 
+  LoginScreen, 
+  DashboardScreen, 
+  RegisterScreen, 
+  SplashScreen, 
+  ProfileScreen,
+  JobFinderScreen, 
+  CareerRoadmapScreen 
+} from '@screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +34,7 @@ export default function App() {
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+             <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
           </Stack.Navigator>
         </NavigationContainer>
 
