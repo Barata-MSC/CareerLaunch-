@@ -25,8 +25,7 @@ const QUICK_ACTIONS = [
   { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
 
-
-export default function DashboardScreen({ navigation, userName = 'JP', profileProgress = 0.8 }) {
+export default function DashboardScreen({ navigation, userName = 'User', profileProgress = 0.8 }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -37,7 +36,11 @@ export default function DashboardScreen({ navigation, userName = 'JP', profilePr
         <Text style={styles.greeting}>Hello, {userName}!👋</Text>
 
         {/* Profile completion card */}
-        <View style={styles.profileCard}>
+        <TouchableOpacity
+          style={styles.profileCard}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Profile')}
+        >
           <View style={styles.profileTextWrap}>
             <Text style={styles.profileTitle}>Complete your profile</Text>
             <Text style={styles.profileSubtitle}>
@@ -53,8 +56,7 @@ export default function DashboardScreen({ navigation, userName = 'JP', profilePr
             </View>
           </View>
           <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
-        </View>
-
+        </TouchableOpacity>
         {/* Today's progress */}
         <Text style={styles.sectionTitle}>Today's progress</Text>
         <View style={styles.progressList}>
