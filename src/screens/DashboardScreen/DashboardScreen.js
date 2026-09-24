@@ -20,12 +20,13 @@ const PROGRESS_ITEMS = [
 
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
-  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
+  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE', screen: 'JobFinder' },
   { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
   { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
 
-export default function DashboardScreen({ userName = 'JP', profileProgress = 0.8 }) {
+
+export default function DashboardScreen({ navigation, userName = 'JP', profileProgress = 0.8 }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -80,6 +81,7 @@ export default function DashboardScreen({ userName = 'JP', profileProgress = 0.8
               key={action.id}
               style={styles.quickActionWrap}
               activeOpacity={0.8}
+              onPress={() => action.screen && navigation.navigate(action.screen)}
             >
               <View
                 style={[styles.quickActionTile, { backgroundColor: action.color }]}
@@ -89,6 +91,7 @@ export default function DashboardScreen({ userName = 'JP', profileProgress = 0.8
               <Text style={styles.quickActionLabel}>{action.label}</Text>
             </TouchableOpacity>
           ))}
+      
         </View>
 
         {/* Daily tip */}
