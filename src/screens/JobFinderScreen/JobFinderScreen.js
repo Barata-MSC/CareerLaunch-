@@ -237,7 +237,7 @@ export default function JobFinderScreen({ navigation }) {
 
       <Text style={styles.sectionLabel}>Categories</Text>
       <View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} contentContainerStyle={styles.chipRow}>
           {CATEGORIES.map((c) => {
             const active = c === category;
             return (
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
   },
-  searchInput: { height: 44, fontSize: 14, color: '#111827'},
+  searchInput: { height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827'},
 
   sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },
