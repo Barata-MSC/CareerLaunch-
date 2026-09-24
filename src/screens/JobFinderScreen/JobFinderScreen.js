@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
   },
-  searchInput: { height: 44, fontSize: 14, color: '#111827' },
+  searchInput: { height: 44, fontSize: 14, color: '#111827'},
 
   sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },

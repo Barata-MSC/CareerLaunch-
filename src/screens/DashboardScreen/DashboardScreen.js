@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
  
 // Replace with your own asset, e.g. require('../assets/avatar.png')
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
@@ -25,7 +17,29 @@ const QUICK_ACTIONS = [
   { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
 
-export default function DashboardScreen({ navigation, userName = 'User', profileProgress = 0.8 }) {
+export default function DashboardScreen({
+  navigation,
+  userName = 'JP',
+  profileProgress = 0.8,
+}) {
+  // Tracks which quick-action tile is currently pressed
+  const [pressedId, setPressedId] = useState(null);
+
+  const handleQuickAction = (action) => {
+    if (action.label === 'Skills Roadmap') {
+      navigation.navigate('CareerRoadmap', {
+        goal: 'Become a Software Engineer',
+        estimatedTime: '5 Months',
+      });
+      return;
+    }
+    // Handle other actions here (e.g., JobFinder)
+    if (action.label === 'Job Finder') {
+      navigation.navigate('JobFinder');
+      return;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -34,7 +48,7 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
       >
         {/* Greeting */}
         <Text style={styles.greeting}>Hello, {userName}!👋</Text>
- 
+
         {/* Profile completion card */}
         <TouchableOpacity
           style={styles.profileCard}
@@ -56,68 +70,37 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
             </View>
           </View>
           <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
-        </TouchableOpacity>
-        {/* Today's progress */}
-        <Text style={styles.sectionTitle}>Today's progress</Text>
-        <View style={styles.progressList}>
-          {PROGRESS_ITEMS.map((item) => (
-            <View key={item.id} style={styles.progressItem}>
-              <Text style={styles.progressItemLabel}>{item.label}</Text>
-              <View
-                style={[
-                  styles.checkCircle,
-                  { backgroundColor: item.done ? '#1E8E3E' : '#E5E5EA' },
-                ]}
-              >
-                {item.done && <Text style={styles.checkMark}>✓</Text>}
-              </View>
-            </View>
-          ))}
-        </View>
- 
-          {/* Quick Actions */}
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActionsRow}>
-                    {QUICK_ACTIONS.map((action) => {
-              const isPressed = pressedId === action.id;
-              return (
-                <TouchableOpacity
-                  key={action.id}
-                  style={styles.quickActionWrap}
-                  activeOpacity={0.8}
-                  onPressIn={() => setPressedId(action.id)}
-                  onPressOut={() => setPressedId(null)}
-                  onPress={() => handleQuickAction(action)}
-                >
-                  <View
-                    style={[
-                      styles.quickActionTile,
-                      { backgroundColor: action.color },
-                      isPressed && styles.quickActionTileActive,
-                    ]}
-                  >
-                    <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                  </View>
-                  <Text style={styles.quickActionLabel}>{action.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-        </View>
- 
-                  {/* Daily tip */}
-                  <View style={styles.tipCard}>
-                    <Text style={styles.tipTitle}>Daily tip</Text>
-                    <Text style={styles.tipBody}>
-                      Small steps today,{'\n'}big opportunities tomorrow.
-                    </Text>
-                  </View>
-                </ScrollView>
-              </SafeAreaView>
-            );
-          }
+        </TouchableOpacity> {/* <--- MAKE SURE THIS IS CLOSED */}
 
+        {/* Quick Actions section */}
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.quickActionsRow}>
+          {QUICK_ACTIONS.map((action) => {
+            const isPressed = pressedId === action.id;
+            return (
+              <TouchableOpacity
+                key={action.id}
+                style={styles.quickActionWrap}
+                activeOpacity={0.8}
+                onPressIn={() => setPressedId(action.id)}
+                onPressOut={() => setPressedId(null)}
+                onPress={() => handleQuickAction(action)}
+              >
+                <View
+                  style={[
+                    styles.quickActionTile,
+                    { backgroundColor: action.color },
+                    isPressed && styles.quickActionTileActive,
+                  ]}
+                >
+                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                </View>
+                <Text style={styles.quickActionLabel}>{action.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
- 
+
         {/* Daily tip */}
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Daily tip</Text>
@@ -129,6 +112,7 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
     </SafeAreaView>
   );
 }
+
  
 const styles = StyleSheet.create({
   safeArea: {
