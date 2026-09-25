@@ -103,7 +103,7 @@ export default function RegisterScreen({ navigation }) {
     });
 
     // After signing up, send the user to the Login screen
-    navigation?.navigate('Login');
+    navigation?.navigate('MainTabs', { screen: 'Dashboard' });
   };
 
   return (

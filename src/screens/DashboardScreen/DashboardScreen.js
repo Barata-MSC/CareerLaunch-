@@ -26,22 +26,26 @@ export default function DashboardScreen({
   const [pressedId, setPressedId] = useState(null);
 
   const handleQuickAction = (action) => {
-    if (action.label === 'Skills Roadmap') {
-      navigation.navigate('CareerRoadmap', {
-        goal: 'Become a Software Engineer',
-        estimatedTime: '5 Months',
-      });
-      return;
-    }
-    if (action.label === 'Job Finder') {
-      navigation.navigate('JobFinder');
-      return;
-    }
-    if (action.label === 'AI Coach') {
-      navigation.navigate('AIInterviewCoach');
-      return;
-    }
-  };
+  if (action.label === 'Skills Roadmap') {
+    navigation.navigate('CareerRoadmap', {
+      goal: 'Become a Software Engineer',
+      estimatedTime: '5 Months',
+    });
+    return;
+  }
+  if (action.label === 'Job Finder') {
+    navigation.navigate('JobFinder');
+    return;
+  }
+  if (action.label === 'AI Coach') {
+        navigation.navigate('AIInterviewCoach');
+        return;
+  }
+  if (action.label === 'Resume Editor') {
+    navigation.navigate('ResumeBuilder');
+    return;
+  }
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -107,10 +111,9 @@ export default function DashboardScreen({
         {/* Daily tip */}
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Daily tip</Text>
-          <Text style={styles.tipBody}>
-            Small steps today,{'\n'}big opportunities tomorrow.
-          </Text>
+          <Text style={styles.tipBody}>{`Small steps today,\nbig opportunities tomorrow.`}</Text>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
