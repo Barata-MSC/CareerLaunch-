@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useApplications } from './src/context/ApplicationsContext'
 
 import {
   WelcomeScreen,
@@ -12,8 +13,11 @@ import {
   ProfileScreen,
   JobFinderScreen,
   CareerRoadmapScreen,
+  JobApplicationTracker,
+  ApplicationContext,
   AIInterviewCoachScreen,
 } from '@screens';
+import { ApplicationsProvider } from './src/context/ApplicationsContext';
 
 // Direct import path to bypass the barrel loop
 import MainTabs from './src/screens/ResumeBuilderScreen/MainTabs';
@@ -39,6 +43,7 @@ export default function App() {
   return (
     <View style={styles.backdrop}>
       <View style={styles.phone}>
+        <ApplicationsProvider>
         <ResumeProvider>
           <NavigationContainer>
             <Stack.Navigator
@@ -53,6 +58,7 @@ export default function App() {
               <Stack.Screen name="JobFinder" component={JobFinderScreen} />
               <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
               <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
+              <Stack.Screen name="Dashboard" component={DashboardScreen} />
 
               {/* Resume Builder flow */}
               <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
@@ -63,16 +69,26 @@ export default function App() {
               <Stack.Screen name="certificates" component={CertificatesScreen} />
               <Stack.Screen name="projects" component={ProjectsScreen} />
               <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+
+              <Stack.Screen
+                name="CareerRoadmap"
+                component={CareerRoadmapScreen}
+              />
+              <Stack.Screen
+                name="JobApplicationTracker"
+                component={JobApplicationTracker}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </ResumeProvider>
 
-        {showSplash && (
-          <SplashScreen
-            appName="CareerLaunch!"
-            onFinish={() => setShowSplash(false)}
-          />
-        )}
+          {showSplash && (
+            <SplashScreen
+              appName="CareerLaunch!"
+              onFinish={() => setShowSplash(false)}
+            />
+          )}
+        </ApplicationsProvider>
       </View>
     </View>
   );
