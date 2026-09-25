@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
- 
+
 // Replace with your own asset, e.g. require('../assets/avatar.png')
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
- 
+
 const PROGRESS_ITEMS = [
   { id: '1', label: 'Resume completed', done: true },
   { id: '2', label: 'Interview practice', done: true },
   { id: '3', label: 'Apply for internship', done: false },
 ];
- 
+
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
   { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE', screen: 'JobFinder' },
@@ -26,19 +26,23 @@ export default function DashboardScreen({
   const [pressedId, setPressedId] = useState(null);
 
   const handleQuickAction = (action) => {
-    if (action.label === 'Skills Roadmap') {
-      navigation.navigate('CareerRoadmap', {
-        goal: 'Become a Software Engineer',
-        estimatedTime: '5 Months',
-      });
-      return;
-    }
-    // Handle other actions here (e.g., JobFinder)
-    if (action.label === 'Job Finder') {
-      navigation.navigate('JobFinder');
-      return;
-    }
-  };
+  if (action.label === 'Skills Roadmap') {
+    navigation.navigate('CareerRoadmap', {
+      goal: 'Become a Software Engineer',
+      estimatedTime: '5 Months',
+    });
+    return;
+  }
+  if (action.label === 'Job Finder') {
+    navigation.navigate('JobFinder');
+    return;
+  }
+  //  ADD THIS CHECK FOR YOUR RESUME BUILDER FLOW:
+  if (action.label === 'Resume Editor') {
+    navigation.navigate('ResumeBuilder');
+    return;
+  }
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -104,16 +108,15 @@ export default function DashboardScreen({
         {/* Daily tip */}
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Daily tip</Text>
-          <Text style={styles.tipBody}>
-            Small steps today,{'\n'}big opportunities tomorrow.
-          </Text>
+          <Text style={styles.tipBody}>{`Small steps today,\nbig opportunities tomorrow.`}</Text>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
- 
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -131,7 +134,7 @@ const styles = StyleSheet.create({
     color: '#1C1C1E',
     marginBottom: 20,
   },
- 
+
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -174,14 +177,14 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: '#D6E4F0',
   },
- 
+
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1C1C1E',
     marginBottom: 12,
   },
- 
+
   progressList: {
     marginBottom: 28,
   },
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
- 
+
   quickActionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -250,7 +253,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1C1C1E',
   },
- 
+
   tipCard: {
     backgroundColor: '#AAB4F0',
     borderRadius: 16,
@@ -268,4 +271,3 @@ const styles = StyleSheet.create({
     color: '#F1F1FB',
   },
 });
- 
