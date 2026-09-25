@@ -3,8 +3,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, ProfileScreen } from '@screens';
-import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, SplashScreen } from '@screens';
+import { WelcomeScreen, LoginScreen, DashboardScreen, RegisterScreen, ProfileScreen, SplashScreen, JobFinderScreen, CareerRoadmapScreen } from '@screens';
 
 const Stack = createNativeStackNavigator();
 
