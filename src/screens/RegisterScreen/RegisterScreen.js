@@ -11,10 +11,21 @@ import {
   Platform,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 // npx expo install expo-image-picker
 // (or "react-native-image-picker" if this is a bare RN project, not Expo)
 import * as ImagePicker from 'expo-image-picker';
+
+import { supabase } from '@config/supabase';
+
+const showAlert = (title, message) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}: ${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
 
 // Same theme tokens as WelcomeScreen / LoginScreen.
 const COLORS = {
@@ -37,6 +48,7 @@ export default function RegisterScreen({ navigation }) {
   const [birthday, setBirthday] = useState('');
   const [password, setPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
@@ -47,9 +59,10 @@ export default function RegisterScreen({ navigation }) {
   const [passwordError, setPasswordError] = useState('');
 
   const pickProfileImage = async () => {
+
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission needed', 'Allow photo access to set a profile picture.');
+      showAlert('Permission needed', 'Allow photo access to set a profile picture.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -63,7 +76,37 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
-  const handleRegister = () => {
+  // Uploads the picked photo to the "avatars" storage bucket and saves the
+  // public URL onto the user's profiles row. Only works once we have a
+  // session (i.e. email confirmation is off, or they're already verified).
+  const uploadAvatar = async (userId) => {
+    try {
+      const response = await fetch(profileImage);
+      const blob = await response.blob();
+      const fileExt = profileImage.split('.').pop() || 'jpg';
+      const filePath = `${userId}/avatar.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrlData.publicUrl })
+        .eq('id', userId);
+    } catch (e) {
+      // Non-fatal: account was still created successfully.
+      console.log('Avatar upload failed:', e.message);
+    }
+  };
+
+  const handleRegister = async () => {
     const missingFirstName = !firstName.trim();
     const missingLastName = !lastName.trim();
     const missingMiddleName = !middleName.trim();
@@ -90,21 +133,40 @@ export default function RegisterScreen({ navigation }) {
       missingPassword
     ) return;
 
-    // Hook up to your API / auth logic
-    console.log({
-      firstName,
-      lastName,
-      middleName,
-      email,
-      contactNumber,
-      birthday,
-      password,
-      profileImage,
+    setLoading(true);
+
+    const { data: { session, user }, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password: password,
+      options: {
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          middle_name: middleName.trim(),
+          contact_number: contactNumber.trim(),
+          birthday: birthday.trim(),
+        },
+      },
     });
 
-    // After signing up, send the user to the Login screen
-    navigation?.navigate('Login');
-  };
+    if (error) {
+      setLoading(false);
+      console.log("Signup Error:", error.message); // Add this for debugging
+      showAlert('Registration Error', error.message); // Use showAlert
+      return;
+    }
+
+    if (session && profileImage && user) {
+      await uploadAvatar(user.id);
+    }
+
+    setLoading(false);
+
+    if (!session) {
+      showAlert('Success!', 'Please check your email inbox to confirm your account.'); // Use showAlert
+      navigation?.navigate('Login');
+    }
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -119,6 +181,7 @@ export default function RegisterScreen({ navigation }) {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation?.goBack()}
+            disabled={loading}
           >
             <Text style={styles.backArrow}>‹</Text>
           </TouchableOpacity>
@@ -126,7 +189,7 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>Tell us a bit about yourself</Text>
 
-          <TouchableOpacity style={styles.avatarWrap} onPress={pickProfileImage}>
+          <TouchableOpacity style={styles.avatarWrap} onPress={pickProfileImage} disabled={loading}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.avatarImage} />
             ) : (
@@ -145,6 +208,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Enter your first name"
             placeholderTextColor={COLORS.placeholder}
             value={firstName}
+            editable={!loading}
             onChangeText={(text) => {
               setFirstName(text);
               if (firstNameError) setFirstNameError('');
@@ -161,6 +225,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Enter your last name"
             placeholderTextColor={COLORS.placeholder}
             value={lastName}
+            editable={!loading}
             onChangeText={(text) => {
               setLastName(text);
               if (lastNameError) setLastNameError('');
@@ -177,6 +242,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Enter your middle name"
             placeholderTextColor={COLORS.placeholder}
             value={middleName}
+            editable={!loading}
             onChangeText={(text) => {
               setMiddleName(text);
               if (middleNameError) setMiddleNameError('');
@@ -193,6 +259,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Enter your email"
             placeholderTextColor={COLORS.placeholder}
             value={email}
+            editable={!loading}
             onChangeText={(text) => {
               setEmail(text);
               if (emailError) setEmailError('');
@@ -210,6 +277,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Enter your contact number"
             placeholderTextColor={COLORS.placeholder}
             value={contactNumber}
+            editable={!loading}
             onChangeText={(text) => {
               setContactNumber(text);
               if (contactNumberError) setContactNumberError('');
@@ -226,6 +294,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="MM/DD/YYYY"
             placeholderTextColor={COLORS.placeholder}
             value={birthday}
+            editable={!loading}
             onChangeText={(text) => {
               setBirthday(text);
               if (birthdayError) setBirthdayError('');
@@ -243,6 +312,7 @@ export default function RegisterScreen({ navigation }) {
             placeholder="Create a password"
             placeholderTextColor={COLORS.placeholder}
             value={password}
+            editable={!loading}
             onChangeText={(text) => {
               setPassword(text);
               if (passwordError) setPasswordError('');
@@ -254,31 +324,21 @@ export default function RegisterScreen({ navigation }) {
           ) : null}
 
           <TouchableOpacity
-            style={styles.registerButton}
+            style={[styles.registerButton, loading && { opacity: 0.7 }]}
             onPress={handleRegister}
             activeOpacity={0.85}
+            disabled={loading}
           >
-            <Text style={styles.registerButtonText}>Sign up</Text>
-          </TouchableOpacity>
-
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <TouchableOpacity style={styles.googleButton} activeOpacity={0.85}>
-            <Image
-              source={require('@assets/google-icon.png')}
-              style={styles.googleIcon}
-              resizeMode="contain"
-            />
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.registerButtonText}>Sign up</Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.footerRow}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation?.navigate('Login')}>
+            <TouchableOpacity onPress={() => navigation?.navigate('Login')} disabled={loading}>
               <Text style={styles.footerLink}>Log in</Text>
             </TouchableOpacity>
           </View>
@@ -289,156 +349,24 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 40,
-  },
-  backButton: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  backArrow: {
-    fontSize: 26,
-    color: COLORS.text,
-    fontWeight: '400',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: COLORS.subtext,
-    marginBottom: 20,
-  },
-  avatarWrap: {
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  avatarPlaceholder: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: COLORS.avatarBg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarImage: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-  },
-  avatarPlus: {
-    fontSize: 26,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  avatarLabel: {
-    marginTop: 6,
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 6,
-    marginTop: 10,
-  },
-  input: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    fontSize: 14,
-    color: COLORS.text,
-  },
-  inputError: {
-    borderColor: '#E5484D',
-  },
-  errorText: {
-    color: '#E5484D',
-    fontSize: 12,
-    marginTop: 6,
-  },
-  registerButton: {
-    height: 50,
-    backgroundColor: COLORS.primary,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  registerButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.divider,
-  },
-  dividerText: {
-    marginHorizontal: 12,
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.subtext,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    height: 50,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  googleIcon: {
-    width: 18,
-    height: 18,
-    marginRight: 10,
-  },
-  googleButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 22,
-  },
-  footerText: {
-    fontSize: 13,
-    color: COLORS.subtext,
-  },
-  footerLink: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
+  safeArea: { flex: 1, backgroundColor: COLORS.background },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 40 },
+  backButton: { width: 32, height: 32, justifyContent: 'center', marginBottom: 10 },
+  backArrow: { fontSize: 26, color: COLORS.text, fontWeight: '400' },
+  title: { fontSize: 24, fontWeight: '700', color: COLORS.text, marginBottom: 4 },
+  subtitle: { fontSize: 13, color: COLORS.subtext, marginBottom: 20 },
+  avatarWrap: { alignItems: 'center', marginBottom: 8 },
+  avatarPlaceholder: { width: 72, height: 72, borderRadius: 36, backgroundColor: COLORS.avatarBg, borderWidth: 1, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
+  avatarImage: { width: 72, height: 72, borderRadius: 36 },
+  avatarPlus: { fontSize: 26, fontWeight: '600', color: COLORS.primary },
+  avatarLabel: { marginTop: 6, fontSize: 12, fontWeight: '600', color: COLORS.primary },
+  label: { fontSize: 12, fontWeight: '600', color: COLORS.text, marginBottom: 6, marginTop: 10 },
+  input: { height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14, fontSize: 14, color: COLORS.text },
+  inputError: { borderColor: '#E5484D' },
+  errorText: { color: '#E5484D', fontSize: 12, marginTop: 6 },
+  registerButton: { height: 50, backgroundColor: COLORS.primary, borderRadius: 25, justifyContent: 'center', alignItems: 'center', marginTop: 22, shadowColor: COLORS.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 4 },
+  registerButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  footerRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 22 },
+  footerText: { fontSize: 13, color: COLORS.subtext },
+  footerLink: { fontSize: 13, fontWeight: '700', color: COLORS.primary },
 });
