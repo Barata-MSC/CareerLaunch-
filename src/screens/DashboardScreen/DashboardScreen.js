@@ -1,31 +1,45 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-} from 'react-native';
-
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
+ 
 // Replace with your own asset, e.g. require('../assets/avatar.png')
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
-
+ 
 const PROGRESS_ITEMS = [
   { id: '1', label: 'Resume completed', done: true },
   { id: '2', label: 'Interview practice', done: true },
   { id: '3', label: 'Apply for internship', done: false },
 ];
-
+ 
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
-  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
+  { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE', screen: 'JobFinder' },
   { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
   { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
 
-export default function DashboardScreen({ navigation, userName = 'User', profileProgress = 0.8 }) {
+export default function DashboardScreen({
+  navigation,
+  userName = 'JP',
+  profileProgress = 0.8,
+}) {
+  // Tracks which quick-action tile is currently pressed
+  const [pressedId, setPressedId] = useState(null);
+
+  const handleQuickAction = (action) => {
+    if (action.label === 'Skills Roadmap') {
+      navigation.navigate('CareerRoadmap', {
+        goal: 'Become a Software Engineer',
+        estimatedTime: '5 Months',
+      });
+      return;
+    }
+    // Handle other actions here (e.g., JobFinder)
+    if (action.label === 'Job Finder') {
+      navigation.navigate('JobFinder');
+      return;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -56,42 +70,35 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
             </View>
           </View>
           <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
-        </TouchableOpacity>
-        {/* Today's progress */}
-        <Text style={styles.sectionTitle}>Today's progress</Text>
-        <View style={styles.progressList}>
-          {PROGRESS_ITEMS.map((item) => (
-            <View key={item.id} style={styles.progressItem}>
-              <Text style={styles.progressItemLabel}>{item.label}</Text>
-              <View
-                style={[
-                  styles.checkCircle,
-                  { backgroundColor: item.done ? '#1E8E3E' : '#E5E5EA' },
-                ]}
-              >
-                {item.done && <Text style={styles.checkMark}>✓</Text>}
-              </View>
-            </View>
-          ))}
-        </View>
+        </TouchableOpacity> {/* <--- MAKE SURE THIS IS CLOSED */}
 
-        {/* Quick Actions */}
+        {/* Quick Actions section */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => (
-            <TouchableOpacity
-              key={action.id}
-              style={styles.quickActionWrap}
-              activeOpacity={0.8}
-            >
-              <View
-                style={[styles.quickActionTile, { backgroundColor: action.color }]}
+          {QUICK_ACTIONS.map((action) => {
+            const isPressed = pressedId === action.id;
+            return (
+              <TouchableOpacity
+                key={action.id}
+                style={styles.quickActionWrap}
+                activeOpacity={0.8}
+                onPressIn={() => setPressedId(action.id)}
+                onPressOut={() => setPressedId(null)}
+                onPress={() => handleQuickAction(action)}
               >
-                <Text style={styles.quickActionIcon}>{action.icon}</Text>
-              </View>
-              <Text style={styles.quickActionLabel}>{action.label}</Text>
-            </TouchableOpacity>
-          ))}
+                <View
+                  style={[
+                    styles.quickActionTile,
+                    { backgroundColor: action.color },
+                    isPressed && styles.quickActionTileActive,
+                  ]}
+                >
+                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                </View>
+                <Text style={styles.quickActionLabel}>{action.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Daily tip */}
@@ -106,6 +113,7 @@ export default function DashboardScreen({ navigation, userName = 'User', profile
   );
 }
 
+ 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -123,7 +131,7 @@ const styles = StyleSheet.create({
     color: '#1C1C1E',
     marginBottom: 20,
   },
-
+ 
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -166,14 +174,14 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: '#D6E4F0',
   },
-
+ 
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1C1C1E',
     marginBottom: 12,
   },
-
+ 
   progressList: {
     marginBottom: 28,
   },
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-
+ 
   quickActionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -222,6 +230,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 6,
   },
+  // Highlighted-circle feedback: a light ring around the tile while
+  // it's being pressed, so the tap registers visually before the
+  // screen navigates away.
+  quickActionTileActive: {
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
   quickActionIcon: {
     fontSize: 24,
   },
@@ -230,7 +250,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1C1C1E',
   },
-
+ 
   tipCard: {
     backgroundColor: '#AAB4F0',
     borderRadius: 16,
@@ -248,3 +268,4 @@ const styles = StyleSheet.create({
     color: '#F1F1FB',
   },
 });
+ 
