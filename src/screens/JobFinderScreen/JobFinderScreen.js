@@ -1,5 +1,7 @@
 // src/screens/JobFinderScreen/JobFinderScreen.js
 // Uses only core React Native, so no extra packages are needed.
+// Applications are now stored in ApplicationsContext so JobApplicationTracker
+// (a separate screen) can read and update them.
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -16,6 +18,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
+import { useApplications } from '../../context/ApplicationsContext';
+// ^ adjust this relative path if your context file lives somewhere else
 
 const PURPLE = '#5B21D6';
 const CATEGORIES = ['All', 'IT', 'Design', 'Finance', 'Marketing'];
@@ -107,12 +111,6 @@ const JOBS = [
   },
 ];
 
-const STATUS_STYLES = {
-  Submitted: { bg: '#EDE9FE', fg: PURPLE },
-  'Under Review': { bg: '#FEF3C7', fg: '#B45309' },
-  Interview: { bg: '#DCFCE7', fg: '#15803D' },
-};
-
 function CompanyLogo({ company, color, size = 44 }) {
   return (
     <View
@@ -127,14 +125,14 @@ function CompanyLogo({ company, color, size = 44 }) {
 }
 
 export default function JobFinderScreen({ navigation }) {
-  // view: 'list' | 'detail' | 'tracker'
+  // view: 'list' | 'detail'  (tracker is now its own screen)
   const [view, setView] = useState('list');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [selectedJob, setSelectedJob] = useState(null);
-  const [applications, setApplications] = useState([]); // [{ job, status, date }]
 
-  const appliedIds = useMemo(() => applications.map((a) => a.job.id), [applications]);
+  // Shared with JobApplicationTracker
+  const { applications, appliedIds, addApplication } = useApplications();
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -151,7 +149,6 @@ export default function JobFinderScreen({ navigation }) {
 
   const handleBack = () => {
     if (view === 'detail') return setView('list');
-    if (view === 'tracker') return setView('list');
     if (navigation && navigation.goBack) navigation.goBack();
   };
 
@@ -160,29 +157,37 @@ export default function JobFinderScreen({ navigation }) {
     setView('detail');
   };
 
-  // Steps 8-11: Apply -> confirmation -> record -> send to Application Tracker
-  const handleApply = (job) => {
+  // Apply -> confirmation -> record in ApplicationsContext -> visible in Application Tracker
+  const confirmApply = (title, message) => {
+    if (Platform.OS === 'web') {
+      return Promise.resolve(window.confirm(`${title}\n\n${message}`));
+    }
+    return new Promise((resolve) => {
+      Alert.alert(title, message, [
+        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Apply', onPress: () => resolve(true) },
+      ]);
+    });
+  };
+
+  const notify = (title, message) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  const handleApply = async (job) => {
     if (appliedIds.includes(job.id)) {
-      Alert.alert('Already applied', `You already applied to ${job.title} at ${job.company}.`);
+      notify('Already applied', `You already applied to ${job.title} at ${job.company}.`);
       return;
     }
-    Alert.alert(
-      'Confirm application',
-      `Apply to ${job.title} at ${job.company}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Apply',
-          onPress: () => {
-            setApplications((prev) => [
-              { job, status: 'Submitted', date: new Date().toLocaleDateString() },
-              ...prev,
-            ]);
-            Alert.alert('Application sent', 'You can follow its status in Applied Jobs.');
-          },
-        },
-      ]
-    );
+    const confirmed = await confirmApply('Confirm application', `Apply to ${job.title} at ${job.company}?`);
+    if (!confirmed) return;
+
+    addApplication(job);
+    notify('Application sent', 'You can follow its status in your Application Tracker.');
   };
 
   const openLink = (url) => {
@@ -191,7 +196,7 @@ export default function JobFinderScreen({ navigation }) {
     );
   };
 
-  const titles = { list: 'Job Search', detail: 'Job Details', tracker: 'Application Tracker' };
+  const titles = { list: 'Job Search', detail: 'Job Details' };
 
   // ---------- Screens ----------
 
@@ -263,7 +268,10 @@ export default function JobFinderScreen({ navigation }) {
         }
       />
 
-      <TouchableOpacity style={styles.primaryBtn} onPress={() => setView('tracker')}>
+      <TouchableOpacity
+        style={styles.primaryBtn}
+        onPress={() => navigation && navigation.navigate('JobApplicationTracker')}
+      >
         <Text style={styles.primaryBtnText}>Applied Jobs ({applications.length})</Text>
       </TouchableOpacity>
     </View>
@@ -314,38 +322,6 @@ export default function JobFinderScreen({ navigation }) {
     );
   };
 
-  const renderTracker = () => (
-    <View style={styles.flex}>
-      <FlatList
-        data={applications}
-        keyExtractor={(item) => item.job.id}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <Text style={styles.empty}>You have not applied to any jobs yet. Find one and tap Apply.</Text>
-        }
-        renderItem={({ item }) => {
-          const s = STATUS_STYLES[item.status];
-          return (
-            <View style={styles.card}>
-              <CompanyLogo company={item.job.company} color={item.job.color} />
-              <View style={styles.cardBody}>
-                <Text style={styles.jobTitle}>{item.job.title}</Text>
-                <Text style={styles.company}>{item.job.company}</Text>
-                <Text style={styles.meta}>Applied on {item.date}</Text>
-              </View>
-              <View style={[styles.badge, { backgroundColor: s.bg }]}>
-                <Text style={[styles.badgeText, { color: s.fg }]}>{item.status}</Text>
-              </View>
-            </View>
-          );
-        }}
-      />
-      <TouchableOpacity style={styles.primaryBtn} onPress={() => setView('list')}>
-        <Text style={styles.primaryBtnText}>Continue searching</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
@@ -359,7 +335,6 @@ export default function JobFinderScreen({ navigation }) {
 
       {view === 'list' && renderList()}
       {view === 'detail' && renderDetail()}
-      {view === 'tracker' && renderTracker()}
     </SafeAreaView>
   );
 }
@@ -388,7 +363,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
   },
-  searchInput: { height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827'},
+  searchInput: { height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
 
   sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },
@@ -449,9 +424,6 @@ const styles = StyleSheet.create({
   secondaryBtnText: { color: PURPLE, fontSize: 14, fontWeight: '600' },
 
   empty: { textAlign: 'center', color: '#6B7280', marginTop: 40, paddingHorizontal: 24 },
-
-  badge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
-  badgeText: { fontSize: 11, fontWeight: '700' },
 
   detailContent: { padding: 16 },
   detailHeader: { alignItems: 'center', marginBottom: 16 },

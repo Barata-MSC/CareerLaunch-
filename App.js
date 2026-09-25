@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useApplications } from './src/context/ApplicationsContext'
 
-import { 
-  WelcomeScreen, 
-  LoginScreen, 
-  DashboardScreen, 
-  RegisterScreen, 
-  SplashScreen, 
+import {
+  WelcomeScreen,
+  LoginScreen,
+  DashboardScreen,
+  RegisterScreen,
+  SplashScreen,
   ProfileScreen,
-  JobFinderScreen, 
-  CareerRoadmapScreen 
+  JobFinderScreen,
+  CareerRoadmapScreen,
+  JobApplicationTracker,
+  ApplicationContext
 } from '@screens';
+import { ApplicationsProvider } from './src/context/ApplicationsContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,29 +26,36 @@ export default function App() {
   return (
     <View style={styles.backdrop}>
       <View style={styles.phone}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Welcome"
-            screenOptions={{ headerShown: false }}
-          >
-            {/* Remove Stack.Screen name="Splash" from here */}
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-             <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <ApplicationsProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Welcome"
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen name="Welcome" component={WelcomeScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
+              <Stack.Screen name="Dashboard" component={DashboardScreen} />
+              <Stack.Screen name="Register" component={RegisterScreen} />
+              <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+              <Stack.Screen
+                name="CareerRoadmap"
+                component={CareerRoadmapScreen}
+              />
+              <Stack.Screen
+                name="JobApplicationTracker"
+                component={JobApplicationTracker}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
 
-      
-        {showSplash && (
-          <SplashScreen 
-            appName="CareerLaunch!" 
-            onFinish={() => setShowSplash(false)} 
-          />
-        )}
+          {showSplash && (
+            <SplashScreen
+              appName="CareerLaunch!"
+              onFinish={() => setShowSplash(false)}
+            />
+          )}
+        </ApplicationsProvider>
       </View>
     </View>
   );

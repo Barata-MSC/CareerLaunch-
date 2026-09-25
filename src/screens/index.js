@@ -6,3 +6,4 @@ export { default as SplashScreen } from './SplashScreen/SplashScreen';
 export { default as JobFinderScreen } from './JobFinderScreen/JobFinderScreen';
 export { default as CareerRoadmapScreen} from './CareerRoadmapScreen/SoftwareEngineer';
 export { default as ProfileScreen } from './ProfileScreen/ProfileScreen';
+export { default as JobApplicationTracker } from './JobApplicationTracker/JobApplicationTracker';
