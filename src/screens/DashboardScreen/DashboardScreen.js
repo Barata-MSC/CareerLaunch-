@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
 import { useProfile } from '../../context/ProfileContext';
 
-// Fallback avatar shown until the user has uploaded one
+// Replace with your own asset, e.g. require('../assets/avatar.png')
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
+
+const PROGRESS_ITEMS = [
+  { id: '1', label: 'Resume completed', done: true },
+  { id: '2', label: 'Interview practice', done: true },
+  { id: '3', label: 'Apply for internship', done: false },
+];
 
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
@@ -25,18 +31,26 @@ export default function DashboardScreen({ navigation }) {
   const profileProgress = profile ? filledCount / PROFILE_FIELDS.length : 0;
 
   const handleQuickAction = (action) => {
-    if (action.label === 'Skills Roadmap') {
-      navigation.navigate('CareerRoadmap', {
-        goal: 'Become a Software Engineer',
-        estimatedTime: '5 Months',
-      });
-      return;
-    }
-    if (action.label === 'Job Finder') {
-      navigation.navigate('JobFinder');
-      return;
-    }
-  };
+  if (action.label === 'Skills Roadmap') {
+    navigation.navigate('CareerRoadmap', {
+      goal: 'Become a Software Engineer',
+      estimatedTime: '5 Months',
+    });
+    return;
+  }
+  if (action.label === 'Job Finder') {
+    navigation.navigate('JobFinder');
+    return;
+  }
+  if (action.label === 'AI Coach') {
+        navigation.navigate('AIInterviewCoach');
+        return;
+  }
+  if (action.label === 'Resume Editor') {
+    navigation.navigate('ResumeBuilder');
+    return;
+  }
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -67,10 +81,7 @@ export default function DashboardScreen({ navigation }) {
               />
             </View>
           </View>
-          <Image
-            source={profile?.avatar_url ? { uri: profile.avatar_url } : AVATAR_PLACEHOLDER}
-            style={styles.avatar}
-          />
+          <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
         </TouchableOpacity>
 
         {/* Quick Actions section */}
@@ -105,10 +116,9 @@ export default function DashboardScreen({ navigation }) {
         {/* Daily tip */}
         <View style={styles.tipCard}>
           <Text style={styles.tipTitle}>Daily tip</Text>
-          <Text style={styles.tipBody}>
-            Small steps today,{'\n'}big opportunities tomorrow.
-          </Text>
+          <Text style={styles.tipBody}>{`Small steps today,\nbig opportunities tomorrow.`}</Text>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );

@@ -47,8 +47,7 @@ export default function LoginScreen({ navigation }) {
     if (error) {
       Alert.alert('Login Failed', error.message);
     }
-    // Note: No 'navigation.navigate' is needed here!
-    // App.js catches the successful session change and toggles components automatically.
+   navigation.navigate('MainTabs', { screen: 'Dashboard' });
   };
 
   return (

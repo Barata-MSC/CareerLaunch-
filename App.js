@@ -2,21 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useApplications } from './src/context/ApplicationsContext'
 
-// Connected to your configuration path
 import { supabase } from './src/config/supabase';
 import { ProfileProvider } from './src/context/ProfileContext';
-
-import { 
-  WelcomeScreen, 
-  LoginScreen, 
-  DashboardScreen, 
-  RegisterScreen, 
-  SplashScreen, 
+import {
+  WelcomeScreen,
+  LoginScreen,
+  DashboardScreen,
+  RegisterScreen,
+  SplashScreen,
   ProfileScreen,
-  JobFinderScreen, 
-  CareerRoadmapScreen 
+  JobFinderScreen,
+  CareerRoadmapScreen,
+  JobApplicationTracker,
+  ApplicationContext,
+  AIInterviewCoachScreen,
 } from '@screens';
+import { ApplicationsProvider } from './src/context/ApplicationsContext';
+
+// Direct import path to bypass the barrel loop
+import MainTabs from './src/screens/ResumeBuilderScreen/MainTabs';
+
+// Resume Builder sub-flow screens (Absolute mapping via @screens alias)
+import ResumeBuilderScreen from '@screens/ResumeBuilderScreen/ResumeBuilder';
+import PersonalInfoScreen from '@screens/ResumeBuilderScreen/PersonalInfoScreen';
+import EducationScreen from '@screens/ResumeBuilderScreen/EducationScreen';
+import SkillsScreen from '@screens/ResumeBuilderScreen/SkillsScreen';
+import ExperienceScreen from '@screens/ResumeBuilderScreen/ExperienceScreen';
+import CertificatesScreen from '@screens/ResumeBuilderScreen/CertificateScreen';
+import ProjectsScreen from '@screens/ResumeBuilderScreen/ProjectScreen';
+import ResumePreviewScreen from '@screens/ResumeBuilderScreen/ResumePreviewScreen';
+
+// Global Data State Provider
+import { ResumeProvider } from '@screens/ResumeBuilderScreen/ResumeContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,43 +69,64 @@ export default function App() {
     );
   }
 
-  return (
-    // ProfileProvider re-fetches the `profiles` row any time `session` changes
-    // (login, logout, signup) so Dashboard/Profile always see fresh data.
-    <ProfileProvider session={session}>
-      <View style={styles.backdrop}>
-        <View style={styles.phone}>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              {session && session.user ? (
-                // PROTECTED INTERNAL STACK (Only visible when logged in)
-                <>
-                  <Stack.Screen name="Dashboard" component={DashboardScreen} />
-                  <Stack.Screen name="Profile" component={ProfileScreen} />
-                  <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-                  <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-                </>
-              ) : (
-                // PUBLIC AUTHENTICATION STACK (Only visible when logged out)
-                <>
-                  <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                  <Stack.Screen name="Login" component={LoginScreen} />
-                  <Stack.Screen name="Register" component={RegisterScreen} />
-                </>
-              )}
-            </Stack.Navigator>
-          </NavigationContainer>
+    return (
+      // 1. Wrap everything with all three providers
+      <ProfileProvider session={session}>
+        <ApplicationsProvider>
+          <ResumeProvider>
+            <View style={styles.backdrop}>
+              <View style={styles.phone}>
+                <NavigationContainer>
+                  <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    
+                    {session && session.user ? (
+                      // 2. PROTECTED INTERNAL STACK (Only visible when logged in)
+                      <>
+                        {/* Keep both MainTabs and Dashboard depending on your design */}
+                        <Stack.Screen name="MainTabs" component={MainTabs} />
+                        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+                        
+                        {/* Existing Screens */}
+                        <Stack.Screen name="Profile" component={ProfileScreen} />
+                        <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+                        <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+                        
+                        {/* New Screens from 'main' */}
+                        <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
+                        <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
+                        <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
+                        <Stack.Screen name="education" component={EducationScreen} />
+                        <Stack.Screen name="skills" component={SkillsScreen} />
+                        <Stack.Screen name="experience" component={ExperienceScreen} />
+                        <Stack.Screen name="certificates" component={CertificatesScreen} />
+                        <Stack.Screen name="projects" component={ProjectsScreen} />
+                        <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+                        <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
+                      </>
+                    ) : (
+                      // 3. PUBLIC AUTHENTICATION STACK (Only visible when logged out)
+                      <>
+                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="Register" component={RegisterScreen} />
+                      </>
+                    )}
+                    
+                  </Stack.Navigator>
+                </NavigationContainer>
 
-          {showSplash && (
-            <SplashScreen 
-              appName="CareerLaunch!" 
-              onFinish={() => setShowSplash(false)} 
-            />
-          )}
-        </View>
-      </View>
-    </ProfileProvider>
-  );
+                {showSplash && (
+                  <SplashScreen 
+                    appName="CareerLaunch!" 
+                    onFinish={() => setShowSplash(false)} 
+                  />
+                )}
+              </View>
+            </View>
+          </ResumeProvider>
+        </ApplicationsProvider>
+      </ProfileProvider>
+    );
 }
 
 const styles = StyleSheet.create({

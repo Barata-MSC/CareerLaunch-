@@ -164,9 +164,9 @@ export default function RegisterScreen({ navigation }) {
 
     if (!session) {
       showAlert('Success!', 'Please check your email inbox to confirm your account.'); // Use showAlert
-      navigation?.navigate('Login');
-    }
-};
+      navigation?.navigate('MainTabs', { screen: 'Dashboard' });
+    } 
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>

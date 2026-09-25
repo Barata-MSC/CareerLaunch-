@@ -7,3 +7,6 @@ export { default as JobFinderScreen } from './JobFinderScreen/JobFinderScreen';
 export { default as CareerRoadmapScreen} from './CareerRoadmapScreen/SoftwareEngineer';
 export { default as ProfileScreen } from './ProfileScreen/ProfileScreen';
 import { supabase } from '@config/supabase';
+export { default as JobApplicationTracker } from './JobApplicationTracker/JobApplicationTracker';
+export { default as AIInterviewCoachScreen } from './AIInterviewCoachScreen/AIInterviewCoachScreen';
+export { default as ResumeBuilderScreen } from './ResumeBuilderScreen/MainTabs';
