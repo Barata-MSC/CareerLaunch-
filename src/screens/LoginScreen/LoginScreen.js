@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }) {
 
     if (missingEmail || missingPassword) return;
 
-    navigation?.navigate('Dashboard');
+   navigation.navigate('MainTabs', { screen: 'Dashboard' });
   };
 
   return (
