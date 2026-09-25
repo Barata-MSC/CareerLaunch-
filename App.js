@@ -70,10 +70,7 @@ export default function App() {
               <Stack.Screen name="projects" component={ProjectsScreen} />
               <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
 
-              <Stack.Screen
-                name="CareerRoadmap"
-                component={CareerRoadmapScreen}
-              />
+              
               <Stack.Screen
                 name="JobApplicationTracker"
                 component={JobApplicationTracker}

@@ -8,3 +8,4 @@ export { default as CareerRoadmapScreen} from './CareerRoadmapScreen/SoftwareEng
 export { default as ProfileScreen } from './ProfileScreen/ProfileScreen';
 export { default as JobApplicationTracker } from './JobApplicationTracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './AIInterviewCoachScreen/AIInterviewCoachScreen';
+export { default as ResumeBuilderScreen } from './ResumeBuilderScreen/MainTabs';
