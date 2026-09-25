@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useApplications } from './src/context/ApplicationsContext'
 
+import { supabase } from './src/config/supabase';
+import { ProfileProvider } from './src/context/ProfileContext';
 import {
   WelcomeScreen,
   LoginScreen,
@@ -39,56 +41,92 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  return (
-    <View style={styles.backdrop}>
-      <View style={styles.phone}>
-        <ApplicationsProvider>
-        <ResumeProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName="Welcome"
-              screenOptions={{ headerShown: false }}
-            >
-              <Stack.Screen name="Welcome" component={WelcomeScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="Profile" component={ProfileScreen} />
-              <Stack.Screen name="MainTabs" component={MainTabs} />
-              <Stack.Screen name="Register" component={RegisterScreen} />
-              <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-              <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-              <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
-              <Stack.Screen name="Dashboard" component={DashboardScreen} />
+  useEffect(() => {
+    // 1. Fetch initial local storage session on startup
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
 
-              {/* Resume Builder flow */}
-              <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
-              <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
-              <Stack.Screen name="education" component={EducationScreen} />
-              <Stack.Screen name="skills" component={SkillsScreen} />
-              <Stack.Screen name="experience" component={ExperienceScreen} />
-              <Stack.Screen name="certificates" component={CertificatesScreen} />
-              <Stack.Screen name="projects" component={ProjectsScreen} />
-              <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+    // 2. Continually listen for real-time auth changes (Sign-In, Sign-Out)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth State Changed:", _event, session); // <-- Add this log
+      setSession(session);
+    });
 
-              
-              <Stack.Screen
-                name="JobApplicationTracker"
-                component={JobApplicationTracker}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ResumeProvider>
+    return () => subscription.unsubscribe();
+  }, []);
 
-          {showSplash && (
-            <SplashScreen
-              appName="CareerLaunch!"
-              onFinish={() => setShowSplash(false)}
-            />
-          )}
-        </ApplicationsProvider>
+  // Avoid visual flashing while verifying state
+  if (authLoading) {
+    return (
+      <View style={[styles.backdrop, { justifyContent: 'center' }]}>
+        <ActivityIndicator size="large" color="#5B21F5" />
       </View>
-    </View>
-  );
+    );
+  }
+
+    return (
+      // 1. Wrap everything with all three providers
+      <ProfileProvider session={session}>
+        <ApplicationsProvider>
+          <ResumeProvider>
+            <View style={styles.backdrop}>
+              <View style={styles.phone}>
+                <NavigationContainer>
+                  <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    
+                    {session && session.user ? (
+                      // 2. PROTECTED INTERNAL STACK (Only visible when logged in)
+                      <>
+                        {/* Keep both MainTabs and Dashboard depending on your design */}
+                        <Stack.Screen name="MainTabs" component={MainTabs} />
+                        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+                        
+                        {/* Existing Screens */}
+                        <Stack.Screen name="Profile" component={ProfileScreen} />
+                        <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+                        <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+                        
+                        {/* New Screens from 'main' */}
+                        <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
+                        <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
+                        <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
+                        <Stack.Screen name="education" component={EducationScreen} />
+                        <Stack.Screen name="skills" component={SkillsScreen} />
+                        <Stack.Screen name="experience" component={ExperienceScreen} />
+                        <Stack.Screen name="certificates" component={CertificatesScreen} />
+                        <Stack.Screen name="projects" component={ProjectsScreen} />
+                        <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+                        <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
+                      </>
+                    ) : (
+                      // 3. PUBLIC AUTHENTICATION STACK (Only visible when logged out)
+                      <>
+                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="Register" component={RegisterScreen} />
+                      </>
+                    )}
+                    
+                  </Stack.Navigator>
+                </NavigationContainer>
+
+                {showSplash && (
+                  <SplashScreen 
+                    appName="CareerLaunch!" 
+                    onFinish={() => setShowSplash(false)} 
+                  />
+                )}
+              </View>
+            </View>
+          </ResumeProvider>
+        </ApplicationsProvider>
+      </ProfileProvider>
+    );
 }
 
 const styles = StyleSheet.create({
