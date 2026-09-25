@@ -3,7 +3,6 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Main application screens and tabs module
 import {
   WelcomeScreen,
   LoginScreen,
@@ -12,7 +11,8 @@ import {
   SplashScreen,
   ProfileScreen,
   JobFinderScreen,
-  CareerRoadmapScreen
+  CareerRoadmapScreen,
+  AIInterviewCoachScreen,
 } from '@screens';
 
 // Direct import path to bypass the barrel loop
@@ -52,6 +52,7 @@ export default function App() {
               <Stack.Screen name="Register" component={RegisterScreen} />
               <Stack.Screen name="JobFinder" component={JobFinderScreen} />
               <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+              <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
 
               {/* Resume Builder flow */}
               <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />

@@ -37,7 +37,10 @@ export default function DashboardScreen({
     navigation.navigate('JobFinder');
     return;
   }
-  //  ADD THIS CHECK FOR YOUR RESUME BUILDER FLOW:
+  if (action.label === 'AI Coach') {
+        navigation.navigate('AIInterviewCoach');
+        return;
+  }
   if (action.label === 'Resume Editor') {
     navigation.navigate('ResumeBuilder');
     return;
@@ -74,7 +77,7 @@ export default function DashboardScreen({
             </View>
           </View>
           <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
-        </TouchableOpacity> {/* <--- MAKE SURE THIS IS CLOSED */}
+        </TouchableOpacity>
 
         {/* Quick Actions section */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
