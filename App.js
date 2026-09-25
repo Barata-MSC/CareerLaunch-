@@ -3,15 +3,16 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { 
-  WelcomeScreen, 
-  LoginScreen, 
-  DashboardScreen, 
-  RegisterScreen, 
-  SplashScreen, 
+import {
+  WelcomeScreen,
+  LoginScreen,
+  DashboardScreen,
+  RegisterScreen,
+  SplashScreen,
   ProfileScreen,
-  JobFinderScreen, 
-  CareerRoadmapScreen 
+  JobFinderScreen,
+  CareerRoadmapScreen,
+  AIInterviewCoachScreen,
 } from '@screens';
 
 const Stack = createNativeStackNavigator();
@@ -34,15 +35,16 @@ export default function App() {
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-             <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+            <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+            <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
           </Stack.Navigator>
         </NavigationContainer>
 
-      
+
         {showSplash && (
-          <SplashScreen 
-            appName="CareerLaunch!" 
-            onFinish={() => setShowSplash(false)} 
+          <SplashScreen
+            appName="CareerLaunch!"
+            onFinish={() => setShowSplash(false)}
           />
         )}
       </View>
