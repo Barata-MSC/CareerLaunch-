@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,11 @@ import {
   SafeAreaView,
   Modal,
   Dimensions,
+  PanResponder,
 } from 'react-native';
- 
+
 const SCREEN_HEIGHT = Dimensions.get('window').height;
- 
+
 // Each key is a selectable track. Add as many as you want here —
 // the chip row and roadmap below are both driven off this object,
 // so nothing else needs to change when you add a new track.
@@ -146,15 +147,15 @@ const TRACKS = {
     ],
   },
 };
- 
+
 const TRACK_NAMES = Object.keys(TRACKS);
- 
+
 const STATUS_LABEL = {
   completed: 'Completed',
   'in-progress': 'In Progress',
   'not-started': 'Not started',
 };
- 
+
 function ProgressBar({ percent }) {
   return (
     <View style={styles.progressWrap}>
@@ -165,7 +166,7 @@ function ProgressBar({ percent }) {
     </View>
   );
 }
- 
+
 function StepIndicator({ status, isLast }) {
   return (
     <View style={styles.indicatorColumn}>
@@ -184,7 +185,7 @@ function StepIndicator({ status, isLast }) {
     </View>
   );
 }
- 
+
 export default function CareerRoadmapScreen({ navigation, route }) {
   // If a valid track name is passed in via navigation params, start there.
   // Otherwise default to the first track in the TRACKS object.
@@ -192,31 +193,61 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     route?.params?.goal && TRACKS[route.params.goal]
       ? route.params.goal
       : TRACK_NAMES[0];
- 
+
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
- 
+
   const trackData = TRACKS[selectedTrack];
   const roadmapSteps = trackData.steps;
   const estimatedTime = trackData.estimatedTime;
- 
+
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);
- 
+
   const handleTrackPress = (trackName) => {
     setSelectedTrack(trackName);
   };
- 
+
+  const currentIndex = TRACK_NAMES.indexOf(selectedTrack);
+
+  const goToTrack = (direction) => {
+    const nextIndex =
+      direction === 'next'
+        ? (currentIndex + 1) % TRACK_NAMES.length
+        : (currentIndex - 1 + TRACK_NAMES.length) % TRACK_NAMES.length;
+    setSelectedTrack(TRACK_NAMES[nextIndex]);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return (
+          Math.abs(gestureState.dx) > 20 &&
+          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5
+        );
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        const SWIPE_THRESHOLD = 50;
+        if (gestureState.dx < -SWIPE_THRESHOLD) {
+          goToTrack('next'); // swiped left
+        } else if (gestureState.dx > SWIPE_THRESHOLD) {
+          goToTrack('prev'); // swiped right
+        }
+      },
+    })
+  ).current;
+
   // Every step is tappable. This opens the detail modal below.
   // Swap this out for navigation.navigate('SkillDetail', { skill: step })
   // once you have a dedicated screen for lesson content.
   const handleStepPress = (step) => {
     setSelectedStep(step);
   };
- 
+
   const closeModal = () => setSelectedStep(null);
- 
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -229,20 +260,21 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>Career Roadmap</Text>
         <View style={{ width: 26 }} />
       </View>
- 
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        {...panResponder.panHandlers}
       >
         <View style={styles.goalCard}>
           <Text style={styles.goalLabel}>Your goal</Text>
           <Text style={styles.goalText}>Become a {selectedTrack}</Text>
         </View>
- 
+
         <Text style={styles.sectionLabel}>Choose a track</Text>
         <ScrollView
           horizontal
-          showsHorizontalScrollIndicator={false}
+          showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.chipRow}
         >
           {TRACK_NAMES.map((trackName) => {
@@ -260,11 +292,11 @@ export default function CareerRoadmapScreen({ navigation, route }) {
             );
           })}
         </ScrollView>
- 
+
         <ProgressBar percent={progressPercent} />
- 
+
         <Text style={styles.sectionTitle}>Your Roadmap</Text>
- 
+
         <View style={styles.roadmapList}>
           {roadmapSteps.map((step, index) => {
             return (
@@ -294,13 +326,10 @@ export default function CareerRoadmapScreen({ navigation, route }) {
             );
           })}
         </View>
- 
-        <View style={styles.estimateCard}>
-          <Text style={styles.estimateLabel}>Estimated Time</Text>
-          <Text style={styles.estimateValue}>{estimatedTime}</Text>
-        </View>
+
+       
       </ScrollView>
- 
+
       <Modal
         visible={!!selectedStep}
         transparent
@@ -330,7 +359,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                   />
                   <Text style={styles.modalTitle}>{selectedStep.title}</Text>
                 </View>
- 
+
                 <Text
                   style={[
                     styles.modalStatusBadge,
@@ -341,11 +370,11 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 >
                   {STATUS_LABEL[selectedStep.status]}
                 </Text>
- 
+
                 <Text style={styles.modalDescription}>
                   {selectedStep.description}
                 </Text>
- 
+
                 <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
                   <Text style={styles.modalCloseButtonText}>Close</Text>
                 </TouchableOpacity>
@@ -357,11 +386,11 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
- 
+
 const PURPLE = '#5B2EFF';
 const GREEN = '#2ECC71';
 const GRAY = '#D9D9D9';
- 
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
   header: {
@@ -383,7 +412,7 @@ const styles = StyleSheet.create({
   },
   goalLabel: { color: '#E4DBFF', fontSize: 13, marginBottom: 6 },
   goalText: { color: '#fff', fontSize: 20, fontWeight: '700', lineHeight: 26 },
- 
+
   // Track picker (mirrors JobFinderScreen's category chips)
   sectionLabel: { fontSize: 13, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 },
   chipRow: { paddingVertical: 10 },
@@ -399,7 +428,7 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: PURPLE, borderColor: PURPLE },
   chipText: { fontSize: 13, color: '#374151' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
- 
+
   sectionTitle: {
     fontSize: 15,
     fontWeight: '700',
@@ -450,7 +479,7 @@ const styles = StyleSheet.create({
   },
   estimateLabel: { color: PURPLE, fontWeight: '600', fontSize: 14 },
   estimateValue: { color: '#1A1A1A', fontWeight: '700', fontSize: 14 },
- 
+
   // Progress bar
   progressWrap: { marginBottom: 24 },
   progressBarBackground: {
@@ -470,7 +499,7 @@ const styles = StyleSheet.create({
     color: '#7A7A7A',
     fontWeight: '600',
   },
- 
+
   // Modal
   modalOverlay: {
     flex: 1,
@@ -527,4 +556,3 @@ const styles = StyleSheet.create({
   },
   modalCloseButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });
- 
