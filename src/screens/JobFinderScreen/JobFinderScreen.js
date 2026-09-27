@@ -1,7 +1,9 @@
-// src/screens/JobFinderScreen/JobFinderScreen.js
-// Uses only core React Native, so no extra packages are needed.
-// Applications are now stored in ApplicationsContext so JobApplicationTracker
-// (a separate screen) can read and update them.
+import googleIcon from '../../assets/google.png';
+import microsoftIcon from '../../assets/microsoft.png';
+import spotifyIcon from '../../assets/Spotify.png';
+import canvaIcon from '../../assets/canva.png';
+import deloitteIcon from '../../assets/deloitte.png';
+import globeIcon from '../../assets/globe.png';
 
 import React, { useMemo, useState } from 'react';
 import {
@@ -17,6 +19,7 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 import { useApplications } from '../../context/ApplicationsContext';
 // ^ adjust this relative path if your context file lives somewhere else
@@ -29,6 +32,7 @@ const JOBS = [
     id: '1',
     title: 'Software Developer',
     company: 'Google',
+    logo: googleIcon,
     category: 'IT',
     arrangement: 'Hybrid',
     type: 'Full-time',
@@ -43,6 +47,7 @@ const JOBS = [
     id: '2',
     title: 'Web Developer',
     company: 'Microsoft',
+    logo: microsoftIcon,
     category: 'IT',
     arrangement: 'Hybrid',
     type: 'Full-time',
@@ -57,6 +62,7 @@ const JOBS = [
     id: '3',
     title: 'Frontend Developer',
     company: 'Spotify',
+    logo: spotifyIcon,
     category: 'IT',
     arrangement: 'Hybrid',
     type: 'Full-time',
@@ -71,6 +77,7 @@ const JOBS = [
     id: '4',
     title: 'Graphic Designer',
     company: 'Canva',
+    logo: canvaIcon,
     category: 'Design',
     arrangement: 'Remote',
     type: 'Contract',
@@ -85,6 +92,7 @@ const JOBS = [
     id: '5',
     title: 'Accountant',
     company: 'Deloitte',
+    logo: deloitteIcon,
     category: 'Finance',
     arrangement: 'On-site',
     type: 'Full-time',
@@ -99,6 +107,7 @@ const JOBS = [
     id: '6',
     title: 'Marketing Assistant',
     company: 'Globe Telecom',
+    logo: globeIcon,
     category: 'Marketing',
     arrangement: 'Hybrid',
     type: 'Part-time',
@@ -111,7 +120,44 @@ const JOBS = [
   },
 ];
 
-function CompanyLogo({ company, color, size = 44 }) {
+const STATUS_STYLES = {
+  Submitted: { bg: '#EDE9FE', fg: PURPLE },
+  'Under Review': { bg: '#FEF3C7', fg: '#B45309' },
+  Interview: { bg: '#DCFCE7', fg: '#15803D' },
+};
+
+function CompanyLogo({ company, color, logo, size = 44 }) {
+  if (logo) {
+    return (
+      <View
+        style={[
+          styles.logo,
+          { width: size, height: size, borderRadius: size / 4, backgroundColor: '#F3F4F6' },
+        ]}
+      >
+        <Image
+          source={logo}
+          style={{ width: size * 0.7, height: size * 0.7, borderRadius: 4 }}
+          resizeMode="contain"
+        />
+      </View>
+    );
+  }
+
+  // Fallback: initial letter, used if a job has no logo set
+  return (
+    <View
+      style={[
+        styles.logo,
+        { width: size, height: size, borderRadius: size / 4, backgroundColor: color },
+      ]}
+    >
+      <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company[0]}</Text>
+    </View>
+  );
+
+
+  // Fallback: initial letter
   return (
     <View
       style={[
@@ -204,7 +250,7 @@ export default function JobFinderScreen({ navigation }) {
     const applied = appliedIds.includes(item.id);
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
-        <CompanyLogo company={item.company} color={item.color} />
+        <CompanyLogo company={item.company} color={item.color} logo={item.logo} />
         <View style={styles.cardBody}>
           <Text style={styles.jobTitle}>{item.title}</Text>
           <Text style={styles.company}>{item.company}</Text>
@@ -291,7 +337,7 @@ export default function JobFinderScreen({ navigation }) {
     return (
       <ScrollView contentContainerStyle={styles.detailContent}>
         <View style={styles.detailHeader}>
-          <CompanyLogo company={job.company} color={job.color} size={64} />
+          <CompanyLogo company={job.company} color={job.color} logo={job.logo} size={64} />
           <Text style={styles.detailTitle}>{job.title}</Text>
         </View>
 

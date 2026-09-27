@@ -1,4 +1,9 @@
-// src/screens/JobApplicationTracker/JobApplicationTracker.js
+import googleIcon from '../../assets/google.png';
+import microsoftIcon from '../../assets/microsoft.png';
+import spotifyIcon from '../../assets/Spotify.png';
+import canvaIcon from '../../assets/canva.png';
+import deloitteIcon from '../../assets/deloitte.png';
+import globeIcon from '../../assets/globe.png';
 
 import React, { useMemo, useState } from 'react';
 
@@ -15,6 +20,7 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 
 import { useApplications, STATUSES } from '../../context/ApplicationsContext';
@@ -46,7 +52,29 @@ const STATUS_STYLES = {
 };
 
 // Company logo
-function CompanyLogo({ company, color, size = 44 }) {
+function CompanyLogo({ company, color, logo, size = 44 }) {
+  if (logo) {
+    return (
+      <View
+        style={[
+          styles.logo,
+          {
+            width: size,
+            height: size,
+            borderRadius: size / 4,
+            backgroundColor: '#F3F4F6',
+          },
+        ]}
+      >
+        <Image
+          source={logo}
+          style={{ width: size * 0.7, height: size * 0.7, borderRadius: 4 }}
+          resizeMode="contain"
+        />
+      </View>
+    );
+  }
+
   return (
     <View
       style={[
@@ -142,6 +170,7 @@ export default function JobApplicationTracker({ navigation }) {
         <CompanyLogo
           company={item.job.company}
           color={item.job.color}
+          logo={item.job.logo}
         />
 
         {/* Job Information */}
@@ -292,6 +321,7 @@ export default function JobApplicationTracker({ navigation }) {
                   <CompanyLogo
                     company={selected.job.company}
                     color={selected.job.color}
+                    logo={selected.job.logo}
                     size={40}
                   />
 
