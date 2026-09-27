@@ -9,62 +9,152 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
+ 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-
-
-// Roadmap step statuses: 'completed' | 'in-progress' | 'not-started'
-// `description` is shown in the detail modal for each step.
-const roadmapSteps = [
-  {
-    id: '1',
-    title: 'HTML',
-    status: 'completed',
-    description: 'The building blocks of every web page. You know how to structure content with tags, forms, and semantic elements.',
+ 
+// Each key is a selectable track. Add as many as you want here —
+// the chip row and roadmap below are both driven off this object,
+// so nothing else needs to change when you add a new track.
+const TRACKS = {
+  'Software Engineer': {
+    estimatedTime: '5 Months',
+    steps: [
+      {
+        id: '1',
+        title: 'HTML',
+        status: 'completed',
+        description: 'The building blocks of every web page. You know how to structure content with tags, forms, and semantic elements.',
+      },
+      {
+        id: '2',
+        title: 'CSS',
+        status: 'completed',
+        description: 'You can style layouts, use Flexbox/Grid, and make responsive designs.',
+      },
+      {
+        id: '3',
+        title: 'JavaScript',
+        status: 'completed',
+        description: 'You understand variables, functions, DOM manipulation, and async code — the language that powers interactivity.',
+      },
+      {
+        id: '4',
+        title: 'React',
+        status: 'in-progress',
+        description: "You're currently learning components, props, state, and hooks. This is the step that turns JS into real apps.",
+      },
+      {
+        id: '5',
+        title: 'Node js',
+        status: 'not-started',
+        description: 'Up next: server-side JavaScript. You will learn to build APIs and handle backend logic.',
+      },
+      {
+        id: '6',
+        title: 'Database',
+        status: 'not-started',
+        description: 'Coming later: storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
+      },
+      {
+        id: '7',
+        title: 'Git & Github',
+        status: 'not-started',
+        description: 'Coming later: version control and collaboration — tracking changes and working with a team.',
+      },
+    ],
   },
-  {
-    id: '2',
-    title: 'CSS',
-    status: 'completed',
-    description: 'You can style layouts, use Flexbox/Grid, and make responsive designs.',
+  'Data Analyst': {
+    estimatedTime: '4 Months',
+    steps: [
+      {
+        id: '1',
+        title: 'Excel & Spreadsheets',
+        status: 'completed',
+        description: 'You can clean data, use formulas, and build pivot tables to summarize information.',
+      },
+      {
+        id: '2',
+        title: 'SQL',
+        status: 'completed',
+        description: 'You know how to query, join, and filter data across relational database tables.',
+      },
+      {
+        id: '3',
+        title: 'Python (Pandas)',
+        status: 'in-progress',
+        description: "You're currently learning to clean and analyze datasets using Python and the Pandas library.",
+      },
+      {
+        id: '4',
+        title: 'Data Visualization',
+        status: 'not-started',
+        description: 'Up next: telling stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
+      },
+      {
+        id: '5',
+        title: 'Statistics',
+        status: 'not-started',
+        description: 'Coming later: hypothesis testing, distributions, and the math behind trustworthy insights.',
+      },
+      {
+        id: '6',
+        title: 'Dashboards (Power BI / Tableau)',
+        status: 'not-started',
+        description: 'Coming later: building interactive dashboards stakeholders can explore on their own.',
+      },
+    ],
   },
-  {
-    id: '3',
-    title: 'JavaScript',
-    status: 'completed',
-    description: 'You understand variables, functions, DOM manipulation, and async code — the language that powers interactivity.',
+  'UI/UX Designer': {
+    estimatedTime: '3 Months',
+    steps: [
+      {
+        id: '1',
+        title: 'Design Fundamentals',
+        status: 'completed',
+        description: 'You understand color theory, typography, spacing, and visual hierarchy.',
+      },
+      {
+        id: '2',
+        title: 'User Research',
+        status: 'completed',
+        description: 'You know how to interview users, run surveys, and turn findings into actionable insights.',
+      },
+      {
+        id: '3',
+        title: 'Wireframing',
+        status: 'in-progress',
+        description: "You're currently practicing low-fidelity wireframes to map out layouts before visual design.",
+      },
+      {
+        id: '4',
+        title: 'Figma / Prototyping',
+        status: 'not-started',
+        description: 'Up next: building interactive, high-fidelity prototypes that feel like the real app.',
+      },
+      {
+        id: '5',
+        title: 'Usability Testing',
+        status: 'not-started',
+        description: 'Coming later: testing your designs with real users and iterating on the feedback.',
+      },
+      {
+        id: '6',
+        title: 'Design Systems',
+        status: 'not-started',
+        description: 'Coming later: building reusable components and a consistent design language.',
+      },
+    ],
   },
-  {
-    id: '4',
-    title: 'React',
-    status: 'in-progress',
-    description: "You're currently learning components, props, state, and hooks. This is the step that turns JS into real apps.",
-  },
-  {
-    id: '5',
-    title: 'Node js',
-    status: 'not-started',
-    description: 'Up next: server-side JavaScript. You will learn to build APIs and handle backend logic.',
-  },
-  {
-    id: '6',
-    title: 'Database',
-    status: 'not-started',
-    description: 'Coming later: storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
-  },
-  {
-    id: '7',
-    title: 'Git & Github',
-    status: 'not-started',
-    description: 'Coming later: version control and collaboration — tracking changes and working with a team.',
-  },
-];
-
+};
+ 
+const TRACK_NAMES = Object.keys(TRACKS);
+ 
 const STATUS_LABEL = {
   completed: 'Completed',
   'in-progress': 'In Progress',
   'not-started': 'Not started',
 };
-
+ 
 function ProgressBar({ percent }) {
   return (
     <View style={styles.progressWrap}>
@@ -75,7 +165,7 @@ function ProgressBar({ percent }) {
     </View>
   );
 }
-
+ 
 function StepIndicator({ status, isLast }) {
   return (
     <View style={styles.indicatorColumn}>
@@ -94,26 +184,39 @@ function StepIndicator({ status, isLast }) {
     </View>
   );
 }
-
+ 
 export default function CareerRoadmapScreen({ navigation, route }) {
-  const goal = route?.params?.goal ?? 'Become a Software Engineer';
-  const estimatedTime = route?.params?.estimatedTime ?? '5 Months';
-
+  // If a valid track name is passed in via navigation params, start there.
+  // Otherwise default to the first track in the TRACKS object.
+  const initialTrack =
+    route?.params?.goal && TRACKS[route.params.goal]
+      ? route.params.goal
+      : TRACK_NAMES[0];
+ 
+  const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
-
+ 
+  const trackData = TRACKS[selectedTrack];
+  const roadmapSteps = trackData.steps;
+  const estimatedTime = trackData.estimatedTime;
+ 
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);
-
-  // Every step is tappable now. This opens the detail modal below.
+ 
+  const handleTrackPress = (trackName) => {
+    setSelectedTrack(trackName);
+  };
+ 
+  // Every step is tappable. This opens the detail modal below.
   // Swap this out for navigation.navigate('SkillDetail', { skill: step })
   // once you have a dedicated screen for lesson content.
   const handleStepPress = (step) => {
     setSelectedStep(step);
   };
-
+ 
   const closeModal = () => setSelectedStep(null);
-
+ 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -126,20 +229,42 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>Career Roadmap</Text>
         <View style={{ width: 26 }} />
       </View>
-
+ 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.goalCard}>
           <Text style={styles.goalLabel}>Your goal</Text>
-          <Text style={styles.goalText}>{goal}</Text>
+          <Text style={styles.goalText}>Become a {selectedTrack}</Text>
         </View>
-
+ 
+        <Text style={styles.sectionLabel}>Choose a track</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {TRACK_NAMES.map((trackName) => {
+            const active = trackName === selectedTrack;
+            return (
+              <TouchableOpacity
+                key={trackName}
+                style={[styles.chip, active && styles.chipActive]}
+                onPress={() => handleTrackPress(trackName)}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                  {trackName}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+ 
         <ProgressBar percent={progressPercent} />
-
+ 
         <Text style={styles.sectionTitle}>Your Roadmap</Text>
-
+ 
         <View style={styles.roadmapList}>
           {roadmapSteps.map((step, index) => {
             return (
@@ -169,13 +294,13 @@ export default function CareerRoadmapScreen({ navigation, route }) {
             );
           })}
         </View>
-
+ 
         <View style={styles.estimateCard}>
           <Text style={styles.estimateLabel}>Estimated Time</Text>
           <Text style={styles.estimateValue}>{estimatedTime}</Text>
         </View>
       </ScrollView>
-
+ 
       <Modal
         visible={!!selectedStep}
         transparent
@@ -190,7 +315,10 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           {/* Stop taps inside the card from closing the modal */}
           <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
             {selectedStep && (
-              <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+              >
                 <View style={styles.modalHeaderRow}>
                   <View
                     style={[
@@ -202,7 +330,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                   />
                   <Text style={styles.modalTitle}>{selectedStep.title}</Text>
                 </View>
-
+ 
                 <Text
                   style={[
                     styles.modalStatusBadge,
@@ -213,11 +341,11 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 >
                   {STATUS_LABEL[selectedStep.status]}
                 </Text>
-
+ 
                 <Text style={styles.modalDescription}>
                   {selectedStep.description}
                 </Text>
-
+ 
                 <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
                   <Text style={styles.modalCloseButtonText}>Close</Text>
                 </TouchableOpacity>
@@ -229,11 +357,11 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
+ 
 const PURPLE = '#5B2EFF';
 const GREEN = '#2ECC71';
 const GRAY = '#D9D9D9';
-
+ 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
   header: {
@@ -251,10 +379,27 @@ const styles = StyleSheet.create({
     backgroundColor: PURPLE,
     borderRadius: 16,
     padding: 18,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   goalLabel: { color: '#E4DBFF', fontSize: 13, marginBottom: 6 },
   goalText: { color: '#fff', fontSize: 20, fontWeight: '700', lineHeight: 26 },
+ 
+  // Track picker (mirrors JobFinderScreen's category chips)
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 },
+  chipRow: { paddingVertical: 10 },
+  chip: {
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    marginRight: 8,
+    backgroundColor: '#fff',
+  },
+  chipActive: { backgroundColor: PURPLE, borderColor: PURPLE },
+  chipText: { fontSize: 13, color: '#374151' },
+  chipTextActive: { color: '#fff', fontWeight: '600' },
+ 
   sectionTitle: {
     fontSize: 15,
     fontWeight: '700',
@@ -305,7 +450,7 @@ const styles = StyleSheet.create({
   },
   estimateLabel: { color: PURPLE, fontWeight: '600', fontSize: 14 },
   estimateValue: { color: '#1A1A1A', fontWeight: '700', fontSize: 14 },
-
+ 
   // Progress bar
   progressWrap: { marginBottom: 24 },
   progressBarBackground: {
@@ -325,7 +470,7 @@ const styles = StyleSheet.create({
     color: '#7A7A7A',
     fontWeight: '600',
   },
-
+ 
   // Modal
   modalOverlay: {
     flex: 1,
@@ -335,7 +480,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalCard: {
-    width: '80%',
+    width: '82%',
     maxWidth: 320,
     maxHeight: SCREEN_HEIGHT * 0.4,
     backgroundColor: '#fff',
@@ -380,5 +525,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
-  modalCloseButtonText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  modalCloseButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 });
+ 
