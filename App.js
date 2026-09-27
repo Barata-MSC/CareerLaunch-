@@ -60,6 +60,7 @@ export default function App() {
   }, []);
 
   // Avoid visual flashing while verifying state
+   // Avoid visual flashing while verifying state
   if (authLoading) {
     return (
       <View style={[styles.backdrop, { justifyContent: 'center' }]}>
@@ -68,64 +69,66 @@ export default function App() {
     );
   }
 
+  // Show ONLY the splash screen first — nothing else mounts underneath it
+  if (showSplash) {
     return (
-      // 1. Wrap everything with all three providers
-      <ProfileProvider session={session}>
-        <ApplicationsProvider>
-          <ResumeProvider>
-            <View style={styles.backdrop}>
-              <View style={styles.phone}>
-                <NavigationContainer>
-                  <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    
-                    {session && session.user ? (
-                      // 2. PROTECTED INTERNAL STACK (Only visible when logged in)
-                      <>
-                        {/* Keep both MainTabs and Dashboard depending on your design */}
-                        <Stack.Screen name="MainTabs" component={MainTabs} />
-                        <Stack.Screen name="Dashboard" component={DashboardScreen} />
-                        
-                        {/* Existing Screens */}
-                        <Stack.Screen name="Profile" component={ProfileScreen} />
-                        <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-                        <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-                        
-                        {/* New Screens from 'main' */}
-                        <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
-                        <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
-                        <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
-                        <Stack.Screen name="education" component={EducationScreen} />
-                        <Stack.Screen name="skills" component={SkillsScreen} />
-                        <Stack.Screen name="experience" component={ExperienceScreen} />
-                        <Stack.Screen name="certificates" component={CertificatesScreen} />
-                        <Stack.Screen name="projects" component={ProjectsScreen} />
-                        <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
-                        <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
-                      </>
-                    ) : (
-                      // 3. PUBLIC AUTHENTICATION STACK (Only visible when logged out)
-                      <>
-                        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                        <Stack.Screen name="Login" component={LoginScreen} />
-                        <Stack.Screen name="Register" component={RegisterScreen} />
-                      </>
-                    )}
-                    
-                  </Stack.Navigator>
-                </NavigationContainer>
-
-                {showSplash && (
-                  <SplashScreen 
-                    appName="CareerLaunch!" 
-                    onFinish={() => setShowSplash(false)} 
-                  />
-                )}
-              </View>
-            </View>
-          </ResumeProvider>
-        </ApplicationsProvider>
-      </ProfileProvider>
+      <View style={styles.backdrop}>
+        <View style={styles.phone}>
+          <SplashScreen
+            appName="CareerLaunch!"
+            onFinish={() => setShowSplash(false)}
+          />
+        </View>
+      </View>
     );
+  }
+
+  return (
+    // 1. Wrap everything with all three providers
+    <ProfileProvider session={session}>
+      <ApplicationsProvider>
+        <ResumeProvider>
+          <View style={styles.backdrop}>
+            <View style={styles.phone}>
+              <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                  
+                  {session && session.user ? (
+                    // 2. PROTECTED INTERNAL STACK (Only visible when logged in)
+                    <>
+                      <Stack.Screen name="MainTabs" component={MainTabs} />
+                      <Stack.Screen name="Dashboard" component={DashboardScreen} />
+                      <Stack.Screen name="Profile" component={ProfileScreen} />
+                      <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+                      <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+                      <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
+                      <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
+                      <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
+                      <Stack.Screen name="education" component={EducationScreen} />
+                      <Stack.Screen name="skills" component={SkillsScreen} />
+                      <Stack.Screen name="experience" component={ExperienceScreen} />
+                      <Stack.Screen name="certificates" component={CertificatesScreen} />
+                      <Stack.Screen name="projects" component={ProjectsScreen} />
+                      <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+                      <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
+                    </>
+                  ) : (
+                    // 3. PUBLIC AUTHENTICATION STACK (Only visible when logged out)
+                    <>
+                      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+                      <Stack.Screen name="Login" component={LoginScreen} />
+                      <Stack.Screen name="Register" component={RegisterScreen} />
+                    </>
+                  )}
+                  
+                </Stack.Navigator>
+              </NavigationContainer>
+            </View>
+          </View>
+        </ResumeProvider>
+      </ApplicationsProvider>
+    </ProfileProvider>
+  );
 }
 
 const styles = StyleSheet.create({
