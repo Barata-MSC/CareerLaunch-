@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     top: H / 2 + 10,
     left: 0,
     right: 0,
-    fontSize: 26,
+    fontSize: 35,
     fontWeight: '700',
     letterSpacing: 0.5,
     color: NAME_COLOR,
