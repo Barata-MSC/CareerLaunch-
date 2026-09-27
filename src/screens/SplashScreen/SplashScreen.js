@@ -11,23 +11,10 @@ import {
 
 const { width: W, height: H } = Dimensions.get('window');
 
-const LOGO_SIZE = 112;
-const BG = '#FEFEFE'; // matches the logo PNG's background so no box shows while it moves
+const LOGO_SIZE = Math.min(W, H) * 0.32;
+const BG = '#FEFEFE';
 const NAME_COLOR = '#0A2A6B';
 
-/**
- * Animated splash screen.
- *
- * Sequence (~2.5s):
- *  1. Rocket flies in from the bottom-left, along the direction it points
- *  2. App name fades in while the rocket hovers
- *  3. Rocket blasts off toward the top-right and the screen fades out
- *  4. onFinish() is called
- *
- * Props:
- *  - onFinish: () => void   called when the animation is done
- *  - appName:  string       optional, shown under the rocket
- */
 export default function SplashScreen({ onFinish, appName }) {
   const flyX = useRef(new Animated.Value(-W * 0.7)).current;
   const flyY = useRef(new Animated.Value(H * 0.7)).current;
@@ -44,7 +31,6 @@ export default function SplashScreen({ onFinish, appName }) {
       if (cancelled) return;
 
       if (reduceMotion) {
-        // Simple fade for people who have "Reduce Motion" turned on
         flyX.setValue(0);
         flyY.setValue(0);
         animation = Animated.sequence([
@@ -72,7 +58,6 @@ export default function SplashScreen({ onFinish, appName }) {
         ]);
 
         animation = Animated.sequence([
-          // 1. Fly in
           Animated.parallel([
             Animated.timing(flyX, {
               toValue: 0,
@@ -92,7 +77,6 @@ export default function SplashScreen({ onFinish, appName }) {
               useNativeDriver: true,
             }),
           ]),
-          // 2. Hover + app name
           Animated.parallel([
             hoverCycle,
             Animated.timing(nameOpacity, {
@@ -101,7 +85,6 @@ export default function SplashScreen({ onFinish, appName }) {
               useNativeDriver: true,
             }),
           ]),
-          // 3. Blast off
           Animated.parallel([
             Animated.timing(flyX, {
               toValue: W,
@@ -153,8 +136,9 @@ export default function SplashScreen({ onFinish, appName }) {
 
   return (
     <Animated.View style={[styles.container, { opacity: screenOpacity }]}>
+      {/* Rocket keeps its own flight path, positioned above center */}
       <Animated.Image
-        source={require('@assets/rocket-icon.png')} // adjust path to where you saved the logo
+        source={require('@assets/rocket-icon.png')}
         style={[
           styles.logo,
           {
@@ -165,6 +149,8 @@ export default function SplashScreen({ onFinish, appName }) {
         resizeMode="contain"
         accessibilityIgnoresInvertColors
       />
+
+      {/* App name is now pinned to the true vertical center of the screen */}
       {appName ? (
         <Animated.Text style={[styles.name, { opacity: nameOpacity }]}>{appName}</Animated.Text>
       ) : null}
@@ -177,17 +163,22 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: BG,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   logo: {
     width: LOGO_SIZE,
     height: LOGO_SIZE,
+    position: 'absolute',
+    top: H / 2 - LOGO_SIZE - 20,
   },
   name: {
-    marginTop: 20,
+    position: 'absolute',
+    top: H / 2 + 10,
+    left: 0,
+    right: 0,
     fontSize: 26,
     fontWeight: '700',
     letterSpacing: 0.5,
     color: NAME_COLOR,
+    textAlign: 'center',
   },
 });
