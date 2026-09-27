@@ -1,5 +1,16 @@
 # CareerLaunch!
 
+## README Guide
+
+| Sections | Contents |
+|---|---|
+| **1–10** | Setup + Dependencies |
+| **11–18** | Project Configuration + Architecture |
+| **19–23** | CareerLaunch Application Structure |
+| **24–28** | Git / GitHub Commands |
+| **29–31** | Development History + Team Rules |
+| **32–35** | Current Status + Reference Information |
+
 CareerLaunch! is a React Native mobile application developed for the Mobile Computing final project. The project is built with JavaScript and Expo, organized into reusable screens, components, contexts, configuration files, and assets.
 
 The application currently includes career-related features such as:
