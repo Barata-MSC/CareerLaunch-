@@ -21,8 +21,8 @@ The project uses Supabase for authentication/session handling and stores applica
 |---|---|
 | **1–10** | Setup + Dependencies |
 | **11–18** | Project Configuration + Architecture |
-| **19–26** | Git / GitHub + Development Workflow |
-| **27–30** | Current Status + Reference Information |
+| **19–27** | Git / GitHub + Development Workflow |
+| **28–31** | Current Status + Reference Information |
 
 ---
 
@@ -551,10 +551,24 @@ Then create a new branch:
 git checkout -b "your-feature-name"
 ```
 
+You can also use the newer `git switch` command:
+
+```powershell
+git switch -c "your-feature-name"
+```
+
+Both commands create a new local branch and switch you to it.
+
 Example:
 
 ```powershell
 git checkout -b CareerRoadmapUpdate
+```
+
+or:
+
+```powershell
+git switch -c CareerRoadmapUpdate
 ```
 
 ### Important
@@ -696,7 +710,70 @@ This is optional and is not required every time `main` changes.
 
 ---
 
-## 24. Merging and Deleting Completed Branches
+## 24. Canceling, Undoing, or Recovering Git Changes
+
+These commands are for different situations. **Do not run all of them as one sequence.** Choose the command based on what you are trying to cancel or undo.
+
+### Temporarily set aside local changes
+
+Use `git stash` when you have unfinished local changes but need a clean working tree temporarily.
+
+```powershell
+git stash
+git pull
+git stash pop
+```
+
+What this does:
+
+```text
+git stash     → temporarily stores your uncommitted changes
+git pull      → gets the latest changes from the tracked remote branch
+git stash pop → reapplies your saved local changes
+```
+
+If `git stash pop` causes conflicts, resolve the conflicts manually before continuing.
+
+### Cancel an unfinished merge
+
+If a merge has started and Git reports conflicts, you can cancel the merge and return to the state before the merge began:
+
+```powershell
+git merge --abort
+```
+
+Use this when you want to stop the current merge without keeping the merge result.
+
+### Undo the most recent commit but keep the changes
+
+```powershell
+git reset --soft HEAD~1
+```
+
+This removes the latest commit from the current branch history, but keeps the changes from that commit staged so they can be edited or recommitted.
+
+### Recover the latest remote `main` state
+
+```powershell
+git fetch origin
+git reset --hard origin/main
+```
+
+This updates the local knowledge of the remote repository and then makes the current branch match `origin/main`. **Uncommitted changes and local commits on the current branch can be discarded by `--hard`.** Only use this when you are certain those local changes are no longer needed.
+
+### Quick guide
+
+| Situation | Command | Result |
+|---|---|---|
+| Temporarily save unfinished changes | `git stash` | Stores changes temporarily |
+| Reapply stashed changes | `git stash pop` | Restores the latest stash |
+| Cancel an active merge | `git merge --abort` | Stops the merge and returns to the previous state |
+| Undo the latest commit but keep its changes | `git reset --soft HEAD~1` | Removes the commit, keeps changes staged |
+| Discard local work and match remote `main` | `git fetch origin` + `git reset --hard origin/main` | Resets the current branch to remote `main` |
+
+---
+
+## 25. Merging and Deleting Completed Branches
 
 Once a Pull Request has been successfully merged into `main`, the feature branch can be deleted.
 
@@ -798,7 +875,7 @@ unless there is a specific reason to make the work dependent on the old branch.
 
 ---
 
-## 25. Initial GitHub Upload / Repository Setup
+## 26. Initial GitHub Upload / Repository Setup
 
 The original project notes used the following process for uploading a project to GitHub for the first time:
 
@@ -829,7 +906,7 @@ Use this carefully because it removes the local Git history/configuration.
 
 ---
 
-## 26. Team Workflow Rules
+## 27. Team Workflow Rules
 
 ### Before starting any task
 
@@ -895,7 +972,7 @@ Delete branch
 
 ---
 
-## 27. Project Status
+## 28. Project Status
 
 This README documents the current development setup and workflow of CareerLaunch!.
 
@@ -905,7 +982,7 @@ The old GitHub Pages deployment notes are intentionally not included in the acti
 
 ---
 
-## 28. Useful Command Reference
+## 29. Useful Command Reference
 
 ### Project
 
@@ -933,6 +1010,7 @@ git status
 git checkout main
 git pull
 git checkout -b "branch-name"
+git switch -c "branch-name"
 git add .
 git commit -m "message"
 git push origin "branch-name"
@@ -947,7 +1025,7 @@ npx expo start --tunnel
 
 ---
 
-## 29. Project Repository
+## 30. Project Repository
 
 GitHub repository:
 
@@ -959,7 +1037,7 @@ If the team moves the project to another repository, update this section with th
 
 ---
 
-## 30. Credits / Development
+## 31. Credits / Development
 
 **Project:** CareerLaunch!  
 **Course:** Mobile Computing  
