@@ -8,13 +8,16 @@ import {
     StyleSheet,
 } from 'react-native';
 import { useResume } from './ResumeContext';
-import { calculateResumeScore } from './resumeScore';
+import { calculateResumeScore, getResumeSuggestions } from './resumeScore';
 
 const PURPLE = '#5B21F5';
 
-export default function ResumePreviewScreen({ navigation }) {
+export default function ResumePreviewScreen({ navigation, route }) {
     const { resumeData } = useResume();
+    const mode = route?.params?.mode === 'test' ? 'test' : 'generate';
+
     const score = calculateResumeScore(resumeData);
+    const suggestions = getResumeSuggestions(resumeData);
 
     const info = resumeData.personalInfo || {};
     const education = resumeData.education || [];
@@ -33,115 +36,125 @@ export default function ResumePreviewScreen({ navigation }) {
                 >
                     <Text style={styles.backArrow}>‹</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Resume Preview</Text>
+                <Text style={styles.headerTitle}>
+                    {mode === 'test' ? 'Test Resume' : 'Resume Preview'}
+                </Text>
                 <View style={{ width: 24 }} />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                {/* Dynamic AI Profile Strength Meter */}
-                <View style={styles.scoreContainer}>
-                    <View style={styles.scoreHeaderRow}>
-                        <Text style={styles.scoreTitle}>AI Resume Strength Score</Text>
-                        <Text style={styles.scoreNumber}>{score}/100</Text>
+                {mode === 'test' ? (
+                   
+                    <View style={styles.scoreContainer}>
+                        <View style={styles.scoreHeaderRow}>
+                            <Text style={styles.scoreTitle}>AI Resume Strength Score</Text>
+                            <Text style={styles.scoreNumber}>{score}/100</Text>
+                        </View>
+                        <View style={styles.scoreTrack}>
+                            <View style={[styles.scoreFill, { width: `${score}%` }]} />
+                        </View>
+                        <Text style={styles.scoreHint}>
+                            {score < 70
+                                ? '💡 Tip: Add more detailed descriptions or portfolio items to stand out to employers.'
+                                : '✅ Awesome! Your resume looks robust and well-optimized for application tracking systems.'}
+                        </Text>
+
+                        <View style={styles.suggestionsBox}>
+                            <Text style={styles.suggestionsTitle}>Suggestions</Text>
+                            {suggestions.map((tip, index) => (
+                                <Text key={index} style={styles.suggestionItem}>• {tip}</Text>
+                            ))}
+                        </View>
                     </View>
-                    <View style={styles.scoreTrack}>
-                        <View style={[styles.scoreFill, { width: `${score}%` }]} />
+                ) : (
+                
+                    <View style={styles.documentFrame}>
+                        {/* Header Contact Block */}
+                        <Text style={styles.docName}>{info.fullName || 'Your Name'}</Text>
+                        <Text style={styles.docContact}>
+                            {info.email || 'email@example.com'}  •  {info.phone || 'Phone Number'}
+                        </Text>
+
+                        {/* Professional Summary */}
+                        {info.summary ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>PROFESSIONAL SUMMARY</Text>
+                                <Text style={styles.docBodyText}>{info.summary}</Text>
+                            </View>
+                        ) : null}
+
+                        {/* Core Professional Skills Matrix */}
+                        {skills.length > 0 ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>CORE SKILLS</Text>
+                                <Text style={styles.docBodyText}>{skills.join('  •  ')}</Text>
+                            </View>
+                        ) : null}
+
+                        {/* Employment Work History */}
+                        {experience.length > 0 ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>PROFESSIONAL EXPERIENCE</Text>
+                                {experience.map((item) => (
+                                    <View key={item.id} style={styles.docItemBlock}>
+                                        <View style={styles.docRowSpace}>
+                                            <Text style={styles.docItemHeader}>{item.company}</Text>
+                                            <Text style={styles.docItemDate}>{item.duration}</Text>
+                                        </View>
+                                        <Text style={styles.docItemSubHeader}>{item.role}</Text>
+                                        {item.description ? <Text style={styles.docItemDesc}>{item.description}</Text> : null}
+                                    </View>
+                                ))}
+                            </View>
+                        ) : null}
+
+                        {/* Portfolio Projects Section */}
+                        {projects.length > 0 ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>PROJECTS</Text>
+                                {projects.map((item) => (
+                                    <View key={item.id} style={styles.docItemBlock}>
+                                        <Text style={styles.docItemHeader}>{item.title}</Text>
+                                        {item.link ? <Text style={styles.docItemLink}>{item.link}</Text> : null}
+                                        <Text style={styles.docItemDesc}>{item.description}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ) : null}
+
+                        {/* Academic Profile History */}
+                        {education.length > 0 ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>EDUCATION</Text>
+                                {education.map((item) => (
+                                    <View key={item.id} style={styles.docItemBlock}>
+                                        <View style={styles.docRowSpace}>
+                                            <Text style={styles.docItemHeader}>{item.school}</Text>
+                                            <Text style={styles.docItemDate}>{item.year}</Text>
+                                        </View>
+                                        <Text style={styles.docItemSubHeader}>{item.degree}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ) : null}
+
+                        {/* Professional Credentials & Certifications */}
+                        {certificates.length > 0 ? (
+                            <View style={styles.docSection}>
+                                <Text style={styles.docSectionTitle}>CERTIFICATIONS</Text>
+                                {certificates.map((item) => (
+                                    <View key={item.id} style={styles.docItemBlock}>
+                                        <View style={styles.docRowSpace}>
+                                            <Text style={styles.docItemHeader}>{item.name}</Text>
+                                            <Text style={styles.docItemDate}>{item.year}</Text>
+                                        </View>
+                                        <Text style={styles.docItemSubHeader}>{item.issuer}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ) : null}
                     </View>
-                    <Text style={styles.scoreHint}>
-                        {score < 70
-                            ? '💡 Tip: Add more detailed descriptions or portfolio items to stand out to employers.'
-                            : '✅ Awesome! Your resume looks robust and well-optimized for application tracking systems.'}
-                    </Text>
-                </View>
-
-                {/* --- PHYSICAL WHITE DOCUMENT BOX CONTAINER --- */}
-                <View style={styles.documentFrame}>
-                    {/* Header Contact Block */}
-                    <Text style={styles.docName}>{info.fullName || 'Your Name'}</Text>
-                    <Text style={styles.docContact}>
-                        {info.email || 'email@example.com'}  •  {info.phone || 'Phone Number'}
-                    </Text>
-
-                    {/* Professional Summary */}
-                    {info.summary ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>PROFESSIONAL SUMMARY</Text>
-                            <Text style={styles.docBodyText}>{info.summary}</Text>
-                        </View>
-                    ) : null}
-
-                    {/* Core Professional Skills Matrix */}
-                    {skills.length > 0 ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>CORE SKILLS</Text>
-                            <Text style={styles.docBodyText}>{skills.join('  •  ')}</Text>
-                        </View>
-                    ) : null}
-
-                    {/* Employment Work History */}
-                    {experience.length > 0 ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>PROFESSIONAL EXPERIENCE</Text>
-                            {experience.map((item) => (
-                                <View key={item.id} style={styles.docItemBlock}>
-                                    <View style={styles.docRowSpace}>
-                                        <Text style={styles.docItemHeader}>{item.company}</Text>
-                                        <Text style={styles.docItemDate}>{item.duration}</Text>
-                                    </View>
-                                    <Text style={styles.docItemSubHeader}>{item.role}</Text>
-                                    {item.description ? <Text style={styles.docItemDesc}>{item.description}</Text> : null}
-                                </View>
-                            ))}
-                        </View>
-                    ) : null}
-
-                    {/* Portfolio Projects Section */}
-                    {projects.length > 0 ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>PROJECTS</Text>
-                            {projects.map((item) => (
-                                <View key={item.id} style={styles.docItemBlock}>
-                                    <Text style={styles.docItemHeader}>{item.title}</Text>
-                                    {item.link ? <Text style={styles.docItemLink}>{item.link}</Text> : null}
-                                    <Text style={styles.docItemDesc}>{item.description}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ) : null}
-
-                    {/* Academic Profile History */}
-                    {education.length > 0 ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>EDUCATION</Text>
-                            {education.map((item) => (
-                                <View key={item.id} style={styles.docItemBlock}>
-                                    <View style={styles.docRowSpace}>
-                                        <Text style={styles.docItemHeader}>{item.school}</Text>
-                                        <Text style={styles.docItemDate}>{item.year}</Text>
-                                    </View>
-                                    <Text style={styles.docItemSubHeader}>{item.degree}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ) : null}
-
-                    {/* Professional Credentials & Certifications */}
-
-                    {certificates.length > 0 ? (
-                        <View style={styles.docSection}>
-                            <Text style={styles.docSectionTitle}>CERTIFICATIONS</Text>
-                            {certificates.map((item) => (
-                                <View key={item.id} style={styles.docItemBlock}>
-                                    <View style={styles.docRowSpace}>
-                                        <Text style={styles.docItemHeader}>{item.name}</Text>
-                                        <Text style={styles.docItemDate}>{item.year}</Text>
-                                    </View>
-                                    <Text style={styles.docItemSubHeader}>{item.issuer}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ) : null}
-                </View>
+                )}
             </ScrollView>
         </SafeAreaView>
     );
@@ -218,6 +231,24 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#636366',
         lineHeight: 16,
+    },
+    suggestionsBox: {
+        marginTop: 16,
+        borderTopWidth: 1,
+        borderColor: '#E5E5EA',
+        paddingTop: 14,
+    },
+    suggestionsTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#1C1C1E',
+        marginBottom: 8,
+    },
+    suggestionItem: {
+        fontSize: 13,
+        color: '#3A3A3C',
+        lineHeight: 19,
+        marginBottom: 6,
     },
     documentFrame: {
         backgroundColor: '#FFFFFF',

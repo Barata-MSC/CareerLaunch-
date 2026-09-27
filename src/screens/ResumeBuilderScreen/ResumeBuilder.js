@@ -95,7 +95,7 @@ export default function ResumeBuilderScreen({ navigation }) {
           style={[styles.generateButton, !canGenerate && styles.generateButtonDisabled]}
           activeOpacity={0.85}
           disabled={!canGenerate}
-          onPress={() => navigation?.navigate('ResumePreview')}
+          onPress={() => navigation?.navigate('ResumePreview', { mode: 'generate' })}
         >
           <Text style={styles.generateButtonText}>Generate Resume</Text>
         </TouchableOpacity>
@@ -106,7 +106,7 @@ export default function ResumeBuilderScreen({ navigation }) {
           </Text>
         )}
 
-        <TouchableOpacity onPress={() => navigation?.navigate('ResumePreview')}>
+        <TouchableOpacity onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
           <Text style={styles.testLink}>Test Resume here</Text>
         </TouchableOpacity>
       </ScrollView>
