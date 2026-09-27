@@ -13,7 +13,7 @@ const ICONS = {
   ResumeBuilder: require('@assets/resume_builder.png'),
   JobFinder: require('@assets/job_search.png'),
   CareerRoadmap: require('@assets/roadmap.png'),
-  Profile: require('@assets/icon-profile.png'),
+  Profile: require('@assets/profile.png'),
 };
 
 const PURPLE = '#5B21F5';

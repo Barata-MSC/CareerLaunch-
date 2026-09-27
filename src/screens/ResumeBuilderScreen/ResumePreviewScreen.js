@@ -126,15 +126,16 @@ export default function ResumePreviewScreen({ navigation }) {
                     ) : null}
 
                     {/* Professional Credentials & Certifications */}
+
                     {certificates.length > 0 ? (
                         <View style={styles.docSection}>
                             <Text style={styles.docSectionTitle}>CERTIFICATIONS</Text>
                             {certificates.map((item) => (
                                 <View key={item.id} style={styles.docItemBlock}>
-                                    <div style={styles.docRowSpace}>
+                                    <View style={styles.docRowSpace}>
                                         <Text style={styles.docItemHeader}>{item.name}</Text>
                                         <Text style={styles.docItemDate}>{item.year}</Text>
-                                    </div>
+                                    </View>
                                     <Text style={styles.docItemSubHeader}>{item.issuer}</Text>
                                 </View>
                             ))}
