@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useApplications } from './src/context/ApplicationsContext'
+
 
 import { supabase } from './src/config/supabase';
 import { ProfileProvider } from './src/context/ProfileContext';
@@ -16,7 +16,6 @@ import {
   JobFinderScreen,
   CareerRoadmapScreen,
   JobApplicationTracker,
-  ApplicationContext,
   AIInterviewCoachScreen,
 } from '@screens';
 import { ApplicationsProvider } from './src/context/ApplicationsContext';
