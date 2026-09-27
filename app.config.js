@@ -5,6 +5,7 @@ module.exports = {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon-profile.png",
+    icon: "./src/assets/rocket-icon.png",
     userInterfaceStyle: "light",
     ios: {
       supportsTablet: true
@@ -12,9 +13,7 @@ module.exports = {
     android: {
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
-        foregroundImage: "./assets/android-icon-foreground.png",
-        backgroundImage: "./assets/android-icon-background.png",
-        monochromeImage: "./assets/android-icon-monochrome.png"
+        foregroundImage: "./src/assets/rocket-icon.png"
       }
     },
     web: {
