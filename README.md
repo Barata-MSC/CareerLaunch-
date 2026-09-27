@@ -21,8 +21,8 @@ The project uses Supabase for authentication/session handling and stores applica
 |---|---|
 | **1–10** | Setup + Dependencies |
 | **11–18** | Project Configuration + Architecture |
-| **19–25** | Git / GitHub + Development Workflow |
-| **26–29** | Current Status + Reference Information |
+| **19–26** | Git / GitHub + Development Workflow |
+| **27–30** | Current Status + Reference Information |
 
 ---
 
@@ -593,7 +593,77 @@ your-feature-name → main
 
 ---
 
-## 22. Pull Requests and Merge Conflicts
+
+## 22. Uploading a Local Branch to a Remote Branch for Review
+
+A branch does **not** need to be merged into `main` immediately. A team member can upload their local branch to GitHub so another teammate can inspect and test the source code first.
+
+### From the member's local branch
+
+Make sure the member is currently on the correct branch:
+
+```powershell
+git branch
+git status
+```
+
+Then push that local branch to the remote repository:
+
+```powershell
+git push -u origin "your-feature-name"
+```
+
+Example:
+
+```powershell
+git push -u origin CareerRoadmap
+```
+
+This creates or updates the remote branch:
+
+```text
+Local:  CareerRoadmap
+          ↓
+Remote: origin/CareerRoadmap
+```
+
+The branch is now available on GitHub without changing `main`.
+
+### Checking a teammate's remote branch locally
+
+First update your list of remote branches:
+
+```powershell
+git fetch origin
+```
+
+If you do not already have a local copy of the branch, create one that tracks the remote branch:
+
+```powershell
+git checkout -b "your-feature-name" origin/"your-feature-name"
+```
+
+Example:
+
+```powershell
+git checkout -b CareerRoadmap origin/CareerRoadmap
+```
+
+You can then inspect, run, and test the code locally before deciding whether it is ready to merge into `main`.
+
+### Important
+
+Pushing a branch to GitHub **does not merge it into `main`**.
+
+The branch can stay on GitHub while the team reviews it. After review, create a Pull Request:
+
+```text
+CareerRoadmap → main
+```
+
+Then merge it into `main` only when the team is ready.
+
+## 23. Pull Requests and Merge Conflicts
 
 After a branch is pushed, create a Pull Request so the changes can be reviewed and merged into `main`.
 
@@ -626,7 +696,7 @@ This is optional and is not required every time `main` changes.
 
 ---
 
-## 23. Merging and Deleting Completed Branches
+## 24. Merging and Deleting Completed Branches
 
 Once a Pull Request has been successfully merged into `main`, the feature branch can be deleted.
 
@@ -728,7 +798,7 @@ unless there is a specific reason to make the work dependent on the old branch.
 
 ---
 
-## 24. Initial GitHub Upload / Repository Setup
+## 25. Initial GitHub Upload / Repository Setup
 
 The original project notes used the following process for uploading a project to GitHub for the first time:
 
@@ -759,7 +829,7 @@ Use this carefully because it removes the local Git history/configuration.
 
 ---
 
-## 25. Team Workflow Rules
+## 26. Team Workflow Rules
 
 ### Before starting any task
 
@@ -825,7 +895,7 @@ Delete branch
 
 ---
 
-## 26. Project Status
+## 27. Project Status
 
 This README documents the current development setup and workflow of CareerLaunch!.
 
@@ -835,7 +905,7 @@ The old GitHub Pages deployment notes are intentionally not included in the acti
 
 ---
 
-## 27. Useful Command Reference
+## 28. Useful Command Reference
 
 ### Project
 
@@ -877,7 +947,7 @@ npx expo start --tunnel
 
 ---
 
-## 28. Project Repository
+## 29. Project Repository
 
 GitHub repository:
 
@@ -889,7 +959,7 @@ If the team moves the project to another repository, update this section with th
 
 ---
 
-## 29. Credits / Development
+## 30. Credits / Development
 
 **Project:** CareerLaunch!  
 **Course:** Mobile Computing  
