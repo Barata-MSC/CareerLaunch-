@@ -4,6 +4,7 @@ module.exports = {
     slug: "finalProject",
     version: "1.0.0",
     orientation: "portrait",
+    icon: "./assets/icon-profile.png",
     icon: "./src/assets/rocket-icon.png",
     userInterfaceStyle: "light",
     ios: {
