@@ -1,14 +1,5 @@
 # CareerLaunch!
 
-## README Guide
-
-| Sections | Contents |
-|---|---|
-| **1–10** | Setup + Dependencies |
-| **11–18** | Project Configuration + Architecture |
-| **19–25** | Git / GitHub + Development Workflow |
-| **26–29** | Current Status + Reference Information |
-
 CareerLaunch! is a React Native mobile application developed for the Mobile Computing final project. The project is built with JavaScript and Expo, organized into reusable screens, components, contexts, configuration files, and assets.
 
 The application currently includes career-related features such as:
@@ -21,6 +12,17 @@ The application currently includes career-related features such as:
 - Profile
 
 The project uses Supabase for authentication/session handling and stores application-related state through React context providers.
+
+---
+
+## README Guide
+
+| Sections | Contents |
+|---|---|
+| **1–10** | Setup + Dependencies |
+| **11–18** | Project Configuration + Architecture |
+| **19–25** | Git / GitHub + Development Workflow |
+| **26–29** | Current Status + Reference Information |
 
 ---
 
@@ -115,6 +117,7 @@ npx expo install expo
 npx expo install react-dom react-native-web
 npx expo install expo-image-picker
 npx expo install expo-linking
+npm install react-native-url-polyfill
 ```
 
 For path aliasing and Babel configuration:
@@ -500,9 +503,11 @@ Authentication Check
 
 ---
 
-## 19. Git and GitHub Workflow
+# 19–25. Git / GitHub Development Workflow
 
-Git is used to track project changes and GitHub is used as the project's remote repository.
+## 19. Git and GitHub Basics
+
+Git is used to track project changes, while GitHub is used as the team's remote repository.
 
 ### Clone an Existing Repository
 
@@ -510,7 +515,7 @@ Git is used to track project changes and GitHub is used as the project's remote 
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 ```
 
-Then:
+Then enter the project folder:
 
 ```powershell
 cd "folderName"
@@ -522,58 +527,208 @@ cd "folderName"
 git status
 ```
 
-### Pull the Latest Changes
+---
+
+## 20. Starting Any New Task: Always Create a New Branch
+
+For this project, **one task = one branch**.
+
+This applies to both small changes and large features.
+
+Before starting:
 
 ```powershell
+git checkout main
 git pull
+git status
 ```
+
+Make sure you are on the latest `main` and there are no unwanted local changes.
+
+Then create a new branch:
+
+```powershell
+git checkout -b "your-feature-name"
+```
+
+Example:
+
+```powershell
+git checkout -b CareerRoadmapUpdate
+```
+
+### Important
+
+- Do not continue developing directly on `main`.
+- Start every new task from the latest `main`.
+- Create a new branch for both small fixes and large features.
+- Do not create a new update branch under an old completed feature branch.
 
 ---
 
-## 20. Branch Workflow
+## 21. Develop, Commit, and Push
 
-Create a new branch before working on a separate feature:
-
-```powershell
-git checkout -b "exampleBranchName"
-```
-
-After coding:
+After completing the task:
 
 ```powershell
 git status
 git add .
-git commit -m "DescriptionOfCommit"
-git push origin "exampleBranchName"
+git commit -m "Describe what you changed"
+git push origin "your-feature-name"
 ```
 
-After pushing, the branch can be used to create a Pull Request on GitHub.
+Example:
 
-### Basic Workflow
+```powershell
+git add .
+git commit -m "Update Career Roadmap screen"
+git push origin CareerRoadmapUpdate
+```
+
+Then open GitHub and create a Pull Request:
 
 ```text
-Pull latest changes
-       ↓
-Create / switch to branch
-       ↓
-Develop feature
-       ↓
-Check git status
-       ↓
-git add .
-       ↓
-git commit
-       ↓
-git push
-       ↓
-Create Pull Request
-       ↓
-Merge changes
+your-feature-name → main
 ```
 
 ---
 
-## 21. Initial GitHub Upload
+## 22. Pull Requests and Merge Conflicts
+
+After a branch is pushed, create a Pull Request so the changes can be reviewed and merged into `main`.
+
+Another teammate may have already merged changes into `main` while your branch is still being developed. This does **not** automatically mean there will be a merge conflict.
+
+A conflict is more likely when two branches modify the same files or the same lines of code.
+
+A branch can still be pushed and submitted as a Pull Request:
+
+```powershell
+git add .
+git commit -m "Describe changes"
+git push origin "your-feature-name"
+```
+
+If GitHub reports a merge conflict, resolve the conflict before completing the merge.
+
+### Optional: Update a Long-Running Branch
+
+If a branch has been under development for a while and needs the latest `main`, it can be updated with:
+
+```powershell
+git checkout main
+git pull
+git checkout "your-feature-name"
+git merge main
+```
+
+This is optional and is not required every time `main` changes.
+
+---
+
+## 23. Merging and Deleting Completed Branches
+
+Once a Pull Request has been successfully merged into `main`, the feature branch can be deleted.
+
+Deleting a branch **after it has been merged does not remove the merged commits from `main`**. The commits remain part of `main`'s history.
+
+This keeps the repository clean and prevents old completed branches from piling up.
+
+### Example
+
+```text
+main
+  │
+  └── CareerRoadmapUpdate
+             ↓
+        Pull Request
+             ↓
+        Merge into main
+             ↓
+      Delete the branch
+```
+
+### Delete a completed local branch
+
+First switch back to `main`:
+
+```powershell
+git checkout main
+git pull
+```
+
+Then delete the merged local branch:
+
+```powershell
+git branch -d CareerRoadmapUpdate
+```
+
+If Git says the branch has not been fully merged, **do not use `-D` unless you are certain the branch is no longer needed**:
+
+```powershell
+git branch -D CareerRoadmapUpdate
+```
+
+### Delete the remote GitHub branch
+
+After deleting the local branch, remove the remote branch from GitHub:
+
+```powershell
+git push origin --delete CareerRoadmapUpdate
+```
+
+This removes the branch name from the remote repository but does not remove commits that were already merged into `main`.
+
+### Important: Do not use `git checkout -d` to delete a branch
+
+For example, this is **not** a branch-deletion command:
+
+```powershell
+git checkout -d readmeUpdate
+```
+
+It can place Git into a **detached HEAD** state instead of deleting the branch.
+
+If this happens, return to `main` first:
+
+```powershell
+git checkout main
+```
+
+Then delete the branch normally:
+
+```powershell
+git branch -d readmeUpdate
+```
+
+And, if the branch was pushed to GitHub:
+
+```powershell
+git push origin --delete readmeUpdate
+```
+
+### Updating a completed feature later
+
+If the same feature needs another update later, create a **new branch from the latest `main`**:
+
+```powershell
+git checkout main
+git pull
+git checkout -b CareerRoadmapFix
+```
+
+Do not create:
+
+```text
+CareerRoadmap
+   └── CareerRoadmapFix
+```
+
+unless there is a specific reason to make the work dependent on the old branch.
+
+---
+
+## 24. Initial GitHub Upload / Repository Setup
 
 The original project notes used the following process for uploading a project to GitHub for the first time:
 
@@ -588,11 +743,7 @@ git push -u origin main
 
 For a different repository, replace the remote URL with the team's repository URL.
 
----
-
-## 22. Changing a Git Remote
-
-If the project needs to point to another GitHub repository:
+### Changing a Git Remote
 
 ```powershell
 git remote set-url origin <NEW_URL>
@@ -608,72 +759,69 @@ Use this carefully because it removes the local Git history/configuration.
 
 ---
 
-## 23. Canceling Local Changes
+## 25. Team Workflow Rules
 
-The project Git notes include the following method for resetting the local branch to the remote `main` branch:
-
-```powershell
-git fetch origin
-git reset --hard origin/main
-```
-
-This discards local changes that are not present in the remote branch. Use it only when those local changes are no longer needed.
-
----
-
-## 24. Development Notes
-
-During development, the project went through several stages of configuration and troubleshooting, including:
-
-- Initial Expo project creation
-- React Navigation setup
-- Expo Web setup
-- React Native Web installation
-- Path alias configuration
-- Babel configuration
-- ESLint configuration
-- Image picker installation
-- Expo Linking installation
-- Supabase authentication/session integration
-- Git/GitHub branch workflow
-- Dependency repair and cache clearing
-- Expo tunnel setup for testing
-
-The project structure was also reorganized into `components`, `config`, `context`, `screens`, and `assets` folders to make the codebase easier to manage.
-
----
-
-## 25. Working on the Project as a Team
-
-Before starting work:
+### Before starting any task
 
 ```powershell
 git checkout main
 git pull
+git status
 git checkout -b "your-feature-name"
 ```
 
-After finishing work:
+### While developing
 
 ```powershell
 git status
+```
+
+Commit regularly when a meaningful part of the task is complete.
+
+### After finishing
+
+```powershell
 git add .
 git commit -m "Describe what you changed"
 git push origin "your-feature-name"
 ```
 
-Then create a Pull Request on GitHub so the team can review and merge the changes.
+Create a Pull Request and merge into `main`.
 
-### Important Team Rule
+### After merging
 
-Avoid editing the same files at the same time when possible, especially large navigation or configuration files such as:
+Delete the completed branch.
 
-- `App.js`
-- `babel.config.js`
-- `jsconfig.json`
-- shared context files
+```text
+One task
+   ↓
+One branch
+   ↓
+Develop
+   ↓
+Commit
+   ↓
+Push
+   ↓
+Pull Request
+   ↓
+Merge into main
+   ↓
+Delete branch
+```
 
-Pull the latest `main` branch before beginning new work.
+### Team reminders
+
+- Do not develop directly on `main`.
+- Start every new task from the latest `main`.
+- Create a new branch for both small fixes and large features.
+- Do not keep old merged branches unless there is a specific reason.
+- Do not commit `.env` or private credentials.
+- Avoid editing the same large files at the same time when possible, especially:
+  - `App.js`
+  - `babel.config.js`
+  - `jsconfig.json`
+  - shared context files
 
 ---
 
@@ -712,6 +860,7 @@ npm cache clean --force
 
 ```powershell
 git status
+git checkout main
 git pull
 git checkout -b "branch-name"
 git add .
