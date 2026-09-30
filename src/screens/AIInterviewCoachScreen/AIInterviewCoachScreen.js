@@ -4,6 +4,10 @@
 // (tap-to-record) or by typing, get instant feedback, then a final
 // results summary once all questions are done. Past session scores are
 // kept in memory so the user can see their progress improve over time.
+//
+// Text answers are scored on Grammar + Punctuation (heuristic checks
+// on the actual typed text). Voice answers are scored on Confidence +
+// Clarity (simulated, since there's no real speech analysis here).
 
 import React, { useState } from 'react';
 import {
@@ -27,7 +31,6 @@ const PURPLE_DARK = '#3D14C4';
 const PURPLE_LIGHT = '#F1EEFF';
 const GOLD = '#FFB020';
 const GRAY_STAR = '#E5E5EA';
-const RED = '#E5484D';
 const GREEN = '#2ECC71';
 
 const QUESTIONS = [
@@ -45,7 +48,7 @@ const QUESTIONS = [
 
 const RATING_LABELS = ['Needs Work', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
-const SUGGESTIONS = [
+const VOICE_SUGGESTIONS = [
   'Try to give more specific examples from your own experience.',
   'Keep your answer a bit more concise and focused on the outcome.',
   'Structure your answer with a clear beginning, middle, and end.',
@@ -53,30 +56,82 @@ const SUGGESTIONS = [
   'Slow down slightly and emphasize your key point.',
 ];
 
-// Turns an answer (typed text, or a simulated voice recording) into
-// a star rating (1-5) plus labels and a tip. Longer, more detailed
-// answers score a little higher — simple stand-in for real AI scoring.
-function generateFeedback(answerText, usedVoice) {
-  const wordCount = usedVoice
-    ? 12 + Math.floor(Math.random() * 40) // simulated transcript length
-    : answerText.trim().split(/\s+/).filter(Boolean).length;
+const TEXT_SUGGESTIONS = [
+  'Start each sentence with a capital letter for a more polished answer.',
+  'End your sentences with proper punctuation (. ! ?).',
+  'Remember to capitalize "I" whenever you refer to yourself.',
+  'Watch out for double spaces or accidentally repeated words.',
+  'Try breaking a long answer into a few clear, separate sentences.',
+];
+
+// ----- Voice scoring: simulated confidence/clarity based on a
+// simulated transcript length (there's no real speech analysis here). -----
+function generateVoiceFeedback() {
+  const wordCount = 12 + Math.floor(Math.random() * 40);
 
   let stars = 2;
   if (wordCount >= 45) stars = 5;
   else if (wordCount >= 30) stars = 4;
   else if (wordCount >= 18) stars = 3;
-  else if (wordCount >= 8) stars = 2;
-  else stars = 1;
+  else stars = 2;
 
   const confidenceStars = Math.min(5, Math.max(1, stars + (Math.random() > 0.5 ? 0 : -1)));
-  const claritySars = Math.min(5, Math.max(1, stars + (Math.random() > 0.5 ? 0 : 1) - 1));
+  const clarityStars = Math.min(5, Math.max(1, stars + (Math.random() > 0.5 ? 0 : 1) - 1));
+  const overall = Math.round((stars + confidenceStars + clarityStars) / 3);
 
   return {
-    stars,
-    confidence: RATING_LABELS[confidenceStars - 1],
-    clarity: RATING_LABELS[claritySars - 1],
-    suggestion: SUGGESTIONS[Math.floor(Math.random() * SUGGESTIONS.length)],
+    usedVoice: true,
+    stars: overall,
+    metricAName: 'Confidence',
+    metricAValue: RATING_LABELS[confidenceStars - 1],
+    metricBName: 'Clarity',
+    metricBValue: RATING_LABELS[clarityStars - 1],
+    suggestion: VOICE_SUGGESTIONS[Math.floor(Math.random() * VOICE_SUGGESTIONS.length)],
   };
+}
+
+// ----- Text scoring: real heuristic checks on the typed answer for
+// grammar and punctuation, plus a length-based completeness check. -----
+function generateTextFeedback(answerText) {
+  const trimmed = answerText.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
+
+  let grammarIssues = 0;
+  if (!/^[A-Z]/.test(trimmed)) grammarIssues++;
+  if (/\bi\b/.test(trimmed)) grammarIssues++;
+  if (/ {2,}/.test(trimmed)) grammarIssues++;
+  if (/\b(\w+)\s+\1\b/i.test(trimmed)) grammarIssues++;
+  const grammarStars = Math.min(5, Math.max(1, 5 - grammarIssues));
+
+  let punctuationIssues = 0;
+  if (!/[.!?]$/.test(trimmed)) punctuationIssues++;
+  const sentenceCount = trimmed.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
+  if (sentenceCount === 0) punctuationIssues++;
+  if (/[.,](?=\S)/.test(trimmed)) punctuationIssues++;
+  const punctuationStars = Math.min(5, Math.max(1, 5 - punctuationIssues));
+
+  let completenessStars = 2;
+  if (wordCount >= 45) completenessStars = 5;
+  else if (wordCount >= 30) completenessStars = 4;
+  else if (wordCount >= 18) completenessStars = 3;
+  else if (wordCount < 8) completenessStars = 1;
+
+  const overall = Math.round((grammarStars + punctuationStars + completenessStars) / 3);
+
+  return {
+    usedVoice: false,
+    stars: overall,
+    metricAName: 'Grammar',
+    metricAValue: RATING_LABELS[grammarStars - 1],
+    metricBName: 'Punctuation',
+    metricBValue: RATING_LABELS[punctuationStars - 1],
+    suggestion: TEXT_SUGGESTIONS[Math.floor(Math.random() * TEXT_SUGGESTIONS.length)],
+  };
+}
+
+function generateFeedback(answerText, usedVoice) {
+  return usedVoice ? generateVoiceFeedback() : generateTextFeedback(answerText);
 }
 
 function StarRow({ count, size = 20 }) {
@@ -95,15 +150,14 @@ function StarRow({ count, size = 20 }) {
 }
 
 export default function AIInterviewCoachScreen({ navigation }) {
-  // view: 'intro' | 'question' | 'analyzing' | 'feedback' | 'results'
   const [view, setView] = useState('intro');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [hasRecording, setHasRecording] = useState(false);
   const [useTextInput, setUseTextInput] = useState(false);
   const [answerText, setAnswerText] = useState('');
-  const [answers, setAnswers] = useState([]); // [{ question, stars, confidence, clarity, suggestion }]
-  const [pastResults, setPastResults] = useState([]); // [{ date, score }]
+  const [answers, setAnswers] = useState([]);
+  const [pastResults, setPastResults] = useState([]);
 
   const currentQuestion = QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === QUESTIONS.length - 1;
@@ -125,7 +179,6 @@ export default function AIInterviewCoachScreen({ navigation }) {
 
   const handleMicPress = () => {
     if (isRecording) {
-      // Stopping a recording counts as having answered
       setIsRecording(false);
       setHasRecording(true);
     } else {
@@ -138,8 +191,9 @@ export default function AIInterviewCoachScreen({ navigation }) {
   const handleSubmitAnswer = () => {
     if (!canSubmit) return;
     setView('analyzing');
+    const usedVoice = hasRecording && !useTextInput;
     setTimeout(() => {
-      const feedback = generateFeedback(answerText, hasRecording && !useTextInput);
+      const feedback = generateFeedback(answerText, usedVoice);
       setAnswers((prev) => [...prev, { question: currentQuestion, ...feedback }]);
       setView('feedback');
     }, 900);
@@ -147,9 +201,8 @@ export default function AIInterviewCoachScreen({ navigation }) {
 
   const handleNextQuestion = () => {
     if (isLastQuestion) {
-      const allAnswers = answers; // last item already included from submit
-      const total = allAnswers.reduce((sum, a) => sum + a.stars, 0);
-      const scorePercent = Math.round((total / (allAnswers.length * 5)) * 100);
+      const total = answers.reduce((sum, a) => sum + a.stars, 0);
+      const scorePercent = Math.round((total / (answers.length * 5)) * 100);
       setPastResults((prev) => [
         { date: new Date().toLocaleDateString(), score: scorePercent },
         ...prev,
@@ -173,8 +226,6 @@ export default function AIInterviewCoachScreen({ navigation }) {
     ]);
   };
 
-  // ---------- Sections ----------
-
   const renderIntro = () => (
     <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.introIconWrap}>
@@ -182,8 +233,8 @@ export default function AIInterviewCoachScreen({ navigation }) {
       </View>
       <Text style={styles.introTitle}>Practice with the AI Interview Coach</Text>
       <Text style={styles.introBody}>
-        Answer {QUESTIONS.length} common interview questions by voice or text, and get instant
-        feedback on your clarity, confidence, and completeness.
+        Answer {QUESTIONS.length} common interview questions by voice or text. Voice answers are
+        scored on confidence and clarity; typed answers are scored on grammar and punctuation.
       </Text>
 
       <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleStart}>
@@ -278,16 +329,21 @@ export default function AIInterviewCoachScreen({ navigation }) {
         </Text>
 
         <View style={styles.feedbackCard}>
-          <Text style={styles.feedbackLabel}>Overall Rating</Text>
+          <View style={styles.feedbackRowTop}>
+            <Text style={styles.feedbackLabel}>Overall Rating</Text>
+            <View style={styles.modePill}>
+              <Text style={styles.modePillText}>{latest.usedVoice ? 'Voice answer' : 'Text answer'}</Text>
+            </View>
+          </View>
           <StarRow count={latest.stars} size={24} />
 
           <View style={styles.feedbackRow}>
-            <Text style={styles.feedbackLabel}>Confidence</Text>
-            <Text style={styles.feedbackValueGood}>{latest.confidence}</Text>
+            <Text style={styles.feedbackLabel}>{latest.metricAName}</Text>
+            <Text style={styles.feedbackValueGood}>{latest.metricAValue}</Text>
           </View>
           <View style={styles.feedbackRow}>
-            <Text style={styles.feedbackLabel}>Clarity</Text>
-            <Text style={styles.feedbackValueGood}>{latest.clarity}</Text>
+            <Text style={styles.feedbackLabel}>{latest.metricBName}</Text>
+            <Text style={styles.feedbackValueGood}>{latest.metricBValue}</Text>
           </View>
 
           <Text style={[styles.feedbackLabel, { marginTop: 14 }]}>Suggestions</Text>
@@ -387,7 +443,6 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 24, paddingBottom: 40, alignItems: 'center' },
   centerFill: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  // Intro
   introIconWrap: {
     width: 88, height: 88, borderRadius: 44,
     backgroundColor: PURPLE_LIGHT, alignItems: 'center', justifyContent: 'center',
@@ -407,7 +462,6 @@ const styles = StyleSheet.create({
   progressDate: { fontSize: 13, color: '#6B6B85' },
   progressScore: { fontSize: 14, fontWeight: '700', color: PURPLE },
 
-  // Question
   progressLabel: { fontSize: 13, color: '#8E8E93', alignSelf: 'flex-start', marginTop: 4, marginBottom: 10 },
   categoryPill: {
     backgroundColor: PURPLE_LIGHT, borderRadius: 20,
@@ -433,11 +487,15 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top', marginBottom: 12,
   },
 
-  // Feedback
   feedbackCard: {
     width: '100%', borderWidth: 1, borderColor: '#E5E5EA',
     borderRadius: 16, padding: 18, marginBottom: 24,
   },
+  feedbackRowTop: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6,
+  },
+  modePill: { backgroundColor: PURPLE_LIGHT, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  modePillText: { fontSize: 11, fontWeight: '700', color: PURPLE },
   feedbackLabel: { fontSize: 13, color: '#6B6B85', marginBottom: 6 },
   starRow: { flexDirection: 'row', marginBottom: 14 },
   feedbackRow: {
@@ -449,7 +507,6 @@ const styles = StyleSheet.create({
 
   analyzingText: { marginTop: 14, fontSize: 14, color: '#6B6B85' },
 
-  // Results
   resultsScoreWrap: { alignItems: 'center', marginTop: 12, marginBottom: 8 },
   resultsScoreValue: { fontSize: 44, fontWeight: '800', color: PURPLE },
   resultsScoreLabel: { fontSize: 14, color: '#6B6B85', marginTop: 4 },
