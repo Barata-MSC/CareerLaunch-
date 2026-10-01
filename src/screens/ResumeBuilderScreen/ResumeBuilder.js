@@ -9,48 +9,39 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useResume } from './ResumeContext';
+import { isPersonalInfoComplete } from './validators';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
-// Required fields per section — used to calculate progress.
-// Array sections just need at least 1 entry to count as "started".
+
 const SECTIONS = [
-  { key: 'personalInfo', label: 'Personal Information', type: 'object' },
-  { key: 'education', label: 'Education', type: 'array' },
-  { key: 'skills', label: 'Skills', type: 'array' },
-  { key: 'experience', label: 'Experience', type: 'array' },
-  { key: 'certificates', label: 'Certificates', type: 'array' },
-  { key: 'projects', label: 'Projects', type: 'array' },
+  { key: 'personalInfo', label: 'Personal Information', type: 'object', required: true },
+  { key: 'education', label: 'Education', type: 'array', required: true },
+  { key: 'skills', label: 'Skills', type: 'array', required: true },
+  { key: 'experience', label: 'Experience', type: 'array', required: false },
+  { key: 'certificates', label: 'Certificates', type: 'array', required: false },
+  { key: 'projects', label: 'Projects', type: 'array', required: false },
 ];
 
-function isPersonalInfoComplete(info) {
-  return !!(info.fullName && info.email && info.phone);
+function isSectionDone(section, resumeData) {
+  if (section.type === 'object') return isPersonalInfoComplete(resumeData.personalInfo);
+  return (resumeData[section.key] || []).length > 0;
 }
 
 export default function ResumeBuilderScreen({ navigation }) {
   const { resumeData } = useResume();
 
   const progress = useMemo(() => {
-    let completed = 0;
-    SECTIONS.forEach((section) => {
-      if (section.type === 'object') {
-        if (isPersonalInfoComplete(resumeData.personalInfo)) completed += 1;
-      } else {
-        if (resumeData[section.key].length > 0) completed += 1;
-      }
-    });
+    const completed = SECTIONS.filter((s) => isSectionDone(s, resumeData)).length;
     return Math.round((completed / SECTIONS.length) * 100);
   }, [resumeData]);
 
-  const canGenerate = progress >= 60; // adjust threshold as needed
+  // Generating unlocks once every required section is filled in
+  const missingRequired = SECTIONS.filter((s) => s.required && !isSectionDone(s, resumeData));
+  const canGenerate = missingRequired.length === 0;
 
-  const sectionStatus = (section) => {
-    if (section.type === 'object') {
-      return isPersonalInfoComplete(resumeData.personalInfo) ? 'done' : 'empty';
-    }
-    return resumeData[section.key].length > 0 ? 'done' : 'empty';
-  };
+  const sectionStatus = (section) => (isSectionDone(section, resumeData) ? 'done' : 'empty');
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -86,7 +77,17 @@ export default function ResumeBuilderScreen({ navigation }) {
                 />
                 <Text style={styles.sectionLabel}>{section.label}</Text>
               </View>
-              <Text style={styles.chevron}>›</Text>
+              <View style={styles.sectionRowRight}>
+                <Text
+                  style={[
+                    styles.badge,
+                    section.required && sectionStatus(section) === 'empty' && styles.badgeRequiredEmpty,
+                  ]}
+                >
+                  {section.required ? 'Required' : 'Optional'}
+                </Text>
+                <Text style={styles.chevron}>›</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -102,7 +103,7 @@ export default function ResumeBuilderScreen({ navigation }) {
 
         {!canGenerate && (
           <Text style={styles.hintText}>
-            Complete more sections to unlock resume generation.
+            Complete the required sections to unlock resume generation: {missingRequired.map((s) => s.label).join(', ')}.
           </Text>
         )}
 
@@ -200,6 +201,19 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 18,
     color: '#B5B5B9',
+  },
+  sectionRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  badge: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#8A8A8E',
+    marginRight: 8,
+  },
+  badgeRequiredEmpty: {
+    color: '#FF3B30',
   },
   generateButton: {
     backgroundColor: PURPLE,

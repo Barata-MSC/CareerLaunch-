@@ -25,22 +25,37 @@ export default function ExperienceScreen({ navigation }) {
   const [duration, setDuration] = useState('');
   const [description, setDescription] = useState('');
 
+  // One message per failed field, e.g. { company: 'Company / organization is required.' }
+  const [errors, setErrors] = useState({});
+
+  const clearError = (field) =>
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+
+  // Company, role and duration are required. Description is optional.
+  const validate = () => {
+    const next = {};
+    if (!company.trim()) next.company = 'Company / organization is required.';
+    if (!role.trim()) next.role = 'Job title / role is required.';
+    if (!duration.trim()) next.duration = 'Duration / dates is required.';
+    return next;
+  };
+
   // Bundles values into a standard node item and pushes to global context array
   const handleAddExperience = () => {
-    const trimmedCompany = company.trim();
-    const trimmedRole = role.trim();
-    const trimmedDuration = duration.trim();
-    const trimmedDescription = description.trim();
-
-    // Prevent submission if mandatory fields are missing
-    if (!trimmedCompany || !trimmedRole || !trimmedDuration) return;
+    const nextErrors = validate();
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
     const newExperienceItem = {
       id: Date.now().toString(), // Clean timestamp string hash identifier
-      company: trimmedCompany,
-      role: trimmedRole,
-      duration: trimmedDuration,
-      description: trimmedDescription,
+      company: company.trim(),
+      role: role.trim(),
+      duration: duration.trim(),
+      description: description.trim(),
     };
 
     const updatedList = [...experienceList, newExperienceItem];
@@ -79,7 +94,8 @@ export default function ExperienceScreen({ navigation }) {
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Text style={styles.sectionSubtitle}>
-            Add jobs, internships, or freelance roles to demonstrate your professional background history.
+            This section is optional. Add jobs, internships, or freelance roles to show your professional
+            background. Fields marked * are required for each entry.
           </Text>
 
           {/* Form Entry Field Modules Deck */}
@@ -87,40 +103,60 @@ export default function ExperienceScreen({ navigation }) {
             <Text style={styles.formTitle}>Add New Work History</Text>
             
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Company / Organization</Text>
+              <Text style={styles.inputLabel}>
+                Company / Organization <Text style={styles.requiredStar}>*</Text>
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.company ? styles.inputError : null]}
                 placeholder="e.g. Google, Tech Startup Corp"
                 placeholderTextColor="#B5B5B9"
                 value={company}
-                onChangeText={setCompany}
+                onChangeText={(text) => {
+                  setCompany(text);
+                  clearError('company');
+                }}
               />
+              {errors.company ? <Text style={styles.errorText}>{errors.company}</Text> : null}
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Job Title / Role</Text>
+              <Text style={styles.inputLabel}>
+                Job Title / Role <Text style={styles.requiredStar}>*</Text>
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.role ? styles.inputError : null]}
                 placeholder="e.g. Software Engineer Intern, Sales Associate"
                 placeholderTextColor="#B5B5B9"
                 value={role}
-                onChangeText={setRole}
+                onChangeText={(text) => {
+                  setRole(text);
+                  clearError('role');
+                }}
               />
+              {errors.role ? <Text style={styles.errorText}>{errors.role}</Text> : null}
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Duration / Dates Active</Text>
+              <Text style={styles.inputLabel}>
+                Duration / Dates Active <Text style={styles.requiredStar}>*</Text>
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.duration ? styles.inputError : null]}
                 placeholder="e.g. June 2023 - Present or 1 Year"
                 placeholderTextColor="#B5B5B9"
                 value={duration}
-                onChangeText={setDuration}
+                onChangeText={(text) => {
+                  setDuration(text);
+                  clearError('duration');
+                }}
               />
+              {errors.duration ? <Text style={styles.errorText}>{errors.duration}</Text> : null}
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Description / Key Responsibilities</Text>
+              <Text style={styles.inputLabel}>
+                Description / Key Responsibilities <Text style={styles.optionalTag}>(Optional)</Text>
+              </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Developed features using React... Led team sprints..."
@@ -132,6 +168,12 @@ export default function ExperienceScreen({ navigation }) {
                 onChangeText={setDescription}
               />
             </View>
+
+            {Object.keys(errors).length > 0 ? (
+              <Text style={styles.formErrorBanner}>
+                Fill in the required fields marked in red to add this entry.
+              </Text>
+            ) : null}
 
             <TouchableOpacity 
               style={styles.addButton} 
@@ -188,6 +230,32 @@ export default function ExperienceScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  requiredStar: {
+    color: '#FF3B30',
+    fontWeight: '700',
+  },
+  optionalTag: {
+    color: '#8A8A8E',
+    fontWeight: '400',
+    fontSize: 12,
+  },
+  inputError: {
+    borderColor: '#FF3B30',
+    backgroundColor: '#FFF5F5',
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 12,
+    marginTop: 6,
+    lineHeight: 16,
+  },
+  formErrorBanner: {
+    color: '#FF3B30',
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 4,
+    lineHeight: 18,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',

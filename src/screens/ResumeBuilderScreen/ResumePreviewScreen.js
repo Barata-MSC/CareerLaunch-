@@ -8,7 +8,8 @@ import {
     StyleSheet,
 } from 'react-native';
 import { useResume } from './ResumeContext';
-import { calculateResumeScore, getResumeSuggestions } from './resumeScore';
+import { calculateResumeScore, getResumeSuggestions, getScoreBreakdown } from './resumeScore';
+import { formatPhone } from './validators';
 
 const PURPLE = '#5B21F5';
 
@@ -18,6 +19,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
 
     const score = calculateResumeScore(resumeData);
     const suggestions = getResumeSuggestions(resumeData);
+    const breakdown = getScoreBreakdown(resumeData);
 
     const info = resumeData.personalInfo || {};
     const education = resumeData.education || [];
@@ -44,7 +46,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {mode === 'test' ? (
-                   
+                    <>
                     <View style={styles.scoreContainer}>
                         <View style={styles.scoreHeaderRow}>
                             <Text style={styles.scoreTitle}>AI Resume Strength Score</Text>
@@ -66,13 +68,56 @@ export default function ResumePreviewScreen({ navigation, route }) {
                             ))}
                         </View>
                     </View>
+
+                    {/* Score breakdown: fills the screen and shows where points come from */}
+                    <View style={styles.scoreContainer}>
+                        <Text style={styles.breakdownTitle}>Score Breakdown</Text>
+                        <Text style={styles.breakdownSubtitle}>Tap a section to improve it.</Text>
+                        {breakdown.map((item) => {
+                            const full = item.earned >= item.max;
+                            return (
+                                <TouchableOpacity
+                                    key={item.key}
+                                    style={styles.breakdownRow}
+                                    activeOpacity={0.7}
+                                    onPress={() => navigation?.navigate(item.key)}
+                                >
+                                    <View style={styles.breakdownRowTop}>
+                                        <Text style={styles.breakdownLabel}>
+                                            {full ? '✓  ' : ''}{item.label}
+                                        </Text>
+                                        <Text style={[styles.breakdownPoints, full && styles.breakdownPointsFull]}>
+                                            {item.earned}/{item.max}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.breakdownTrack}>
+                                        <View
+                                            style={[
+                                                styles.breakdownFill,
+                                                { width: `${(item.earned / item.max) * 100}%` },
+                                            ]}
+                                        />
+                                    </View>
+                                    {item.tip ? <Text style={styles.breakdownTip}>{item.tip}</Text> : null}
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.previewButton}
+                        activeOpacity={0.85}
+                        onPress={() => navigation?.setParams({ mode: 'generate' })}
+                    >
+                        <Text style={styles.previewButtonText}>View Resume Preview</Text>
+                    </TouchableOpacity>
+                    </>
                 ) : (
-                
                     <View style={styles.documentFrame}>
                         {/* Header Contact Block */}
                         <Text style={styles.docName}>{info.fullName || 'Your Name'}</Text>
                         <Text style={styles.docContact}>
-                            {info.email || 'email@example.com'}  •  {info.phone || 'Phone Number'}
+                            {info.email || 'email@example.com'}  •  {info.phone ? formatPhone(info.phone) : 'Phone Number'}
                         </Text>
 
                         {/* Professional Summary */}
@@ -161,6 +206,74 @@ export default function ResumePreviewScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+    breakdownTitle: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1C1C1E',
+    },
+    breakdownSubtitle: {
+        fontSize: 12,
+        color: '#8A8A8E',
+        marginTop: 2,
+        marginBottom: 14,
+    },
+    breakdownRow: {
+        paddingVertical: 10,
+        borderTopWidth: 1,
+        borderColor: '#F2F2F7',
+    },
+    breakdownRowTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    breakdownLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1C1C1E',
+    },
+    breakdownPoints: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#8A8A8E',
+    },
+    breakdownPointsFull: {
+        color: PURPLE,
+    },
+    breakdownTrack: {
+        height: 5,
+        borderRadius: 3,
+        backgroundColor: '#EDEBFB',
+        overflow: 'hidden',
+    },
+    breakdownFill: {
+        height: '100%',
+        borderRadius: 3,
+        backgroundColor: PURPLE,
+    },
+    breakdownTip: {
+        fontSize: 12,
+        color: '#636366',
+        lineHeight: 16,
+        marginTop: 6,
+    },
+    previewButton: {
+        backgroundColor: PURPLE,
+        borderRadius: 25,
+        paddingVertical: 15,
+        alignItems: 'center',
+        shadowColor: '#3D14C4',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    previewButtonText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '700',
+    },
     safeArea: {
         flex: 1,
         backgroundColor: '#F2F2F7',

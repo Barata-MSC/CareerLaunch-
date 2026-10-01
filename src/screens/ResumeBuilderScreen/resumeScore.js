@@ -1,35 +1,88 @@
+import { isPhoneValid } from './validators';
+
+export function getScoreBreakdown(resumeData) {
+  const data = resumeData || {};
+  const info = data.personalInfo || {};
+  const edu = data.education || [];
+  const skills = data.skills || [];
+  const exp = data.experience || [];
+  const certs = data.certificates || [];
+  const projects = data.projects || [];
+
+  const missingInfo = [];
+  if (!info.fullName?.trim()) missingInfo.push('full name');
+  if (!info.email?.trim()) missingInfo.push('email');
+  if (!isPhoneValid(info.phone)) missingInfo.push('a valid +63 mobile number');
+  if (!info.summary?.trim()) missingInfo.push('professional summary');
+
+  const skillsLeft = Math.max(5 - skills.length, 0);
+
+  return [
+    {
+      key: 'personalInfo',
+      label: 'Personal Information',
+      max: 25,
+      earned:
+        (info.fullName?.trim() ? 10 : 0) +
+        (info.email?.trim() ? 5 : 0) +
+        (isPhoneValid(info.phone) ? 5 : 0) +
+        (info.summary?.trim() ? 5 : 0),
+      tip: missingInfo.length ? `Still missing: ${missingInfo.join(', ')}.` : '',
+    },
+    {
+      key: 'education',
+      label: 'Education',
+      max: 15,
+      earned: (edu.length > 0 ? 10 : 0) + (edu.length > 1 ? 5 : 0),
+      tip:
+        edu.length === 0
+          ? 'Add your education (+10).'
+          : edu.length === 1
+          ? 'Add another entry, e.g. senior high school (+5).'
+          : '',
+    },
+    {
+      key: 'skills',
+      label: 'Skills',
+      max: 20,
+      earned: Math.min(skills.length * 4, 20),
+      tip: skillsLeft
+        ? `Add ${skillsLeft} more skill${skillsLeft === 1 ? '' : 's'} to earn full points.`
+        : '',
+    },
+    {
+      key: 'experience',
+      label: 'Experience',
+      max: 25,
+      earned: (exp.length > 0 ? 15 : 0) + (exp.length > 1 ? 10 : 0),
+      tip:
+        exp.length === 0
+          ? 'Add your first job or internship (+15).'
+          : exp.length === 1
+          ? 'Add a second experience (+10).'
+          : '',
+    },
+    {
+      key: 'certificates',
+      label: 'Certificates',
+      max: 5,
+      earned: certs.length > 0 ? 5 : 0,
+      tip: certs.length === 0 ? 'Add a certificate or course (+5).' : '',
+    },
+    {
+      key: 'projects',
+      label: 'Projects',
+      max: 10,
+      earned: projects.length > 0 ? 10 : 0,
+      tip: projects.length === 0 ? 'Add a project to show hands-on skills (+10).' : '',
+    },
+  ];
+}
+
 export function calculateResumeScore(resumeData) {
   if (!resumeData) return 0;
-
-  let score = 0;
-
-  const info = resumeData.personalInfo || {};
-  if (info.fullName?.trim()) score += 10;
-  if (info.email?.trim()) score += 5;
-  if (info.phone?.trim()) score += 5;
-  if (info.summary?.trim()) score += 5;
-
-  const exp = resumeData.experience || [];
-  if (exp.length > 0) score += 15;
-  if (exp.length > 1) score += 10;
-
-  const skills = resumeData.skills || [];
-  if (skills.length > 0) {
-    const skillsWeight = Math.min(skills.length * 4, 20);
-    score += skillsWeight;
-  }
-
-  const edu = resumeData.education || [];
-  if (edu.length > 0) score += 10;
-  if (edu.length > 1) score += 5;
-
-  const projects = resumeData.projects || [];
-  if (projects.length > 0) score += 10;
-
-  const certs = resumeData.certificates || [];
-  if (certs.length > 0) score += 5;
-
-  return Math.min(score, 100);
+  const total = getScoreBreakdown(resumeData).reduce((sum, s) => sum + s.earned, 0);
+  return Math.min(total, 100);
 }
 
 export function getResumeSuggestions(resumeData) {
@@ -45,7 +98,7 @@ export function getResumeSuggestions(resumeData) {
 
   const missingSections = [];
 
-  if (!info.fullName?.trim() || !info.email?.trim() || !info.phone?.trim()) {
+  if (!info.fullName?.trim() || !info.email?.trim() || !isPhoneValid(info.phone)) {
     missingSections.push('Personal Information');
   }
   if (!info.summary?.trim()) {
