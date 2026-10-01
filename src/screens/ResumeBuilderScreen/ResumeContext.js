@@ -21,10 +21,7 @@ const ResumeContext = createContext(null);
 export function ResumeProvider({ children }) {
   const [resumeData, setResumeData] = useState(INITIAL_RESUME_STATE);
 
-  /**
-   * Safe state updater function.
-   * Merges updates cleanly into existing fields or targets specific collections.
-   */
+ 
   const updateResumeData = (sectionKey, updatedValues) => {
     setResumeData((prevData) => ({
       ...prevData,
@@ -32,9 +29,7 @@ export function ResumeProvider({ children }) {
     }));
   };
 
-  /**
-   * Reset helper action to wipe data clean.
-   */
+  
   const clearResumeData = () => {
     setResumeData(INITIAL_RESUME_STATE);
   };
@@ -53,7 +48,7 @@ export function ResumeProvider({ children }) {
   );
 }
 
-// 3. Export custom access hook for layout screens
+
 export function useResume() {
   const context = useContext(ResumeContext);
   if (!context) {

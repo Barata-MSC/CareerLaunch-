@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -11,6 +11,12 @@ import {
   Platform,
 } from 'react-native';
 import { useResume } from './ResumeContext';
+import {
+  getPhoneError,
+  getLocalNumber,
+  sanitizePhoneInput,
+  toStoredPhone,
+} from './validators';
 
 const PURPLE = '#5B21F5';
 
@@ -19,12 +25,37 @@ export default function PersonalInfoScreen({ navigation }) {
   const { resumeData, updateResumeData } = useResume();
   const info = resumeData.personalInfo;
 
+  // Errors only show after a field is touched or the user taps Save
+  const [touched, setTouched] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const errors = {
+    fullName: info.fullName?.trim() ? '' : 'Full name is required.',
+    email: info.email?.trim() ? '' : 'Email address is required.',
+    phone: getPhoneError(info.phone),
+  };
+
+  // The phone error shows live while typing (like the Profile screen);
+  // other fields wait until they are touched or the user taps Save.
+  const errorFor = (field) => {
+    if (field === 'phone' && getLocalNumber(info.phone).length > 0) return errors.phone;
+    return submitted || touched[field] ? errors[field] : '';
+  };
+  const markTouched = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
+
   // Local helper to merge text field changes live into global state
   const handleInputChange = (field, value) => {
     updateResumeData('personalInfo', {
       ...info,
       [field]: value,
     });
+  };
+
+  // Only leave the screen when every required field is valid
+  const handleSave = () => {
+    setSubmitted(true);
+    if (Object.values(errors).some(Boolean)) return;
+    navigation?.goBack();
   };
 
   return (
@@ -45,53 +76,79 @@ export default function PersonalInfoScreen({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
           <Text style={styles.sectionSubtitle}>
-            Enter your contact details to display at the top of your resume.
+            This section is required. Enter your contact details to display at the top of your resume.
+            Fields marked * must be filled in.
           </Text>
 
           {/* Full Name Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Full Name</Text>
+            <Text style={styles.inputLabel}>
+              Full Name <Text style={styles.requiredStar}>*</Text>
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errorFor('fullName') ? styles.inputError : null]}
               placeholder="e.g. John Doe"
               placeholderTextColor="#B5B5B9"
               value={info.fullName}
               onChangeText={(text) => handleInputChange('fullName', text)}
+              onBlur={() => markTouched('fullName')}
             />
+            {errorFor('fullName') ? <Text style={styles.errorText}>{errorFor('fullName')}</Text> : null}
           </View>
 
           {/* Email Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email Address</Text>
+            <Text style={styles.inputLabel}>
+              Email Address <Text style={styles.requiredStar}>*</Text>
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errorFor('email') ? styles.inputError : null]}
               placeholder="e.g. johndoe@example.com"
               placeholderTextColor="#B5B5B9"
               keyboardType="email-address"
               autoCapitalize="none"
               value={info.email}
               onChangeText={(text) => handleInputChange('email', text)}
+              onBlur={() => markTouched('email')}
             />
+            {errorFor('email') ? <Text style={styles.errorText}>{errorFor('email')}</Text> : null}
           </View>
 
-          {/* Phone Number Input */}
+          {/* Phone Number Input (PH format: +63 9XX XXX XXXX) */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Phone Number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. +1 234 567 890"
-              placeholderTextColor="#B5B5B9"
-              keyboardType="phone-pad"
-              value={info.phone}
-              onChangeText={(text) => handleInputChange('phone', text)}
-            />
+            <Text style={styles.inputLabel}>
+              Mobile Number <Text style={styles.requiredStar}>*</Text>
+            </Text>
+            <View style={[styles.phoneContainer, errorFor('phone') ? styles.inputError : null]}>
+              <Text style={styles.countryCode}>+63</Text>
+              <TextInput
+                style={styles.phoneInput}
+                placeholder="9XX XXX XXXX"
+                placeholderTextColor="#B5B5B9"
+                keyboardType="number-pad"
+                maxLength={10}
+                value={getLocalNumber(info.phone)}
+                onChangeText={(text) =>
+                  handleInputChange('phone', toStoredPhone(sanitizePhoneInput(text)))
+                }
+                onBlur={() => markTouched('phone')}
+              />
+            </View>
+            {errorFor('phone') ? <Text style={styles.errorText}>{errorFor('phone')}</Text> : null}
           </View>
 
           {/* Professional Summary Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Professional Summary</Text>
+            <Text style={styles.inputLabel}>
+              Professional Summary <Text style={styles.optionalTag}>(Optional)</Text>
+            </Text>
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="Briefly describe your career goals and background..."
@@ -108,7 +165,7 @@ export default function PersonalInfoScreen({ navigation }) {
           <TouchableOpacity
             style={styles.saveButton}
             activeOpacity={0.85}
-            onPress={() => navigation?.goBack()}
+            onPress={handleSave}
           >
             <Text style={styles.saveButtonText}>Save Details</Text>
           </TouchableOpacity>
@@ -119,6 +176,48 @@ export default function PersonalInfoScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  phoneContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E3E3E8',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    height: 48,
+    backgroundColor: '#FAFAFC',
+  },
+  countryCode: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1C1C1E',
+    marginRight: 8,
+  },
+  phoneInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#1C1C1E',
+    paddingVertical: 0,
+    textAlignVertical: 'center',
+  },
+  requiredStar: {
+    color: '#FF3B30',
+    fontWeight: '700',
+  },
+  optionalTag: {
+    color: '#8A8A8E',
+    fontWeight: '400',
+    fontSize: 12,
+  },
+  inputError: {
+    borderColor: '#FF3B30',
+    backgroundColor: '#FFF5F5',
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 12,
+    marginTop: 6,
+    lineHeight: 16,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
