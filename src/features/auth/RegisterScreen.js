@@ -421,6 +421,8 @@ export default function RegisterScreen({ navigation }) {
                     value={pendingBirthday}
                     mode="date"
                     display="spinner"
+                    textColor={COLORS.text}
+                    themeVariant="light"
                     maximumDate={new Date()}
                     onValueChange={handleBirthdayValueChange}
                     onDismiss={dismissBirthdayPicker}
@@ -499,9 +501,9 @@ const styles = StyleSheet.create({
   birthdayPickerButton: { flex: 1, justifyContent: 'center', paddingHorizontal: 14 },
   birthdayText: { fontSize: 14, color: COLORS.text },
   birthdayPlaceholder: { color: COLORS.placeholder },
-  datePickerBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.35)', paddingBottom: 24 },
-  datePickerModal: { alignSelf: 'center', width: '92%', maxWidth: 380, backgroundColor: COLORS.background, borderRadius: 12, overflow: 'hidden' },
-  datePickerActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  datePickerBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.35)', paddingHorizontal: 12, paddingBottom: 12 },
+  datePickerModal: { alignSelf: 'center', width: '100%', maxWidth: 360, backgroundColor: COLORS.background, borderRadius: 12, overflow: 'hidden' },
+  datePickerActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   datePickerAction: { color: COLORS.primary, fontSize: 15, fontWeight: '600' },
   phoneContainer: { flexDirection: 'row', alignItems: 'center', height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14 },
   countryCode: { fontSize: 14, color: COLORS.text, marginRight: 8, fontWeight: '500' },

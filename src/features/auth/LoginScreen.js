@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Image,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
@@ -11,11 +10,11 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import GoogleButton from '@components/GoogleButton';
 
 // Explicit alias pointing to your configuration
 import { supabase } from '@config/supabase';
 
-const GOOGLE_ICON = require('@assets/google-icon.png');
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
@@ -122,14 +121,7 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       {/* Google Button */}
-      <TouchableOpacity style={styles.googleButton} activeOpacity={0.85} disabled={loading}>
-        <Image
-          source={require('@assets/google-icon.png')}
-          style={styles.googleIcon}
-          resizeMode="contain"
-        />
-        <Text style={styles.googleButtonText}>Continue with Google</Text>
-      </TouchableOpacity>
+      <GoogleButton disabled={loading} />
 
       {/* Sign Up */}
       <View style={styles.signUpRow}>
@@ -160,9 +152,6 @@ const styles = StyleSheet.create({
   dividerRow: { width: '90%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', marginVertical: 28 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#E0E0E0' },
   dividerText: { marginHorizontal: 12, color: '#888888', fontSize: 13 },
-  googleButton: { width: '90%', alignSelf: 'center', height: 52, flexDirection: 'row', borderWidth: 1, borderColor: '#DADADA', borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  googleIcon: { width: 20, height: 20 },
-  googleButtonText: { marginLeft: 10, fontSize: 15, fontWeight: '600', color: '#111111' },
   signUpRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20 },
   signUpText: { fontSize: 14, color: '#666666' },
   signUpLink: { fontSize: 14, color: PURPLE, fontWeight: '700' },
