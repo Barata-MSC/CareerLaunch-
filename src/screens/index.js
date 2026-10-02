@@ -1,8 +1,8 @@
 export { default as DashboardScreen } from './DashboardScreen/DashboardScreen';
-export { default as LoginScreen } from './LoginScreen/LoginScreen';
-export { default as RegisterScreen } from './RegisterScreen/RegisterScreen';
-export { default as WelcomeScreen } from './WelcomeScreen/WelcomeScreen';
-export { default as SplashScreen } from './SplashScreen/SplashScreen';
+export { default as LoginScreen } from '../features/auth/LoginScreen';
+export { default as RegisterScreen } from '../features/auth/RegisterScreen';
+export { default as WelcomeScreen } from '../features/auth/WelcomeScreen';
+export { default as SplashScreen } from '../features/auth/SplashScreen';
 export { default as JobFinderScreen } from './JobFinderScreen/JobFinderScreen';
 export { default as CareerRoadmapScreen} from './CareerRoadmapScreen/SoftwareEngineer';
 export { default as ProfileScreen } from './ProfileScreen/ProfileScreen';
