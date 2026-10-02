@@ -112,6 +112,7 @@ export default function RegisterScreen({ navigation }) {
     const missingMiddleName = !middleName.trim();
     const missingEmail = !email.trim();
     const missingContactNumber = !contactNumber.trim();
+    const invalidContactNumber = !/^9\d{9}$/.test(contactNumber);
     const missingBirthday = !birthday.trim();
     const missingPassword = !password.trim();
 
@@ -119,7 +120,13 @@ export default function RegisterScreen({ navigation }) {
     setLastNameError(missingLastName ? 'Please enter your last name' : '');
     setMiddleNameError(missingMiddleName ? 'Please enter your middle name' : '');
     setEmailError(missingEmail ? 'Please enter your email' : '');
-    setContactNumberError(missingContactNumber ? 'Please enter your contact number' : '');
+    setContactNumberError(
+      missingContactNumber
+        ? 'Please enter your contact number'
+        : invalidContactNumber
+          ? 'Contact number must be exactly 10 digits and start with 9.'
+          : '',
+    );
     setBirthdayError(missingBirthday ? 'Please enter your birthday' : '');
     setPasswordError(missingPassword ? 'Please create a password' : '');
 
@@ -129,6 +136,7 @@ export default function RegisterScreen({ navigation }) {
       missingMiddleName ||
       missingEmail ||
       missingContactNumber ||
+      invalidContactNumber ||
       missingBirthday ||
       missingPassword
     ) return;
@@ -272,18 +280,29 @@ export default function RegisterScreen({ navigation }) {
           ) : null}
 
           <Text style={styles.label}>Contact number</Text>
-          <TextInput
-            style={[styles.input, contactNumberError ? styles.inputError : null]}
-            placeholder="Enter your contact number"
-            placeholderTextColor={COLORS.placeholder}
-            value={contactNumber}
-            editable={!loading}
-            onChangeText={(text) => {
-              setContactNumber(text);
-              if (contactNumberError) setContactNumberError('');
-            }}
-            keyboardType="phone-pad"
-          />
+          <View style={[styles.phoneContainer, contactNumberError ? styles.inputError : null]}>
+            <Text style={styles.countryCode}>+63</Text>
+            <TextInput
+              style={[
+                styles.phoneInput,
+                Platform.OS === 'web' ? styles.phoneInputWeb : null,
+              ]}
+              placeholder="Enter your contact number"
+              placeholderTextColor={COLORS.placeholder}
+              value={contactNumber}
+              editable={!loading}
+              onChangeText={(text) => {
+                let numbersOnly = text.replace(/[^0-9]/g, '');
+                if (numbersOnly.startsWith('0')) {
+                  numbersOnly = numbersOnly.substring(1);
+                }
+                setContactNumber(numbersOnly.slice(0, 10));
+                if (contactNumberError) setContactNumberError('');
+              }}
+              keyboardType="phone-pad"
+              maxLength={10}
+            />
+          </View>
           {contactNumberError ? (
             <Text style={styles.errorText}>{contactNumberError}</Text>
           ) : null}
@@ -362,6 +381,10 @@ const styles = StyleSheet.create({
   avatarLabel: { marginTop: 6, fontSize: 12, fontWeight: '600', color: COLORS.primary },
   label: { fontSize: 12, fontWeight: '600', color: COLORS.text, marginBottom: 6, marginTop: 10 },
   input: { height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14, fontSize: 14, color: COLORS.text },
+  phoneContainer: { flexDirection: 'row', alignItems: 'center', height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14 },
+  countryCode: { fontSize: 14, color: COLORS.text, marginRight: 8, fontWeight: '500' },
+  phoneInput: { flex: 1, height: '100%', fontSize: 14, color: COLORS.text, paddingVertical: 0 },
+  phoneInputWeb: { borderWidth: 0, outlineStyle: 'none' },
   inputError: { borderColor: '#E5484D' },
   errorText: { color: '#E5484D', fontSize: 12, marginTop: 6 },
   registerButton: { height: 50, backgroundColor: COLORS.primary, borderRadius: 25, justifyContent: 'center', alignItems: 'center', marginTop: 22, shadowColor: COLORS.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 4 },

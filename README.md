@@ -1047,17 +1047,18 @@ If the team moves the project to another repository, update this section with th
 
 # 32. Deploying AI Coding Agents / Assistants in VS Code
 
-AI coding assistants can be integrated into Visual Studio Code to help with code generation, debugging, refactoring, project navigation, and other development tasks.
+AI coding assistants can be integrated into Visual Studio Code to help with code generation, debugging, refactoring, code explanation, and project-level development tasks.
 
-For this project, the following AI coding tools can be used:
+For this project, the following AI coding tools are used:
 
-* GitHub Copilot
-* Cline
-* Google Gemini
+* **GitHub Copilot** — everyday coding assistance, code completion, and AI chat.
+* **OpenAI Codex** — project-level AI coding agent for understanding and modifying the codebase.
 
 ---
 
 ## 32.1 GitHub Copilot
+
+GitHub Copilot provides AI-powered coding assistance directly inside Visual Studio Code.
 
 ### Installation and Setup
 
@@ -1071,121 +1072,128 @@ For this project, the following AI coding tools can be used:
 
 4. Follow the browser prompt to authenticate your GitHub account.
 
-5. Once connected, a **Copilot status icon** should appear in the VS Code status bar.
+5. Once connected, the Copilot status icon should appear in the VS Code status bar.
 
-6. Click **Codebase Semantic Index** if available to allow Copilot to index and understand the project codebase.
+6. Open the **GitHub Copilot Chat** interface from the VS Code sidebar.
 
-7. Open **GitHub Copilot Chat** from the secondary sidebar, located at the top-right area of VS Code.
+7. At the bottom of the Copilot Chat interface, open the **model selector**.
 
-8. At the bottom of the Copilot Chat interface, open the **model selector** and select the available **Claude** model if required.
+8. Select the desired available model, such as **Claude**, when available.
+
+### Recommended Uses
+
+GitHub Copilot can be used for:
+
+* Code completion
+* Generating small code snippets
+* Explaining code
+* Fixing simple errors
+* Refactoring code
+* Asking questions about the current file
+* Generating common React Native patterns
 
 ---
 
-## 32.2 Cline
+## 32.2 OpenAI Codex
 
-Cline is an AI coding assistant that operates inside VS Code and can use external AI model providers.
+OpenAI Codex is an AI coding agent that can be used directly within VS Code.
 
-### Installation
+Unlike a basic autocomplete tool, Codex can work with the project's codebase to understand the relationships between files and perform larger development tasks.
+
+### Installation and Setup
 
 1. Open **VS Code Extensions**.
 
-2. Search for **Cline**.
+2. Search for the official **Codex** extension from OpenAI.
 
-3. Install the **Cline** extension.
+3. Install the extension.
 
-4. After installation, click the **Cline robot icon** in the VS Code Activity Bar on the left side.
+4. Open the **Codex** panel in VS Code.
 
-5. Open the **Settings** by clicking the gear icon at the top of the Cline window.
+5. Sign in using your **ChatGPT account** when prompted.
 
-6. Locate **API Provider**.
+6. Open the **CareerLaunch** project folder in VS Code.
 
-7. Select the appropriate AI provider and configure its API key.
+7. Give Codex a coding task through the Codex interface.
 
-> **Note:** The Google Gemini API must be configured first if Google Gemini will be used as Cline's AI provider.
+### Example Tasks
 
----
-
-## 32.3 Google Gemini API Setup
-
-Google Gemini can be connected to Cline through the Google Gemini API.
-
-### Creating a Gemini API Key
-
-1. Open a web browser and navigate to **Google AI Studio**.
-
-2. Sign in using a personal Google/Gmail account.
-
-   * Some corporate or school Google Workspace accounts may have API access restrictions.
-
-3. In Google AI Studio, locate **Get API Key** or **Create API Key** in the lower-left area.
-
-4. Select **Create API Key**.
-
-5. Choose either:
-
-   * **Create API key in an existing project**, or
-   * **Create API key** using the available project options.
-
-6. Copy the generated API key.
-
-7. Return to **Cline Settings** in VS Code.
-
-8. Under **API Provider**, select **Google Gemini**.
-
-9. Paste the API key into the API key field.
-
-10. Select the desired Gemini model. If appropriate for the task and available to the account, select the highest available model tier.
-
-> **Security Warning:** Treat the API key as a private credential. Do not commit it to GitHub, place it directly inside source code, or share it publicly.
-
----
-
-## 32.4 Two Rules to Avoid Cline Errors and Rate Limits
-
-### Rule 1 — Scope Your Workspace
-
-When using free or resource-limited AI models, avoid giving the AI agent access to unnecessary files.
-
-Large projects may contain many files that the AI does not need to read for a specific task. Processing too many files can increase context usage and may slow down or interrupt the agent.
-
-When working on a specific part of the application, open only the relevant project folder when practical.
-
-For example:
+Codex can be used for larger development tasks such as:
 
 ```text
-CareerLaunch-
-└── src/
-    ├── components/
-    ├── config/
-    ├── context/
-    └── screens/
+Analyze the Job Finder feature and explain how the components,
+screens, and data flow are connected.
 ```
 
-If the task only concerns a particular area, work within the relevant folder rather than unnecessarily exposing the entire project.
-
-For example:
+```text
+Find the cause of this navigation error and fix it.
+```
 
 ```text
+Add a loading state to the Job Finder screen.
+Keep the existing project structure and styling.
+```
+
+```text
+Review the Resume Builder and identify possible bugs
+without changing the code.
+```
+
+Codex can inspect relevant project files and, depending on the task and permissions, make code changes within the project.
+
+---
+
+## 32.3 GitHub Copilot vs. OpenAI Codex
+
+Both tools can assist with programming, but they are useful for different types of work.
+
+| Tool                    | Primary Use                                               |
+| ----------------------- | --------------------------------------------------------- |
+| **GitHub Copilot**      | Everyday coding assistance and code completion            |
+| **GitHub Copilot Chat** | Questions, explanations, and smaller coding tasks         |
+| **OpenAI Codex**        | Larger project-level coding and agentic development tasks |
+
+### Recommended Workflow
+
+For this project, GitHub Copilot can be used as the primary everyday coding assistant while Codex can be used when a task requires deeper understanding of multiple files.
+
+```text
+VS Code
+│
+├── GitHub Copilot
+│   ├── Code completion
+│   ├── Quick fixes
+│   ├── Code explanations
+│   └── Everyday coding
+│
+└── OpenAI Codex
+    ├── Understand project structure
+    ├── Analyze multiple files
+    ├── Debug larger problems
+    ├── Implement features
+    └── Review/refactor code
+```
+
+### Important
+
+AI coding agents should be treated as development assistants rather than replacements for understanding the source code.
+
+Before accepting major changes:
+
+1. Review the generated code.
+2. Check which files were modified.
+3. Run the application.
+4. Test the affected functionality.
+5. Review the Git diff before committing.
+
+This is especially important when working on shared project files such as:
+
+```text
+App.js
+babel.config.js
+jsconfig.json
+src/context/
 src/screens/
 ```
 
-This helps keep the AI's context focused on the files relevant to the current task.
-
-### Rule 2 — Handle Rate Limits (429 Errors)
-
-Making many rapid AI-assisted edits or requests can result in a:
-
-```text
-429: Resource Exhausted
-```
-
-error.
-
-If this occurs:
-
-1. Stop sending requests temporarily.
-2. Wait approximately **60 seconds**.
-3. Send a follow-up prompt.
-4. Allow Cline to continue its work.
-
-Avoid repeatedly sending requests while the service is already rate-limited.
+AI-generated changes should be reviewed before they are committed and pushed to the team's GitHub repository.
