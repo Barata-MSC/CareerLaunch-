@@ -13,6 +13,134 @@ The application currently includes career-related features such as:
 
 The project uses Supabase for authentication/session handling and stores application-related state through React context providers.
 
+### Prerequisites
+
+1. Install the **GitHub Pull Requests** extension in VS Code (if it is not already installed).
+2. Sign in to GitHub from VS Code so the extension can access the repository.
+3. Have an active GitHub Copilot subscription (the free tier does not support this generation feature).
+
+### Configure Copilot PR Description Instructions
+
+Create or open the following file in the project:
+
+```text
+.vscode/settings.json
+```
+
+Add (or merge) the following configuration:
+
+```json
+{
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "Generate a highly detailed pull request description based only on the actual changes in the current branch compared with the base branch. Do not invent information. Explain WHAT changed, WHY it changed, and HOW it was implemented. Identify the relevant files, components, functions, screens, or modules affected. Explain important implementation details and how the changes interact with the existing system. Describe user-facing behavior when applicable. Include testing performed or evidence available from the changes, but do not claim tests were performed if there is no evidence. Mention important limitations, known issues, or follow-up work when applicable. Use clear Markdown headings and bullet points. Begin with a concise summary, followed by detailed sections. Make the description thorough enough that another team member can understand the purpose, implementation, and impact of the changes without inspecting every file manually."
+    }
+  ]
+}
+```
+
+These instructions are used only when generating the title/description from inside VS Code.
+
+### Pull Request Workflow (VS Code)
+
+1. Switch to the latest `main` branch:
+
+```powershell
+git checkout main
+git pull
+```
+
+2. Create a new feature branch:
+
+```powershell
+git checkout -b JobFinderUpdate
+```
+
+3. Develop and test the feature.
+
+4. Check the current Git status:
+
+```powershell
+git status
+```
+
+5. Stage the changes:
+
+```powershell
+git add .
+```
+
+6. Commit the changes:
+
+```powershell
+git commit -m "Update Job Finder"
+```
+
+7. Push the feature branch to GitHub:
+
+```powershell
+git push -u origin JobFinderUpdate
+```
+
+8. In VS Code, open the **GitHub Pull Requests** view (usually the GitHub icon in the Activity Bar).
+
+9. Click **Create Pull Request**.
+
+10. Select the base branch (`main`) and the compare branch (`JobFinderUpdate`).
+
+11. Click the **Copilot / Generate** (sparkle) icon next to the title or description fields. Copilot uses the project’s configured instructions and the actual branch changes to generate the title and description.
+
+12. Review the generated description carefully. Edit anything that is inaccurate, incomplete, or missing important context.
+
+13. Submit the Pull Request.
+
+### Workflow Summary
+
+```text
+main
+  │
+  ├── git pull
+  │
+  └── JobFinderUpdate
+          │
+          ├── Develop feature
+          ├── git status
+          ├── git add .
+          ├── git commit
+          └── git push origin JobFinderUpdate
+                    │
+                    ▼
+              VS Code
+              (GitHub Pull Requests extension)
+                    │
+                    ▼
+             Create Pull Request
+                    │
+                    ▼
+          Generate title + description
+             with GitHub Copilot
+             (uses .vscode/settings.json instructions)
+                    │
+                    ▼
+             Review & edit description
+                    │
+                    ▼
+                PR → main
+```
+
+### Important
+
+- The feature branch must be pushed to GitHub before (or while) creating the Pull Request from VS Code.
+- Do not push the feature directly to `main` when the team workflow requires a Pull Request.
+- Always review the Copilot-generated description before submitting. It should accurately reflect only the changes that were actually made and tested.
+- The custom instructions in `.vscode/settings.json` apply to generation performed inside VS Code. They do not control the separate “Summary” button that appears on the GitHub website.
+```
+
+The same content is already saved in the project’s `README.md` at:
+
+`/home/workdir/attachments/README.md`
+
+
 ---
 
 ## README Guide
@@ -1197,3 +1325,12 @@ src/screens/
 ```
 
 AI-generated changes should be reviewed before they are committed and pushed to the team's GitHub repository.
+
+
+Here’s the full updated **section 32.4** ready to copy:
+
+```markdown
+## 32.4 GitHub Copilot Pull Request Description Generation (VS Code)
+
+The team generates detailed Pull Request descriptions **inside Visual Studio Code** using the **GitHub Pull Requests** extension together with GitHub Copilot. Custom instructions in the project control the style and depth of the generated description.
+
