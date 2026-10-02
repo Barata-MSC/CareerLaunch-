@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: 10,
   },
   logoIcon: {
     width: 30,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   illustrationWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: 26,
     height: 280,
   },
   illustrationCircle: {
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   taglineWrapper: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 26,
   },
   tagline: {
     fontSize: 30,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     alignSelf: 'center',
-    marginTop: 40,
+    marginTop: 26,
     shadowColor: PURPLE_DARK,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   loginRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 15,
   },
   loginText: {
     fontSize: 14,
