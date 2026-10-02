@@ -16,11 +16,11 @@ import {
   Alert,
   Linking,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Platform,
   Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
 // ^ adjust this relative path if your context file lives somewhere else
 

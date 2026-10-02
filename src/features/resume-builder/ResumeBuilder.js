@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   TouchableOpacity,
@@ -8,6 +7,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
 import { isPersonalInfoComplete } from './validators';
 

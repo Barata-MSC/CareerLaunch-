@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   Image,
@@ -8,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const ROCKET_ICON = require('@assets/rocket-icon.png');
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: 40,
   },
   logoIcon: {
     width: 30,
@@ -102,11 +102,13 @@ const styles = StyleSheet.create({
   illustrationWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: 40,
     height: 280,
   },
   illustrationCircle: {
     position: 'absolute',
+    top: 0,
+    alignSelf: 'center',
     width: 280,
     height: 280,
     borderRadius: 140,
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
   },
   taglineWrapper: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: 40,
   },
   tagline: {
     fontSize: 30,

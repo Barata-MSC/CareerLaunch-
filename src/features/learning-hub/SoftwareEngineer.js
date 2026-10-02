@@ -5,11 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Modal,
   Dimensions,
   PanResponder,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 

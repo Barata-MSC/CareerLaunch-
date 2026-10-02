@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { supabase } from './src/config/supabase';
 import { ProfileProvider } from './src/context/ProfileContext';
@@ -9,7 +10,7 @@ import { ResumeProvider } from './src/features/resume-builder/ResumeContext';
 import SplashScreen from './src/features/auth/SplashScreen';
 import RootNavigator from './src/navigation/RootNavigator';
 
-export default function App() {
+function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -22,8 +23,8 @@ export default function App() {
     });
 
     // 2. Continually listen for real-time auth changes (Sign-In, Sign-Out)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth State Changed:', _event, session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth State Changed:', event);
       setSession(session);
     });
 
@@ -65,6 +66,14 @@ export default function App() {
         </ResumeProvider>
       </ApplicationsProvider>
     </ProfileProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
   );
 }
 
