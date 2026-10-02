@@ -9,9 +9,10 @@
     "ignoreDeprecations": "6.0",
     "paths": {
       "@components/*": ["src/components/*"],
-      "@screens": ["src/screens/index.js"],
-      "@screens/*": ["src/screens/*"],
-      "@assets/*": ["src/assets/*"]
+      "@features": ["src/features/index.js"],
+      "@features/*": ["src/features/*"],
+      "@assets/*": ["src/assets/*"],
+      "@config/*": ["src/config/*"]
     }
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js"]

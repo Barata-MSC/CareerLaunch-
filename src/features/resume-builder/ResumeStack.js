@@ -1,14 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useResume } from './ResumeContext';
-import ResumeBuilderScreen from '../screens/ResumeScreen/ResumeBuilderScreen';
-import PersonalInfoScreen from '../screens/ResumeScreen/PersonalInfoScreen';
-import EducationScreen from '../screens/ResumeScreen/EducationScreen';
-import SkillsScreen from '../screens/ResumeScreen/SkillsScreen';
-import ExperienceScreen from '../screens/ResumeScreen/ExperienceScreen';
-import CertificatesScreen from '../screens/ResumeScreen/CertificatesScreen';
-import ProjectsScreen from '../screens/ResumeScreen/ProjectsScreen';
-import ResumePreviewScreen from '../screens/ResumeScreen/ResumePreviewScreen';
+import ResumeBuilderScreen from './ResumeBuilder';
+import PersonalInfoScreen from './PersonalInfoScreen';
+import EducationScreen from './EducationScreen';
+import SkillsScreen from './SkillsScreen';
+import ExperienceScreen from './ExperienceScreen';
+import CertificatesScreen from './CertificateScreen';
+import ProjectsScreen from './ProjectScreen';
+import ResumePreviewScreen from './ResumePreviewScreen';
 
 const Stack = createNativeStackNavigator();
 
