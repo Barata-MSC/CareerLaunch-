@@ -1,42 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 
 import { supabase } from './src/config/supabase';
 import { ProfileProvider } from './src/context/ProfileContext';
-import {
-  WelcomeScreen,
-  LoginScreen,
-  DashboardScreen,
-  RegisterScreen,
-  SplashScreen,
-  ProfileScreen,
-  JobFinderScreen,
-  CareerRoadmapScreen,
-  JobApplicationTracker,
-  AIInterviewCoachScreen,
-} from '@screens';
 import { ApplicationsProvider } from './src/context/ApplicationsContext';
+import { ResumeProvider } from './src/features/resume-builder/ResumeContext';
 
-// Direct import path to bypass the barrel loop
-import MainTabs from './src/screens/ResumeBuilderScreen/MainTabs';
-
-// Resume Builder sub-flow screens (Absolute mapping via @screens alias)
-import ResumeBuilderScreen from '@screens/ResumeBuilderScreen/ResumeBuilder';
-import PersonalInfoScreen from '@screens/ResumeBuilderScreen/PersonalInfoScreen';
-import EducationScreen from '@screens/ResumeBuilderScreen/EducationScreen';
-import SkillsScreen from '@screens/ResumeBuilderScreen/SkillsScreen';
-import ExperienceScreen from '@screens/ResumeBuilderScreen/ExperienceScreen';
-import CertificatesScreen from '@screens/ResumeBuilderScreen/CertificateScreen';
-import ProjectsScreen from '@screens/ResumeBuilderScreen/ProjectScreen';
-import ResumePreviewScreen from '@screens/ResumeBuilderScreen/ResumePreviewScreen';
-
-// Global Data State Provider
-import { ResumeProvider } from '@screens/ResumeBuilderScreen/ResumeContext';
-
-const Stack = createNativeStackNavigator();
+import SplashScreen from './src/features/auth/SplashScreen';
+import RootNavigator from './src/navigation/RootNavigator';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -52,7 +23,7 @@ export default function App() {
 
     // 2. Continually listen for real-time auth changes (Sign-In, Sign-Out)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth State Changed:", _event, session); // <-- Add this log
+      console.log('Auth State Changed:', _event, session);
       setSession(session);
     });
 
@@ -60,7 +31,6 @@ export default function App() {
   }, []);
 
   // Avoid visual flashing while verifying state
-   // Avoid visual flashing while verifying state
   if (authLoading) {
     return (
       <View style={[styles.backdrop, { justifyContent: 'center' }]}>
@@ -84,45 +54,12 @@ export default function App() {
   }
 
   return (
-    // 1. Wrap everything with all three providers
     <ProfileProvider session={session}>
       <ApplicationsProvider>
         <ResumeProvider>
           <View style={styles.backdrop}>
             <View style={styles.phone}>
-              <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                  
-                  {session && session.user ? (
-                    // 2. PROTECTED INTERNAL STACK (Only visible when logged in)
-                    <>
-                      <Stack.Screen name="MainTabs" component={MainTabs} />
-                      <Stack.Screen name="Dashboard" component={DashboardScreen} />
-                      <Stack.Screen name="Profile" component={ProfileScreen} />
-                      <Stack.Screen name="JobFinder" component={JobFinderScreen} />
-                      <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-                      <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
-                      <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
-                      <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
-                      <Stack.Screen name="education" component={EducationScreen} />
-                      <Stack.Screen name="skills" component={SkillsScreen} />
-                      <Stack.Screen name="experience" component={ExperienceScreen} />
-                      <Stack.Screen name="certificates" component={CertificatesScreen} />
-                      <Stack.Screen name="projects" component={ProjectsScreen} />
-                      <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
-                      <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
-                    </>
-                  ) : (
-                    // 3. PUBLIC AUTHENTICATION STACK (Only visible when logged out)
-                    <>
-                      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-                      <Stack.Screen name="Login" component={LoginScreen} />
-                      <Stack.Screen name="Register" component={RegisterScreen} />
-                    </>
-                  )}
-                  
-                </Stack.Navigator>
-              </NavigationContainer>
+              <RootNavigator session={session} />
             </View>
           </View>
         </ResumeProvider>

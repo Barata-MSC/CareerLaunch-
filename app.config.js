@@ -3,6 +3,7 @@ module.exports = {
     name: "finalProject",
     slug: "finalProject",
     version: "1.0.0",
+    plugins: ["@react-native-community/datetimepicker"],
     orientation: "portrait",
     icon: "./assets/icon-profile.png",
     icon: "./src/assets/rocket-icon.png",

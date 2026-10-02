@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Modal,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -16,8 +17,31 @@ import {
 // npx expo install expo-image-picker
 // (or "react-native-image-picker" if this is a bare RN project, not Expo)
 import * as ImagePicker from 'expo-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { supabase } from '@config/supabase';
+
+const formatBirthday = (date) => {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${month}/${day}/${date.getFullYear()}`;
+};
+
+const parseBirthday = (birthday) => {
+  const match = birthday.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return match ? new Date(Number(match[3]), Number(match[1]) - 1, Number(match[2])) : new Date();
+};
+
+const toDateInputValue = (date) => {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
+const birthdayToDateInputValue = (birthday) => {
+  const match = birthday.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return match ? `${match[3]}-${match[1]}-${match[2]}` : '';
+};
 
 const showAlert = (title, message) => {
   if (Platform.OS === 'web') {
@@ -49,6 +73,8 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
+  const [pendingBirthday, setPendingBirthday] = useState(new Date());
 
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
@@ -57,6 +83,28 @@ export default function RegisterScreen({ navigation }) {
   const [contactNumberError, setContactNumberError] = useState('');
   const [birthdayError, setBirthdayError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  const openBirthdayPicker = () => {
+    setPendingBirthday(parseBirthday(birthday));
+    setShowBirthdayPicker(true);
+  };
+
+  const handleBirthdayPickerChange = (event, selectedDate) => {
+    if (event.type === 'dismissed') {
+      setShowBirthdayPicker(false);
+      return;
+    }
+
+    if (selectedDate) {
+      setPendingBirthday(selectedDate);
+      if (Platform.OS === 'android') {
+        setBirthday(formatBirthday(selectedDate));
+        setBirthdayError('');
+      }
+    }
+
+    if (Platform.OS === 'android') setShowBirthdayPicker(false);
+  };
 
   const pickProfileImage = async () => {
 
@@ -308,22 +356,90 @@ export default function RegisterScreen({ navigation }) {
           ) : null}
 
           <Text style={styles.label}>Birthday</Text>
-          <TextInput
-            style={[styles.input, birthdayError ? styles.inputError : null]}
-            placeholder="MM/DD/YYYY"
-            placeholderTextColor={COLORS.placeholder}
-            value={birthday}
-            editable={!loading}
-            onChangeText={(text) => {
-              setBirthday(text);
-              if (birthdayError) setBirthdayError('');
-            }}
-            keyboardType="numbers-and-punctuation"
-          />
+          <View style={[styles.birthdayField, birthdayError ? styles.inputError : null]}>
+            {Platform.OS === 'web' ? React.createElement('input', {
+              type: 'date',
+              value: birthdayToDateInputValue(birthday),
+              max: toDateInputValue(new Date()),
+              disabled: loading,
+              'aria-label': 'Birthday',
+              onChange: (event) => {
+                const [year, month, day] = event.target.value.split('-');
+                if (year && month && day) {
+                  setBirthday(`${month}/${day}/${year}`);
+                  setBirthdayError('');
+                }
+              },
+              style: {
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                outline: 'none',
+                backgroundColor: 'transparent',
+                color: COLORS.text,
+                fontSize: 14,
+                padding: '0 14px',
+                boxSizing: 'border-box',
+              },
+            }) : (
+              <TouchableOpacity
+                style={styles.birthdayPickerButton}
+                onPress={openBirthdayPicker}
+                disabled={loading}
+                accessibilityRole="button"
+                accessibilityLabel={birthday ? `Birthday: ${birthday}` : 'Select your birthday'}
+              >
+                <Text style={[styles.birthdayText, !birthday && styles.birthdayPlaceholder]}>
+                  {birthday || 'Select your birthday'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
           {birthdayError ? (
             <Text style={styles.errorText}>{birthdayError}</Text>
           ) : null}
-          {/* Swap for @react-native-community/datetimepicker if you want a native date-wheel */}
+          {Platform.OS === 'ios' && showBirthdayPicker ? (
+            <Modal
+              transparent
+              animationType="fade"
+              visible={showBirthdayPicker}
+              onRequestClose={() => setShowBirthdayPicker(false)}
+            >
+              <View style={styles.datePickerBackdrop}>
+                <View style={styles.datePickerModal}>
+                  <View style={styles.datePickerActions}>
+                    <TouchableOpacity onPress={() => setShowBirthdayPicker(false)}>
+                      <Text style={styles.datePickerAction}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setBirthday(formatBirthday(pendingBirthday));
+                        setBirthdayError('');
+                        setShowBirthdayPicker(false);
+                      }}
+                    >
+                      <Text style={styles.datePickerAction}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePicker
+                    value={pendingBirthday}
+                    mode="date"
+                    display="spinner"
+                    maximumDate={new Date()}
+                    onChange={handleBirthdayPickerChange}
+                  />
+                </View>
+              </View>
+            </Modal>
+          ) : null}
+          {Platform.OS === 'android' && showBirthdayPicker ? (
+            <DateTimePicker
+              value={pendingBirthday}
+              mode="date"
+              maximumDate={new Date()}
+              onChange={handleBirthdayPickerChange}
+            />
+          ) : null}
 
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -381,6 +497,14 @@ const styles = StyleSheet.create({
   avatarLabel: { marginTop: 6, fontSize: 12, fontWeight: '600', color: COLORS.primary },
   label: { fontSize: 12, fontWeight: '600', color: COLORS.text, marginBottom: 6, marginTop: 10 },
   input: { height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14, fontSize: 14, color: COLORS.text },
+  birthdayField: { height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, overflow: 'hidden' },
+  birthdayPickerButton: { flex: 1, justifyContent: 'center', paddingHorizontal: 14 },
+  birthdayText: { fontSize: 14, color: COLORS.text },
+  birthdayPlaceholder: { color: COLORS.placeholder },
+  datePickerBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.35)', paddingBottom: 24 },
+  datePickerModal: { alignSelf: 'center', width: '92%', maxWidth: 380, backgroundColor: COLORS.background, borderRadius: 12, overflow: 'hidden' },
+  datePickerActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  datePickerAction: { color: COLORS.primary, fontSize: 15, fontWeight: '600' },
   phoneContainer: { flexDirection: 'row', alignItems: 'center', height: 44, borderWidth: 1, borderColor: COLORS.border, borderRadius: 12, paddingHorizontal: 14 },
   countryCode: { fontSize: 14, color: COLORS.text, marginRight: 8, fontWeight: '500' },
   phoneInput: { flex: 1, height: '100%', fontSize: 14, color: COLORS.text, paddingVertical: 0 },
