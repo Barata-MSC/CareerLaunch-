@@ -15,7 +15,7 @@ const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '📄', color: '#6C4CE0' },
   { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE', screen: 'JobFinder' },
   { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
-  { id: '4', label: 'Skills Roadmap', icon: '🗺️', color: '#F0637D' },
+  { id: '4', label: 'Career Roadmap', icon: '🗺️', color: '#F0637D' },
 ];
 
 // Fields we consider when computing "% profile complete".
@@ -31,7 +31,7 @@ export default function DashboardScreen({ navigation }) {
   const profileProgress = profile ? filledCount / PROFILE_FIELDS.length : 0;
 
   const handleQuickAction = (action) => {
-  if (action.label === 'Skills Roadmap') {
+  if (action.label === 'Career Roadmap') {
     navigation.navigate('CareerRoadmap', {
       goal: 'Become a Software Engineer',
       estimatedTime: '5 Months',
@@ -81,7 +81,7 @@ export default function DashboardScreen({ navigation }) {
               />
             </View>
           </View>
-          <Image source={AVATAR_PLACEHOLDER} style={styles.avatar} />
+          <Image source={profile?.avatar_url ? { uri: profile.avatar_url } : AVATAR_PLACEHOLDER} style={styles.avatar} />
         </TouchableOpacity>
 
         {/* Quick Actions section */}
