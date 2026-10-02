@@ -134,12 +134,6 @@ main
 - Do not push the feature directly to `main` when the team workflow requires a Pull Request.
 - Always review the Copilot-generated description before submitting. It should accurately reflect only the changes that were actually made and tested.
 - The custom instructions in `.vscode/settings.json` apply to generation performed inside VS Code. They do not control the separate “Summary” button that appears on the GitHub website.
-```
-
-The same content is already saved in the project’s `README.md` at:
-
-`/home/workdir/attachments/README.md`
-
 
 ---
 
@@ -160,54 +154,54 @@ The same content is already saved in the project’s `README.md` at:
 - **Framework:** React Native
 - **Development Platform:** Expo
 - **Editor:** Visual Studio Code
-- **Version Control:** Git + GitHub
+- **Version Control:** Git & GitHub
 - **Database / Backend Services:** Supabase
 - **Navigation:** React Navigation
-- **Project Structure:** Modular `src` folders with path aliases
+- **Project Structure:** Modular `src` directory with path aliases
 - **Web Support:** Expo Web / React Native Web
 
 ---
 
 ## 2. Development Environment Setup
 
-Before starting development, install the following:
+Before starting development, download and install the required tools:
 
 ### Required Software
 
-1. **Git for Windows**
-2. **Node.js**
+1. **Git** (Git for Windows or platform equivalent)
+2. **Node.js** (LTS version recommended)
 3. **Visual Studio Code**
-4. **Expo / React Native project dependencies**
+4. **Expo CLI & React Native dependencies**
 
-After installing Git and Node.js, VS Code is used as the main development environment.
+Once Git and Node.js are installed, open Visual Studio Code to begin workspace configuration.
 
 ---
 
 ## 3. Recommended VS Code Extensions
 
-The following extensions were used during development:
+The following extensions are recommended to streamline development and ensure code consistency:
 
 | Extension | Purpose |
 |---|---|
-| **Path Intellisense** | Provides filename and path autocomplete when importing files. |
-| **ESLint** | Helps detect JavaScript and React Native code issues. |
-| **ES7+ React/Redux/React-Native Snippets** | Provides shortcuts for common React and React Native code patterns. |
-| **React Native Tools** | Adds React Native debugging and development support to VS Code. |
-| **vscode-styled-components** | Adds syntax highlighting and editor support for styled-components. |
-| **Mobile Preview - Phone & Tablet Simulator** | Used to preview web-based layouts inside mobile/tablet frames. |
-| **Test Runner for Java** | Installed in the VS Code environment, although it is not a core dependency of this React Native project. |
+| **Path Intellisense** | Auto-completes filenames and module paths during imports. |
+| **ESLint** | Detects potential JavaScript and React Native code quality issues. |
+| **ES7+ React/Redux/React-Native Snippets** | Provides quick code snippet shortcuts for React/React Native components. |
+| **React Native Tools** | Adds debugging and command support for React Native projects in VS Code. |
+| **vscode-styled-components** | Provides syntax highlighting and formatting for styled-components. |
+| **Mobile Preview - Phone & Tablet Simulator** | Previews web-rendered mobile and tablet layouts directly in the editor. |
+| **GitHub Pull Requests and Issues** | Enables local PR creation, review, and integration within VS Code. |
 
 ---
 
-## 4. Creating the Expo Project
+## 4. Project Initialization
 
-The initial Expo project was created with:
+The Expo project structure was initialized using the default blank template:
 
 ```powershell
 npx create-expo-app finalProject --template blank
 ```
 
-Expo and the related React Native packages were then installed as development progressed.
+Additional dependencies and supporting Expo libraries are installed incrementally as required.
 
 ---
 
@@ -735,7 +729,6 @@ your-feature-name → main
 
 ---
 
-
 ## 22. Uploading a Local Branch to a Remote Branch for Review
 
 A branch does **not** need to be merged into `main` immediately. A team member can upload their local branch to GitHub so another teammate can inspect and test the source code first.
@@ -1173,7 +1166,9 @@ If the team moves the project to another repository, update this section with th
 **Repository:** GitHub  
 **Backend / Database Service:** Supabase
 
-# 32. Deploying AI Coding Agents / Assistants in VS Code
+---
+
+## 32. Deploying AI Coding Agents / Assistants in VS Code
 
 AI coding assistants can be integrated into Visual Studio Code to help with code generation, debugging, refactoring, code explanation, and project-level development tasks.
 
@@ -1184,31 +1179,23 @@ For this project, the following AI coding tools are used:
 
 ---
 
-## 32.1 GitHub Copilot
+### 32.1 GitHub Copilot
 
 GitHub Copilot provides AI-powered coding assistance directly inside Visual Studio Code.
 
-### Installation and Setup
+#### Installation and Setup
 
 1. Open **VS Code Extensions** and search for **GitHub Copilot** / **GitHub Copilot Chat**.
-
    * Newer versions of Visual Studio Code may include Copilot functionality directly.
-
 2. Click the **Accounts** icon in the bottom-left corner of VS Code.
-
 3. Select **Sign in with GitHub** to authenticate GitHub Copilot.
-
 4. Follow the browser prompt to authenticate your GitHub account.
-
 5. Once connected, the Copilot status icon should appear in the VS Code status bar.
-
 6. Open the **GitHub Copilot Chat** interface from the VS Code sidebar.
-
 7. At the bottom of the Copilot Chat interface, open the **model selector**.
-
 8. Select the desired available model, such as **Claude**, when available.
 
-### Recommended Uses
+#### Recommended Uses
 
 GitHub Copilot can be used for:
 
@@ -1222,29 +1209,23 @@ GitHub Copilot can be used for:
 
 ---
 
-## 32.2 OpenAI Codex
+### 32.2 OpenAI Codex
 
 OpenAI Codex is an AI coding agent that can be used directly within VS Code.
 
 Unlike a basic autocomplete tool, Codex can work with the project's codebase to understand the relationships between files and perform larger development tasks.
 
-### Installation and Setup
+#### Installation and Setup
 
 1. Open **VS Code Extensions**.
-
 2. Search for the official **Codex** extension from OpenAI.
-
 3. Install the extension.
-
 4. Open the **Codex** panel in VS Code.
-
 5. Sign in using your **ChatGPT account** when prompted.
-
 6. Open the **CareerLaunch** project folder in VS Code.
-
 7. Give Codex a coding task through the Codex interface.
 
-### Example Tasks
+#### Example Tasks
 
 Codex can be used for larger development tasks such as:
 
@@ -1271,17 +1252,17 @@ Codex can inspect relevant project files and, depending on the task and permissi
 
 ---
 
-## 32.3 GitHub Copilot vs. OpenAI Codex
+### 32.3 GitHub Copilot vs. OpenAI Codex
 
 Both tools can assist with programming, but they are useful for different types of work.
 
-| Tool                    | Primary Use                                               |
-| ----------------------- | --------------------------------------------------------- |
-| **GitHub Copilot**      | Everyday coding assistance and code completion            |
-| **GitHub Copilot Chat** | Questions, explanations, and smaller coding tasks         |
-| **OpenAI Codex**        | Larger project-level coding and agentic development tasks |
+| Tool | Primary Use |
+| --- | --- |
+| **GitHub Copilot** | Everyday coding assistance and code completion |
+| **GitHub Copilot Chat** | Questions, explanations, and smaller coding tasks |
+| **OpenAI Codex** | Larger project-level coding and agentic development tasks |
 
-### Recommended Workflow
+#### Recommended Workflow
 
 For this project, GitHub Copilot can be used as the primary everyday coding assistant while Codex can be used when a task requires deeper understanding of multiple files.
 
@@ -1302,7 +1283,7 @@ VS Code
     └── Review/refactor code
 ```
 
-### Important
+#### Important
 
 AI coding agents should be treated as development assistants rather than replacements for understanding the source code.
 
@@ -1326,11 +1307,8 @@ src/screens/
 
 AI-generated changes should be reviewed before they are committed and pushed to the team's GitHub repository.
 
+---
 
-Here’s the full updated **section 32.4** ready to copy:
-
-```markdown
-## 32.4 GitHub Copilot Pull Request Description Generation (VS Code)
+### 32.4 GitHub Copilot Pull Request Description Generation (VS Code)
 
 The team generates detailed Pull Request descriptions **inside Visual Studio Code** using the **GitHub Pull Requests** extension together with GitHub Copilot. Custom instructions in the project control the style and depth of the generated description.
-
