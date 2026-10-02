@@ -1044,3 +1044,148 @@ If the team moves the project to another repository, update this section with th
 **Technology:** React Native + Expo + JavaScript  
 **Repository:** GitHub  
 **Backend / Database Service:** Supabase
+
+# 32. Deploying AI Coding Agents / Assistants in VS Code
+
+AI coding assistants can be integrated into Visual Studio Code to help with code generation, debugging, refactoring, project navigation, and other development tasks.
+
+For this project, the following AI coding tools can be used:
+
+* GitHub Copilot
+* Cline
+* Google Gemini
+
+---
+
+## 32.1 GitHub Copilot
+
+### Installation and Setup
+
+1. Open **VS Code Extensions** and search for **GitHub Copilot** / **GitHub Copilot Chat**.
+
+   * Newer versions of Visual Studio Code may include Copilot functionality directly.
+
+2. Click the **Accounts** icon in the bottom-left corner of VS Code.
+
+3. Select **Sign in with GitHub** to authenticate GitHub Copilot.
+
+4. Follow the browser prompt to authenticate your GitHub account.
+
+5. Once connected, a **Copilot status icon** should appear in the VS Code status bar.
+
+6. Click **Codebase Semantic Index** if available to allow Copilot to index and understand the project codebase.
+
+7. Open **GitHub Copilot Chat** from the secondary sidebar, located at the top-right area of VS Code.
+
+8. At the bottom of the Copilot Chat interface, open the **model selector** and select the available **Claude** model if required.
+
+---
+
+## 32.2 Cline
+
+Cline is an AI coding assistant that operates inside VS Code and can use external AI model providers.
+
+### Installation
+
+1. Open **VS Code Extensions**.
+
+2. Search for **Cline**.
+
+3. Install the **Cline** extension.
+
+4. After installation, click the **Cline robot icon** in the VS Code Activity Bar on the left side.
+
+5. Open the **Settings** by clicking the gear icon at the top of the Cline window.
+
+6. Locate **API Provider**.
+
+7. Select the appropriate AI provider and configure its API key.
+
+> **Note:** The Google Gemini API must be configured first if Google Gemini will be used as Cline's AI provider.
+
+---
+
+## 32.3 Google Gemini API Setup
+
+Google Gemini can be connected to Cline through the Google Gemini API.
+
+### Creating a Gemini API Key
+
+1. Open a web browser and navigate to **Google AI Studio**.
+
+2. Sign in using a personal Google/Gmail account.
+
+   * Some corporate or school Google Workspace accounts may have API access restrictions.
+
+3. In Google AI Studio, locate **Get API Key** or **Create API Key** in the lower-left area.
+
+4. Select **Create API Key**.
+
+5. Choose either:
+
+   * **Create API key in an existing project**, or
+   * **Create API key** using the available project options.
+
+6. Copy the generated API key.
+
+7. Return to **Cline Settings** in VS Code.
+
+8. Under **API Provider**, select **Google Gemini**.
+
+9. Paste the API key into the API key field.
+
+10. Select the desired Gemini model. If appropriate for the task and available to the account, select the highest available model tier.
+
+> **Security Warning:** Treat the API key as a private credential. Do not commit it to GitHub, place it directly inside source code, or share it publicly.
+
+---
+
+## 32.4 Two Rules to Avoid Cline Errors and Rate Limits
+
+### Rule 1 — Scope Your Workspace
+
+When using free or resource-limited AI models, avoid giving the AI agent access to unnecessary files.
+
+Large projects may contain many files that the AI does not need to read for a specific task. Processing too many files can increase context usage and may slow down or interrupt the agent.
+
+When working on a specific part of the application, open only the relevant project folder when practical.
+
+For example:
+
+```text
+CareerLaunch-
+└── src/
+    ├── components/
+    ├── config/
+    ├── context/
+    └── screens/
+```
+
+If the task only concerns a particular area, work within the relevant folder rather than unnecessarily exposing the entire project.
+
+For example:
+
+```text
+src/screens/
+```
+
+This helps keep the AI's context focused on the files relevant to the current task.
+
+### Rule 2 — Handle Rate Limits (429 Errors)
+
+Making many rapid AI-assisted edits or requests can result in a:
+
+```text
+429: Resource Exhausted
+```
+
+error.
+
+If this occurs:
+
+1. Stop sending requests temporarily.
+2. Wait approximately **60 seconds**.
+3. Send a follow-up prompt.
+4. Allow Cline to continue its work.
+
+Avoid repeatedly sending requests while the service is already rate-limited.
