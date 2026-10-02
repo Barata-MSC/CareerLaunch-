@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-    SafeAreaView,
     View,
     Text,
     TouchableOpacity,
     ScrollView,
     StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
 import { calculateResumeScore, getResumeSuggestions, getScoreBreakdown } from './resumeScore';
 import { formatPhone } from './validators';

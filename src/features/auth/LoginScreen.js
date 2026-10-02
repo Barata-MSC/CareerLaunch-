@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   TextInput,
@@ -11,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Explicit alias pointing to your configuration
 import { supabase } from '@config/supabase';
@@ -47,7 +47,6 @@ export default function LoginScreen({ navigation }) {
     if (error) {
       Alert.alert('Login Failed', error.message);
     }
-   navigation.navigate('MainTabs', { screen: 'Dashboard' });
   };
 
   return (

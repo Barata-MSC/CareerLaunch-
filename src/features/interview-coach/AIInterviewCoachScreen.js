@@ -11,7 +11,6 @@
 
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   Text,
@@ -23,6 +22,7 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MIC_ICON = require('@assets/mic-icon.png');
 

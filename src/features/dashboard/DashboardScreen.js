@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View, Image, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../context/ProfileContext';
 
 // Replace with your own asset, e.g. require('../assets/avatar.png')

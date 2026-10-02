@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   Modal,
   ScrollView,
   KeyboardAvoidingView,
@@ -14,6 +13,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // npx expo install expo-image-picker
 // (or "react-native-image-picker" if this is a bare RN project, not Expo)
 import * as ImagePicker from 'expo-image-picker';
@@ -89,12 +89,7 @@ export default function RegisterScreen({ navigation }) {
     setShowBirthdayPicker(true);
   };
 
-  const handleBirthdayPickerChange = (event, selectedDate) => {
-    if (event.type === 'dismissed') {
-      setShowBirthdayPicker(false);
-      return;
-    }
-
+  const handleBirthdayValueChange = (_event, selectedDate) => {
     if (selectedDate) {
       setPendingBirthday(selectedDate);
       if (Platform.OS === 'android') {
@@ -106,6 +101,8 @@ export default function RegisterScreen({ navigation }) {
     if (Platform.OS === 'android') setShowBirthdayPicker(false);
   };
 
+  const dismissBirthdayPicker = () => setShowBirthdayPicker(false);
+
   const pickProfileImage = async () => {
 
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -114,7 +111,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -220,7 +217,6 @@ export default function RegisterScreen({ navigation }) {
 
     if (!session) {
       showAlert('Success!', 'Please check your email inbox to confirm your account.'); // Use showAlert
-      navigation?.navigate('MainTabs', { screen: 'Dashboard' });
     } 
   };
 
@@ -426,7 +422,8 @@ export default function RegisterScreen({ navigation }) {
                     mode="date"
                     display="spinner"
                     maximumDate={new Date()}
-                    onChange={handleBirthdayPickerChange}
+                    onValueChange={handleBirthdayValueChange}
+                    onDismiss={dismissBirthdayPicker}
                   />
                 </View>
               </View>
@@ -437,7 +434,8 @@ export default function RegisterScreen({ navigation }) {
               value={pendingBirthday}
               mode="date"
               maximumDate={new Date()}
-              onChange={handleBirthdayPickerChange}
+              onValueChange={handleBirthdayValueChange}
+              onDismiss={dismissBirthdayPicker}
             />
           ) : null}
 
