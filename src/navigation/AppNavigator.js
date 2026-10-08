@@ -8,6 +8,7 @@ import {
   CareerRoadmapScreen,
   JobApplicationTracker,
   AIInterviewCoachScreen,
+  CSSCourseScreen,
 } from '@features';
 
 import MainTabs from '../features/resume-builder/MainTabs';

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Dimensions,
   PanResponder,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-
-// Each key is a selectable track. Add as many as you want here —
-// the chip row and roadmap below are both driven off this object,
-// so nothing else needs to change when you add a new track.
 const TRACKS = {
   'Software Engineer': {
     estimatedTime: '5 Months',
@@ -187,22 +181,17 @@ function StepIndicator({ status, isLast }) {
 }
 
 export default function CareerRoadmapScreen({ navigation, route }) {
-  // If a valid track name is passed in via navigation params, start there.
-  // Otherwise default to the first track in the TRACKS object.
   const initialTrack =
     route?.params?.goal && TRACKS[route.params.goal]
       ? route.params.goal
       : TRACK_NAMES[0];
 
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
-  // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
 
   const trackData = TRACKS[selectedTrack];
   const roadmapSteps = trackData.steps;
-  const estimatedTime = trackData.estimatedTime;
-
-  const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
+  const completedCount = roadmapSteps.filter((step) => step.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);
 
   const handleTrackPress = (trackName) => {
@@ -216,33 +205,35 @@ export default function CareerRoadmapScreen({ navigation, route }) {
       direction === 'next'
         ? (currentIndex + 1) % TRACK_NAMES.length
         : (currentIndex - 1 + TRACK_NAMES.length) % TRACK_NAMES.length;
+
     setSelectedTrack(TRACK_NAMES[nextIndex]);
   };
 
   const panResponder = useRef(
     PanResponder.create({
-
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return (
-          Math.abs(gestureState.dx) > 20 &&
-          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5
-        );
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        const SWIPE_THRESHOLD = 50;
-        if (gestureState.dx < -SWIPE_THRESHOLD) {
-          goToTrack('next'); // swiped left
-        } else if (gestureState.dx > SWIPE_THRESHOLD) {
-          goToTrack('prev'); // swiped right
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > 20 &&
+        Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5,
+      onPanResponderRelease: (_, gestureState) => {
+        const threshold = 50;
+        if (gestureState.dx < -threshold) {
+          goToTrack('next');
+        } else if (gestureState.dx > threshold) {
+          goToTrack('prev');
         }
       },
     })
   ).current;
 
-  // Every step is tappable. This opens the detail modal below.
-  // Swap this out for navigation.navigate('SkillDetail', { skill: step })
-  // once you have a dedicated screen for lesson content.
   const handleStepPress = (step) => {
+    if (
+      selectedTrack === 'Software Engineer' &&
+      (step.title === 'CSS' || step.title === 'HTML')
+    ) {
+      navigation.navigate('CSSCourse');
+      return;
+    }
+
     setSelectedStep(step);
   };
 
@@ -298,261 +289,244 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         <Text style={styles.sectionTitle}>Your Roadmap</Text>
 
         <View style={styles.roadmapList}>
-          {roadmapSteps.map((step, index) => {
-            return (
-              <TouchableOpacity
-                key={step.id}
-                style={styles.stepRow}
-                activeOpacity={0.6}
-                onPress={() => handleStepPress(step)}
-              >
-                <StepIndicator
-                  status={step.status}
-                  isLast={index === roadmapSteps.length - 1}
-                />
-                <View style={styles.stepTextWrap}>
-                  <Text style={styles.stepTitle}>{step.title}</Text>
-                  <Text
-                    style={[
-                      styles.stepStatus,
-                      step.status === 'in-progress' && styles.stepStatusActive,
-                    ]}
-                  >
-                    {STATUS_LABEL[step.status]}
-                  </Text>
-                </View>
-                <Text style={styles.chevron}>›</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-       
-      </ScrollView>
-
-      <Modal
-        visible={!!selectedStep}
-        transparent
-        animationType="fade"
-        onRequestClose={closeModal}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={closeModal}
-        >
-          {/* Stop taps inside the card from closing the modal */}
-          <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
-            {selectedStep && (
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                bounces={false}
-              >
-                <View style={styles.modalHeaderRow}>
-                  <View
-                    style={[
-                      styles.modalStatusDot,
-                      selectedStep.status === 'completed' && styles.circleCompleted,
-                      selectedStep.status === 'in-progress' && styles.circleInProgress,
-                      selectedStep.status === 'not-started' && styles.circleNotStarted,
-                    ]}
-                  />
-                  <Text style={styles.modalTitle}>{selectedStep.title}</Text>
-                </View>
-
+          {roadmapSteps.map((step, index) => (
+            <TouchableOpacity
+              key={step.id}
+              style={styles.stepRow}
+              activeOpacity={0.6}
+              onPress={() => handleStepPress(step)}
+            >
+              <StepIndicator
+                status={step.status}
+                isLast={index === roadmapSteps.length - 1}
+              />
+              <View style={styles.stepTextWrap}>
+                <Text style={styles.stepTitle}>{step.title}</Text>
                 <Text
                   style={[
-                    styles.modalStatusBadge,
-                    selectedStep.status === 'completed' && styles.badgeCompleted,
-                    selectedStep.status === 'in-progress' && styles.badgeInProgress,
-                    selectedStep.status === 'not-started' && styles.badgeNotStarted,
+                    styles.stepStatus,
+                    step.status === 'in-progress' && styles.stepStatusActive,
                   ]}
                 >
-                  {STATUS_LABEL[selectedStep.status]}
+                  {STATUS_LABEL[step.status]}
                 </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
 
-                <Text style={styles.modalDescription}>
-                  {selectedStep.description}
-                </Text>
-
-                <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
-                  <Text style={styles.modalCloseButtonText}>Close</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            )}
-          </TouchableOpacity>
-        </TouchableOpacity>
+      <Modal transparent visible={Boolean(selectedStep)} animationType="slide">
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{selectedStep?.title}</Text>
+            <Text style={styles.modalText}>{selectedStep?.description}</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
 }
 
-const PURPLE = '#5B2EFF';
-const GREEN = '#2ECC71';
-const GRAY = '#D9D9D9';
-
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8F7FF',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#1A1A1A' },
-  backArrow: { fontSize: 30, color: '#1A1A1A', lineHeight: 30 },
-  checkMark: { color: '#fff', fontSize: 14, fontWeight: '700' },
-  scrollContent: { paddingHorizontal: 20, paddingBottom: 32 },
+  backArrow: {
+    fontSize: 32,
+    color: '#5B21F5',
+    lineHeight: 32,
+    fontWeight: '700',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
+  },
   goalCard: {
-    backgroundColor: PURPLE,
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 18,
     marginBottom: 20,
   },
-  goalLabel: { color: '#E4DBFF', fontSize: 13, marginBottom: 6 },
-  goalText: { color: '#fff', fontSize: 20, fontWeight: '700', lineHeight: 26 },
-
-  // Track picker (mirrors JobFinderScreen's category chips)
-  sectionLabel: { fontSize: 13, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 },
-  chipRow: { paddingVertical: 10 },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    marginRight: 8,
-    backgroundColor: '#fff',
+  goalLabel: {
+    color: '#6B7280',
+    fontSize: 12,
+    marginBottom: 4,
   },
-  chipActive: { backgroundColor: PURPLE, borderColor: PURPLE },
-  chipText: { fontSize: 13, color: '#374151' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-
-  sectionTitle: {
-    fontSize: 15,
+  goalText: {
+    color: '#111827',
+    fontSize: 24,
     fontWeight: '700',
-    color: '#1A1A1A',
-    marginBottom: 16,
   },
-  roadmapList: { marginBottom: 24 },
-  stepRow: { flexDirection: 'row' },
-  indicatorColumn: { alignItems: 'center', width: 32 },
-  circle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 10,
   },
-  circleCompleted: { backgroundColor: GREEN, borderColor: GREEN },
-  circleInProgress: { backgroundColor: '#fff', borderColor: PURPLE },
-  circleNotStarted: { backgroundColor: '#fff', borderColor: GRAY },
-  innerDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: PURPLE,
+  chipRow: {
+    paddingBottom: 10,
   },
-  connectorLine: {
-    width: 2,
-    flex: 1,
-    minHeight: 28,
-    backgroundColor: GRAY,
-  },
-  stepTextWrap: { flex: 1, paddingBottom: 22, paddingLeft: 12 },
-  chevron: { fontSize: 22, color: '#C7C7CC', paddingBottom: 22 },
-  stepTitle: { fontSize: 16, fontWeight: '600', color: '#1A1A1A' },
-  stepStatus: { fontSize: 13, color: '#9B9B9B', marginTop: 2 },
-  stepStatusActive: { color: PURPLE, fontWeight: '600' },
-  estimateCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E9E4FF',
-    backgroundColor: '#F7F5FF',
-    borderRadius: 12,
-    paddingVertical: 14,
+  chip: {
+    borderRadius: 999,
     paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginRight: 10,
+    backgroundColor: '#E5E7EB',
   },
-  estimateLabel: { color: PURPLE, fontWeight: '600', fontSize: 14 },
-  estimateValue: { color: '#1A1A1A', fontWeight: '700', fontSize: 14 },
-
-  // Progress bar
-  progressWrap: { marginBottom: 24 },
+  chipActive: {
+    backgroundColor: '#5B21F5',
+  },
+  chipText: {
+    color: '#374151',
+    fontWeight: '600',
+  },
+  chipTextActive: {
+    color: '#FFFFFF',
+  },
+  progressWrap: {
+    marginTop: 20,
+    marginBottom: 24,
+  },
   progressBarBackground: {
     height: 10,
-    borderRadius: 5,
-    backgroundColor: GRAY,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 999,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 5,
-    backgroundColor: PURPLE,
+    backgroundColor: '#5B21F5',
+    borderRadius: 999,
   },
   progressLabel: {
-    marginTop: 6,
+    marginTop: 8,
+    color: '#6B7280',
     fontSize: 12,
-    color: '#7A7A7A',
-    fontWeight: '600',
+    textAlign: 'right',
   },
-
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
   },
-  modalCard: {
-    width: '82%',
-    maxWidth: 320,
-    maxHeight: SCREEN_HEIGHT * 0.4,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 16,
+  roadmapList: {
+    gap: 12,
   },
-  modalHeaderRow: {
+  stepRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
   },
-  modalStatusDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    borderWidth: 2,
-    marginRight: 10,
+  indicatorColumn: {
+    alignItems: 'center',
+    width: 34,
+    marginRight: 12,
   },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: '#1A1A1A' },
-  modalStatusBadge: {
-    alignSelf: 'flex-start',
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  badgeCompleted: { backgroundColor: '#E5FAEF', color: GREEN },
-  badgeInProgress: { backgroundColor: '#EFEAFF', color: PURPLE },
-  badgeNotStarted: { backgroundColor: '#F1F1F1', color: '#8A8A8A' },
-  modalDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#4A4A4A',
-    marginBottom: 14,
-  },
-  modalCloseButton: {
-    backgroundColor: PURPLE,
+  circle: {
+    width: 24,
+    height: 24,
     borderRadius: 12,
-    paddingVertical: 10,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleCompleted: {
+    backgroundColor: '#16A34A',
+  },
+  circleInProgress: {
+    backgroundColor: '#5B21F5',
+  },
+  circleNotStarted: {
+    backgroundColor: '#E5E7EB',
+  },
+  checkMark: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  innerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+  },
+  connectorLine: {
+    width: 2,
+    height: 30,
+    backgroundColor: '#E5E7EB',
+    marginTop: 4,
+  },
+  stepTextWrap: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  stepStatus: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  stepStatusActive: {
+    color: '#5B21F5',
+    fontWeight: '600',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(17,24,39,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+  },
+  modalTitle: {
+    color: '#111827',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  modalText: {
+    color: '#374151',
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 18,
+  },
+  modalButton: {
+    backgroundColor: '#5B21F5',
+    borderRadius: 12,
+    paddingVertical: 12,
     alignItems: 'center',
   },
-  modalCloseButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
 });
