@@ -549,7 +549,18 @@ This allows the application to switch between the public authentication screens 
 
 ### Environment Variables
 
-The project contains a `.env` file.
+Add these values to a root-level `.env` file before starting the app:
+
+```dotenv
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
+```
+
+These are client-side Supabase settings and are included in the application
+bundle. Use only the project's publishable/anon key, never a service-role key,
+and configure Supabase row-level security for exposed data. The app reports a
+session-loading error with a retry action if it cannot read the persisted
+session.
 
 The Git workflow notes specifically include removing `.env` from Git tracking:
 
@@ -559,6 +570,14 @@ git commit -m "Remove .env from tracking"
 ```
 
 Do not commit private keys, secrets, or environment credentials to the repository.
+
+### Feature imports
+
+Feature screens and APIs are exported from `src/features/index.js` or their
+domain barrel files, such as `src/features/auth/index.js` and
+`src/features/resume-builder/index.js`. Babel and `jsconfig.json` map
+`@features` and `@features/*` to `src/features`, so use imports such as
+`@features/auth` and `@features/resume-builder` instead of long relative paths.
 
 ---
 

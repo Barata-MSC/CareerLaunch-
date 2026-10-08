@@ -7,7 +7,6 @@ import {
   StyleSheet,
   StatusBar,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GoogleButton from '@components/GoogleButton';
@@ -23,28 +22,46 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    const missingEmail = !email.trim();
+    const trimmedEmail = email.trim();
+    const missingEmail = !trimmedEmail;
+    const invalidEmail = !missingEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
     const missingPassword = !password.trim();
 
-    setEmailError(missingEmail ? 'Please enter your email' : '');
+    setLoginError('');
+    setEmailError(
+      missingEmail ? 'Please enter your email' : invalidEmail ? 'Please enter a valid email address' : '',
+    );
     setPasswordError(missingPassword ? 'Please enter your password' : '');
 
-    if (missingEmail || missingPassword) return;
+    if (missingEmail || invalidEmail || missingPassword) return;
 
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: trimmedEmail,
       password: password,
     });
 
     setLoading(false);
 
     if (error) {
-      Alert.alert('Login Failed', error.message);
+      const message = (error.message || '').toLowerCase();
+
+      if (error.code === 'email_not_confirmed' || message.includes('not confirmed')) {
+        setLoginError('Your email is not confirmed yet. Please check your inbox for the confirmation link.');
+      } else if (error.code === 'invalid_credentials' || message.includes('invalid login credentials')) {
+        // Supabase intentionally returns the same error for a wrong password and
+        // for an email that has no account, so we show one combined message.
+        setLoginError('Incorrect email or password. If you don\'t have an account yet, please sign up.');
+      } else if (message.includes('network') || message.includes('fetch')) {
+        setLoginError('Network error. Please check your connection and try again.');
+      } else {
+        setLoginError(error.message || 'Something went wrong. Please try again.');
+      }
     }
   };
 
@@ -61,7 +78,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={[styles.input, emailError ? styles.inputError : null]}
+          style={[styles.input, emailError || loginError ? styles.inputError : null]}
           placeholder="Enter your email"
           placeholderTextColor="#9A9A9A"
           keyboardType="email-address"
@@ -71,6 +88,7 @@ export default function LoginScreen({ navigation }) {
           onChangeText={(text) => {
             setEmail(text);
             if (emailError) setEmailError('');
+            if (loginError) setLoginError('');
           }}
         />
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -80,7 +98,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.fieldGroup}>
         <Text style={styles.label}>Password</Text>
         <TextInput
-          style={[styles.input, passwordError ? styles.inputError : null]}
+          style={[styles.input, passwordError || loginError ? styles.inputError : null]}
           placeholder="Enter your password"
           placeholderTextColor="#9A9A9A"
           secureTextEntry
@@ -89,13 +107,19 @@ export default function LoginScreen({ navigation }) {
           onChangeText={(text) => {
             setPassword(text);
             if (passwordError) setPasswordError('');
+            if (loginError) setLoginError('');
           }}
         />
         {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+        {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
       </View>
 
       {/* Forgot Password */}
-      <TouchableOpacity style={styles.forgotWrapper} disabled={loading}>
+      <TouchableOpacity
+        style={styles.forgotWrapper}
+        disabled={loading}
+        onPress={() => navigation?.navigate('ForgotPassword', { email: email.trim() })}
+      >
         <Text style={styles.forgotText}>Forgot password?</Text>
       </TouchableOpacity>
 

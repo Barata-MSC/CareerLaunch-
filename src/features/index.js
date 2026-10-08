@@ -10,3 +10,6 @@ export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';
 export { default as ResumeBuilderScreen } from './resume-builder/ResumeBuilder';
+
+export * from './auth';
+export * from './resume-builder';
