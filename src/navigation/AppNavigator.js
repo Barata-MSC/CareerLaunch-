@@ -8,6 +8,7 @@ import {
   CareerRoadmapScreen,
   JobApplicationTracker,
   AIInterviewCoachScreen,
+  CSSCourseScreen,
 } from '@features';
 
 import {
