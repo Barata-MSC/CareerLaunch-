@@ -43,18 +43,24 @@ const TRACKS = {
       },
       {
         id: '4',
+        title: 'React',
+        status: 'in-progress',
+        description: "You're currently learning components, props, state, and hooks. This is the step that turns JS into real apps.",
+      },
+      {
+        id: '5',
         title: 'Node js',
         status: 'not-started',
         description: 'Up next: server-side JavaScript. You will learn to build APIs and handle backend logic.',
       },
       {
-        id: '5',
+        id: '6',
         title: 'Database',
         status: 'not-started',
         description: 'Coming later: storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
-        id: '6',
+        id: '7',
         title: 'Git & Github',
         status: 'not-started',
         description: 'Coming later: version control and collaboration — tracking changes and working with a team.',
@@ -217,6 +223,9 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     return steps;
   }, [trackData, selectedTrack, completedLessonIds, quizPassed]);
   const estimatedTime = trackData.estimatedTime;
+
+  const trackData = TRACKS[selectedTrack];
+  const roadmapSteps = trackData.steps;
 
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);

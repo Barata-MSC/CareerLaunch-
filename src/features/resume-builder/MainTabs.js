@@ -2,10 +2,9 @@ import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// Absolute screen imports via your working Babel alias
+// Import screens from the feature barrel.
 import { DashboardScreen, JobFinderScreen, CareerRoadmapScreen, ProfileScreen } from '@features';
 
-// Local peer file import (MainTabs and ResumeBuilder sit in the same folder)
 import ResumeBuilderScreen from './ResumeBuilder';
 
 const ICONS = {
