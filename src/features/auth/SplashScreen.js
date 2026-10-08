@@ -128,7 +128,6 @@ export default function SplashScreen({ onFinish, appName }) {
       cancelled = true;
       if (animation) animation.stop();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const hoverY = hover.interpolate({ inputRange: [0, 1], outputRange: [4, -6] });

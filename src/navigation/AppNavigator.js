@@ -10,15 +10,17 @@ import {
   AIInterviewCoachScreen,
 } from '@features';
 
-import MainTabs from '../features/resume-builder/MainTabs';
-import ResumeBuilderScreen from '../features/resume-builder/ResumeBuilder';
-import PersonalInfoScreen from '../features/resume-builder/PersonalInfoScreen';
-import EducationScreen from '../features/resume-builder/EducationScreen';
-import SkillsScreen from '../features/resume-builder/SkillsScreen';
-import ExperienceScreen from '../features/resume-builder/ExperienceScreen';
-import CertificatesScreen from '../features/resume-builder/CertificateScreen';
-import ProjectsScreen from '../features/resume-builder/ProjectScreen';
-import ResumePreviewScreen from '../features/resume-builder/ResumePreviewScreen';
+import {
+  CertificatesScreen,
+  EducationScreen,
+  ExperienceScreen,
+  PersonalInfoScreen,
+  ProjectsScreen,
+  ResumeBuilderScreen,
+  ResumePreviewScreen,
+  SkillsScreen,
+} from '@features/resume-builder';
+import MainTabs from '@features/resume-builder/MainTabs';
 
 const Stack = createNativeStackNavigator();
 

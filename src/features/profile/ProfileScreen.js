@@ -38,6 +38,8 @@ export default function ProfileScreen({ navigation }) {
   const [contactNumber, setContactNumber] = useState('');
   const [birthday, setBirthday] = useState('');
   const [loading, setLoading] = useState(false);
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
 
   // 3. Populate the local state when the profile data loads from the context
   useEffect(() => {
@@ -140,6 +142,15 @@ export default function ProfileScreen({ navigation }) {
   // SAVE PROFILE
   // --------------------------------------------------
   const handleSave = async () => {
+    // 0. Name Validation (first/last name can't be blank or spaces-only; middle name is optional)
+    const missingFirstName = !firstName.trim();
+    const missingLastName = !lastName.trim();
+
+    setFirstNameError(missingFirstName ? 'First name cannot be blank.' : '');
+    setLastNameError(missingLastName ? 'Last name cannot be blank.' : '');
+
+    if (missingFirstName || missingLastName) return;
+
     // 1. Email Validation
     if (!validateEmail(email)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
@@ -169,6 +180,21 @@ export default function ProfileScreen({ navigation }) {
       return;
     }
 
+    // 4b. Email change: Supabase Auth owns the login email, so a change needs a
+    // confirmation link sent to the new address. profiles.email is synced by a
+    // database trigger (email_sync.sql) once the change is confirmed.
+    const newEmail = email.trim();
+    const emailChanged = newEmail.toLowerCase() !== (user.email || '').toLowerCase();
+
+    if (emailChanged) {
+      const { error: emailChangeError } = await supabase.auth.updateUser({ email: newEmail });
+      if (emailChangeError) {
+        setLoading(false);
+        Alert.alert('Email Change Failed', emailChangeError.message);
+        return;
+      }
+    }
+
     // 5. Upload avatar if a new one was picked
     const newAvatarUrl = await uploadAvatar(user.id);
 
@@ -177,7 +203,6 @@ export default function ProfileScreen({ navigation }) {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       middle_name: middleName.trim(),
-      email: email.trim(),
       contact_number: contactNumber.trim(),
       birthday: birthday.trim(),
       avatar_url: newAvatarUrl,
@@ -191,7 +216,12 @@ export default function ProfileScreen({ navigation }) {
     if (error) {
       Alert.alert('Update Failed', error.message);
     } else {
-      Alert.alert('Profile updated', 'Your changes have been saved successfully.');
+      Alert.alert(
+        'Profile updated',
+        emailChanged
+          ? `Your changes were saved. We sent a confirmation link to ${newEmail}. Your login email stays the same until you confirm it.`
+          : 'Your changes have been saved successfully.',
+      );
     }
   };
 
@@ -255,28 +285,36 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>First Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, firstNameError ? styles.inputError : null]}
               placeholder="Enter your first name"
               placeholderTextColor="#9A9A9A"
               value={firstName}
-              onChangeText={setFirstName}
+              onChangeText={(text) => {
+                setFirstName(text);
+                if (firstNameError) setFirstNameError('');
+              }}
               autoCapitalize="words"
               editable={!loading}
             />
+            {firstNameError ? <Text style={styles.errorText}>{firstNameError}</Text> : null}
           </View>
 
           {/* LAST NAME */}
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Last Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, lastNameError ? styles.inputError : null]}
               placeholder="Enter your last name"
               placeholderTextColor="#9A9A9A"
               value={lastName}
-              onChangeText={setLastName}
+              onChangeText={(text) => {
+                setLastName(text);
+                if (lastNameError) setLastNameError('');
+              }}
               autoCapitalize="words"
               editable={!loading}
             />
+            {lastNameError ? <Text style={styles.errorText}>{lastNameError}</Text> : null}
           </View>
 
           {/* MIDDLE NAME */}
@@ -284,7 +322,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.label}>Middle Name</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter your middle name"
+              placeholder="Enter your middle name (optional)"
               placeholderTextColor="#9A9A9A"
               value={middleName}
               onChangeText={setMiddleName}
@@ -310,6 +348,12 @@ export default function ProfileScreen({ navigation }) {
             {email.length > 0 && !validateEmail(email) && (
               <Text style={styles.errorText}>Please enter a valid email address.</Text>
             )}
+            {validateEmail(email) &&
+              email.trim().toLowerCase() !== (profile?.email || '').toLowerCase() && (
+                <Text style={styles.hintText}>
+                  We'll email a confirmation link to this address before your login email changes.
+                </Text>
+              )}
           </View>
 
           {/* CONTACT NUMBER */}
@@ -437,6 +481,8 @@ const styles = StyleSheet.create({
     color: '#111111',
   },
 
+  inputError: { borderColor: '#D32F2F' },
+
   phoneContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -450,6 +496,7 @@ const styles = StyleSheet.create({
   phoneInput: { flex: 1, fontSize: 15, color: '#111111', paddingVertical: 0 },
 
   errorText: { color: '#D32F2F', fontSize: 12, marginTop: 5 },
+  hintText: { color: '#666666', fontSize: 12, marginTop: 5 },
 
   primaryButton: {
     backgroundColor: PURPLE,

@@ -19,7 +19,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { supabase } from '@config/supabase';
+import { createIsolatedClient } from './isolatedClient';
+import { meetsAllRules } from './passwordRules';
+import PasswordRequirements from './PasswordRequirements';
 
 const formatBirthday = (date) => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -43,13 +45,15 @@ const birthdayToDateInputValue = (birthday) => {
   return match ? `${match[3]}-${match[1]}-${match[2]}` : '';
 };
 
-const showAlert = (title, message) => {
+const showAlert = (title, message, onOk) => {
   if (Platform.OS === 'web') {
     window.alert(`${title}: ${message}`);
+    if (onOk) onOk();
   } else {
-    Alert.alert(title, message);
+    Alert.alert(title, message, [{ text: 'OK', onPress: onOk }]);
   }
 };
+
 
 // Same theme tokens as WelcomeScreen / LoginScreen.
 const COLORS = {
@@ -71,6 +75,7 @@ export default function RegisterScreen({ navigation }) {
   const [contactNumber, setContactNumber] = useState('');
   const [birthday, setBirthday] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
@@ -78,11 +83,11 @@ export default function RegisterScreen({ navigation }) {
 
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
-  const [middleNameError, setMiddleNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [contactNumberError, setContactNumberError] = useState('');
   const [birthdayError, setBirthdayError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   const openBirthdayPicker = () => {
     setPendingBirthday(parseBirthday(birthday));
@@ -124,24 +129,25 @@ export default function RegisterScreen({ navigation }) {
   // Uploads the picked photo to the "avatars" storage bucket and saves the
   // public URL onto the user's profiles row. Only works once we have a
   // session (i.e. email confirmation is off, or they're already verified).
-  const uploadAvatar = async (userId) => {
+  // `client` is the temporary sign-up client that holds the new session.
+  const uploadAvatar = async (client, userId) => {
     try {
       const response = await fetch(profileImage);
       const blob = await response.blob();
       const fileExt = profileImage.split('.').pop() || 'jpg';
       const filePath = `${userId}/avatar.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await client.storage
         .from('avatars')
         .upload(filePath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
 
       if (uploadError) throw uploadError;
 
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData } = client.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      await supabase
+      await client
         .from('profiles')
         .update({ avatar_url: publicUrlData.publicUrl })
         .eq('id', userId);
@@ -154,16 +160,17 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = async () => {
     const missingFirstName = !firstName.trim();
     const missingLastName = !lastName.trim();
-    const missingMiddleName = !middleName.trim();
     const missingEmail = !email.trim();
     const missingContactNumber = !contactNumber.trim();
     const invalidContactNumber = !/^9\d{9}$/.test(contactNumber);
     const missingBirthday = !birthday.trim();
-    const missingPassword = !password.trim();
+    const missingPassword = !password;
+    const weakPassword = !missingPassword && !meetsAllRules(password);
+    const missingConfirm = !confirmPassword;
+    const passwordMismatch = !missingConfirm && password !== confirmPassword;
 
     setFirstNameError(missingFirstName ? 'Please enter your first name' : '');
     setLastNameError(missingLastName ? 'Please enter your last name' : '');
-    setMiddleNameError(missingMiddleName ? 'Please enter your middle name' : '');
     setEmailError(missingEmail ? 'Please enter your email' : '');
     setContactNumberError(
       missingContactNumber
@@ -173,22 +180,42 @@ export default function RegisterScreen({ navigation }) {
           : '',
     );
     setBirthdayError(missingBirthday ? 'Please enter your birthday' : '');
-    setPasswordError(missingPassword ? 'Please create a password' : '');
+    setPasswordError(
+      missingPassword
+        ? 'Please create a password'
+        : weakPassword
+          ? 'Your password does not meet all the requirements below'
+          : '',
+    );
+    setConfirmPasswordError(
+      missingConfirm
+        ? 'Please confirm your password'
+        : passwordMismatch
+          ? 'Passwords do not match'
+          : '',
+    );
 
     if (
       missingFirstName ||
       missingLastName ||
-      missingMiddleName ||
       missingEmail ||
       missingContactNumber ||
       invalidContactNumber ||
       missingBirthday ||
-      missingPassword
+      missingPassword ||
+      weakPassword ||
+      missingConfirm ||
+      passwordMismatch
     ) return;
 
     setLoading(true);
 
-    const { data: { session, user }, error } = await supabase.auth.signUp({
+    // Sign up through a throwaway client that keeps its session in memory only.
+    // The main `supabase` client (and App.js's auth listener) never sees a
+    // session, so the app does NOT jump to the dashboard after registering.
+    const signupClient = createIsolatedClient('careerlaunch-signup-temp');
+
+    const { data: { session, user }, error } = await signupClient.auth.signUp({
       email: email.trim(),
       password: password,
       options: {
@@ -210,14 +237,18 @@ export default function RegisterScreen({ navigation }) {
     }
 
     if (session && profileImage && user) {
-      await uploadAvatar(user.id);
+      await uploadAvatar(signupClient, user.id);
     }
 
     setLoading(false);
 
-    if (!session) {
-      showAlert('Success!', 'Please check your email inbox to confirm your account.'); // Use showAlert
-    } 
+    showAlert(
+      'Account created!',
+      session
+        ? 'Your account is ready. Please log in to continue.'
+        : 'Please check your email inbox to confirm your account, then log in.',
+      () => navigation?.navigate('Login'),
+    );
   };
 
   return (
@@ -288,22 +319,16 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.errorText}>{lastNameError}</Text>
           ) : null}
 
-          <Text style={styles.label}>Middle name</Text>
+          <Text style={styles.label}>Middle name (optional)</Text>
           <TextInput
-            style={[styles.input, middleNameError ? styles.inputError : null]}
-            placeholder="Enter your middle name"
+            style={styles.input}
+            placeholder="Enter your middle name (optional)"
             placeholderTextColor={COLORS.placeholder}
             value={middleName}
             editable={!loading}
-            onChangeText={(text) => {
-              setMiddleName(text);
-              if (middleNameError) setMiddleNameError('');
-            }}
+            onChangeText={setMiddleName}
             autoCapitalize="words"
           />
-          {middleNameError ? (
-            <Text style={styles.errorText}>{middleNameError}</Text>
-          ) : null}
 
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -452,10 +477,35 @@ export default function RegisterScreen({ navigation }) {
               setPassword(text);
               if (passwordError) setPasswordError('');
             }}
+            autoCapitalize="none"
+            autoCorrect={false}
             secureTextEntry
           />
           {passwordError ? (
             <Text style={styles.errorText}>{passwordError}</Text>
+          ) : null}
+
+          <PasswordRequirements password={password} />
+
+          <Text style={styles.label}>Confirm password</Text>
+          <TextInput
+            style={[styles.input, confirmPasswordError ? styles.inputError : null]}
+            placeholder="Re-enter your password"
+            placeholderTextColor={COLORS.placeholder}
+            value={confirmPassword}
+            editable={!loading}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+              if (confirmPasswordError) setConfirmPasswordError('');
+            }}
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry
+          />
+          {confirmPasswordError ? (
+            <Text style={styles.errorText}>{confirmPasswordError}</Text>
+          ) : confirmPassword.length > 0 && confirmPassword === password ? (
+            <Text style={styles.matchText}>✓ Passwords match</Text>
           ) : null}
 
           <TouchableOpacity
@@ -511,6 +561,7 @@ const styles = StyleSheet.create({
   phoneInputWeb: { borderWidth: 0, outlineStyle: 'none' },
   inputError: { borderColor: '#E5484D' },
   errorText: { color: '#E5484D', fontSize: 12, marginTop: 6 },
+  matchText: { color: '#2E9E5B', fontSize: 12, marginTop: 6 },
   registerButton: { height: 50, backgroundColor: COLORS.primary, borderRadius: 25, justifyContent: 'center', alignItems: 'center', marginTop: 22, shadowColor: COLORS.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 4 },
   registerButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
   footerRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 22 },
