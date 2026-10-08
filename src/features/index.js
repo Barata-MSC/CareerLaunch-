@@ -6,6 +6,7 @@ export { default as SplashScreen } from './auth/SplashScreen';
 export { default as JobFinderScreen } from './job-finder/JobFinderScreen';
 export { default as CareerRoadmapScreen } from './learning-hub/software-engineering/SoftwareEngineerRoadmap';
 export { default as CSSCourseScreen } from './learning-hub/software-engineering/css-course/CSSCourse';
+export { default as JavaScriptCourseScreen } from './learning-hub/software-engineering/javascript-course/JavaScriptCourse';
 export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';

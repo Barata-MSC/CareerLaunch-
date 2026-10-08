@@ -222,10 +222,6 @@ export default function CareerRoadmapScreen({ navigation, route }) {
 
     return steps;
   }, [trackData, selectedTrack, completedLessonIds, quizPassed]);
-  const estimatedTime = trackData.estimatedTime;
-
-  const trackData = TRACKS[selectedTrack];
-  const roadmapSteps = trackData.steps;
 
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);
@@ -264,12 +260,13 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     })
   ).current;
 
-  // Every step is tappable. This opens the detail modal below.
-  // Swap this out for navigation.navigate('SkillDetail', { skill: step })
-  // once you have a dedicated screen for lesson content.
   const handleStepPress = (step) => {
     if (step.title === 'JavaScript') {
       navigation.navigate('JavaScriptCourse');
+      return;
+    }
+    if (step.title === 'CSS') {
+      navigation.navigate('CSSCourse');
       return;
     }
     setSelectedStep(step);
