@@ -1,33 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    ActivityIndicator,
+    Alert,
+    Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
 import { calculateResumeScore, getResumeSuggestions, getScoreBreakdown } from './resumeScore';
 import { formatPhone } from './validators';
-
+import { downloadResumePdf } from './resumePdf';
+ 
 const PURPLE = '#5B21F5';
-
+ 
 export default function ResumePreviewScreen({ navigation, route }) {
     const { resumeData } = useResume();
     const mode = route?.params?.mode === 'test' ? 'test' : 'generate';
-
+    const [downloading, setDownloading] = useState(false);
+ 
+    const handleDownload = async () => {
+        if (downloading) return;
+        setDownloading(true);
+        try {
+            await downloadResumePdf(resumeData);
+        } catch (error) {
+            Alert.alert('Download failed', error?.message || 'Could not create the PDF. Please try again.');
+        } finally {
+            setDownloading(false);
+        }
+    };
+ 
     const score = calculateResumeScore(resumeData);
     const suggestions = getResumeSuggestions(resumeData);
     const breakdown = getScoreBreakdown(resumeData);
-
+ 
     const info = resumeData.personalInfo || {};
     const education = resumeData.education || [];
     const skills = resumeData.skills || [];
     const experience = resumeData.experience || [];
     const certificates = resumeData.certificates || [];
     const projects = resumeData.projects || [];
-
+ 
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Navigation Header */}
@@ -43,7 +60,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                 </Text>
                 <View style={{ width: 24 }} />
             </View>
-
+ 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {mode === 'test' ? (
                     <>
@@ -60,7 +77,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 ? '💡 Tip: Add more detailed descriptions or portfolio items to stand out to employers.'
                                 : '✅ Awesome! Your resume looks robust and well-optimized for application tracking systems.'}
                         </Text>
-
+ 
                         <View style={styles.suggestionsBox}>
                             <Text style={styles.suggestionsTitle}>Suggestions</Text>
                             {suggestions.map((tip, index) => (
@@ -68,7 +85,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                             ))}
                         </View>
                     </View>
-
+ 
                     {/* Score breakdown: fills the screen and shows where points come from */}
                     <View style={styles.scoreContainer}>
                         <Text style={styles.breakdownTitle}>Score Breakdown</Text>
@@ -103,7 +120,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                             );
                         })}
                     </View>
-
+ 
                     <TouchableOpacity
                         style={styles.previewButton}
                         activeOpacity={0.85}
@@ -113,13 +130,17 @@ export default function ResumePreviewScreen({ navigation, route }) {
                     </TouchableOpacity>
                     </>
                 ) : (
+                    <>
                     <View style={styles.documentFrame}>
                         {/* Header Contact Block */}
+                        {info.photo ? (
+                            <Image source={{ uri: info.photo }} style={styles.docPhoto} />
+                        ) : null}
                         <Text style={styles.docName}>{info.fullName || 'Your Name'}</Text>
                         <Text style={styles.docContact}>
                             {info.email || 'email@example.com'}  •  {info.phone ? formatPhone(info.phone) : 'Phone Number'}
                         </Text>
-
+ 
                         {/* Professional Summary */}
                         {info.summary ? (
                             <View style={styles.docSection}>
@@ -127,7 +148,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 <Text style={styles.docBodyText}>{info.summary}</Text>
                             </View>
                         ) : null}
-
+ 
                         {/* Core Professional Skills Matrix */}
                         {skills.length > 0 ? (
                             <View style={styles.docSection}>
@@ -135,7 +156,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 <Text style={styles.docBodyText}>{skills.join('  •  ')}</Text>
                             </View>
                         ) : null}
-
+ 
                         {/* Employment Work History */}
                         {experience.length > 0 ? (
                             <View style={styles.docSection}>
@@ -152,7 +173,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 ))}
                             </View>
                         ) : null}
-
+ 
                         {/* Portfolio Projects Section */}
                         {projects.length > 0 ? (
                             <View style={styles.docSection}>
@@ -166,7 +187,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 ))}
                             </View>
                         ) : null}
-
+ 
                         {/* Academic Profile History */}
                         {education.length > 0 ? (
                             <View style={styles.docSection}>
@@ -182,7 +203,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                 ))}
                             </View>
                         ) : null}
-
+ 
                         {/* Professional Credentials & Certifications */}
                         {certificates.length > 0 ? (
                             <View style={styles.docSection}>
@@ -199,12 +220,26 @@ export default function ResumePreviewScreen({ navigation, route }) {
                             </View>
                         ) : null}
                     </View>
+ 
+                    <TouchableOpacity
+                        style={[styles.previewButton, styles.downloadButton, downloading && styles.downloadButtonDisabled]}
+                        activeOpacity={0.85}
+                        disabled={downloading}
+                        onPress={handleDownload}
+                    >
+                        {downloading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.previewButtonText}>Download PDF</Text>
+                        )}
+                    </TouchableOpacity>
+                    </>
                 )}
             </ScrollView>
         </SafeAreaView>
     );
 }
-
+ 
 const styles = StyleSheet.create({
     breakdownTitle: {
         fontSize: 15,
@@ -257,6 +292,12 @@ const styles = StyleSheet.create({
         color: '#636366',
         lineHeight: 16,
         marginTop: 6,
+    },
+    downloadButton: {
+        marginTop: 20,
+    },
+    downloadButtonDisabled: {
+        opacity: 0.7,
     },
     previewButton: {
         backgroundColor: PURPLE,
@@ -374,6 +415,13 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         shadowOffset: { width: 0, height: 2 },
         elevation: 2,
+    },
+    docPhoto: {
+        width: 84,
+        height: 84,
+        borderRadius: 0,
+        alignSelf: 'center',
+        marginBottom: 10,
     },
     docName: {
         fontSize: 20,
