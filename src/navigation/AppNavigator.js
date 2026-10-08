@@ -19,6 +19,7 @@ import ExperienceScreen from '../features/resume-builder/ExperienceScreen';
 import CertificatesScreen from '../features/resume-builder/CertificateScreen';
 import ProjectsScreen from '../features/resume-builder/ProjectScreen';
 import ResumePreviewScreen from '../features/resume-builder/ResumePreviewScreen';
+import JavaScriptCourse from '../features/learning-hub/software-engineering/javascript-course/JavaScriptCourse';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+      <Stack.Screen name="JavaScriptCourse" component={JavaScriptCourse} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,9 @@ import {
   PanResponder,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { LESSONS } from './javascript-course/CourseData';
+import { useCourseProgress } from './javascript-course/CourseStore';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -40,24 +43,18 @@ const TRACKS = {
       },
       {
         id: '4',
-        title: 'React',
-        status: 'in-progress',
-        description: "You're currently learning components, props, state, and hooks. This is the step that turns JS into real apps.",
-      },
-      {
-        id: '5',
         title: 'Node js',
         status: 'not-started',
         description: 'Up next: server-side JavaScript. You will learn to build APIs and handle backend logic.',
       },
       {
-        id: '6',
+        id: '5',
         title: 'Database',
         status: 'not-started',
         description: 'Coming later: storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
-        id: '7',
+        id: '6',
         title: 'Git & Github',
         status: 'not-started',
         description: 'Coming later: version control and collaboration — tracking changes and working with a team.',
@@ -156,6 +153,14 @@ const STATUS_LABEL = {
   'not-started': 'Not started',
 };
 
+function getJavaScriptStatus(completedLessonIds, quizPassed) {
+  const hasStarted = completedLessonIds.length > 0 || quizPassed;
+
+  if (!hasStarted) return 'not-started';
+  if (completedLessonIds.length >= LESSONS.length && quizPassed) return 'completed';
+  return 'in-progress';
+}
+
 function ProgressBar({ percent }) {
   return (
     <View style={styles.progressWrap}>
@@ -197,9 +202,20 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
+  const { completedLessonIds, quizPassed } = useCourseProgress();
 
   const trackData = TRACKS[selectedTrack];
-  const roadmapSteps = trackData.steps;
+  const roadmapSteps = useMemo(() => {
+    const steps = trackData.steps.map((step) => {
+      if (selectedTrack !== 'Software Engineer' || step.title !== 'JavaScript') return step;
+      return {
+        ...step,
+        status: getJavaScriptStatus(completedLessonIds, quizPassed),
+      };
+    });
+
+    return steps;
+  }, [trackData, selectedTrack, completedLessonIds, quizPassed]);
   const estimatedTime = trackData.estimatedTime;
 
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
@@ -243,6 +259,10 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   // Swap this out for navigation.navigate('SkillDetail', { skill: step })
   // once you have a dedicated screen for lesson content.
   const handleStepPress = (step) => {
+    if (step.title === 'JavaScript') {
+      navigation.navigate('JavaScriptCourse');
+      return;
+    }
     setSelectedStep(step);
   };
 
@@ -327,7 +347,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           })}
         </View>
 
-       
+
       </ScrollView>
 
       <Modal
