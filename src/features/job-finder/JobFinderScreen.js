@@ -155,19 +155,6 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
       <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company[0]}</Text>
     </View>
   );
-
-
-  // Fallback: initial letter
-  return (
-    <View
-      style={[
-        styles.logo,
-        { width: size, height: size, borderRadius: size / 4, backgroundColor: color },
-      ]}
-    >
-      <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company[0]}</Text>
-    </View>
-  );
 }
 
 export default function JobFinderScreen({ navigation }) {

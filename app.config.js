@@ -2,10 +2,10 @@ module.exports = {
   expo: {
     name: "finalProject",
     slug: "finalProject",
+    scheme: "careerlaunch",
     version: "1.0.0",
     plugins: ["@react-native-community/datetimepicker"],
     orientation: "portrait",
-    icon: "./assets/icon-profile.png",
     icon: "./src/assets/rocket-icon.png",
     userInterfaceStyle: "light",
     ios: {
