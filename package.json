@@ -1,6 +1,6 @@
 {
   "homepage": "https://barata-msc.github.io/CareerLaunch-/",
-  "name": "finalproject",
+  "name": "careerlaunch",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {

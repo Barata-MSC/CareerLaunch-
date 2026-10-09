@@ -198,7 +198,7 @@ The following extensions are recommended to streamline development and ensure co
 The Expo project structure was initialized using the default blank template:
 
 ```powershell
-npx create-expo-app finalProject --template blank
+npx create-expo-app "CareerLaunch!" --template blank
 ```
 
 Additional dependencies and supporting Expo libraries are installed incrementally as required.
