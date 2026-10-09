@@ -7,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GoogleButton from '@components/GoogleButton';
@@ -24,6 +25,14 @@ export default function LoginScreen({ navigation }) {
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Guest sign-in
+  const [showGuest, setShowGuest] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestError, setGuestError] = useState('');
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  const busy = loading || guestLoading;
 
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
@@ -65,102 +74,192 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // Guest sign-in: Supabase creates an anonymous user (a real user id with no
+  // personal info). The username travels as metadata, and the new-user trigger
+  // copies it into profiles.username. When the session arrives, App.js /
+  // RootNavigator switch to the app by themselves, so no navigation is needed.
+  const handleGuestStart = async () => {
+    const name = guestName.trim();
+
+    if (name.length < 2) {
+      setGuestError('Please enter a username (at least 2 characters)');
+      return;
+    }
+
+    setGuestError('');
+    setGuestLoading(true);
+
+    const { error } = await supabase.auth.signInAnonymously({
+      options: { data: { username: name } },
+    });
+
+    setGuestLoading(false);
+
+    if (error) {
+      const message = (error.message || '').toLowerCase();
+
+      if (error.code === 'anonymous_provider_disabled' || message.includes('anonymous')) {
+        setGuestError('Guest access is not enabled yet. Turn on anonymous sign-ins in Supabase.');
+      } else if (message.includes('network') || message.includes('fetch')) {
+        setGuestError('Network error. Please check your connection and try again.');
+      } else {
+        setGuestError(error.message || 'Something went wrong. Please try again.');
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      <View style={styles.headerWrapper}>
-        <Text style={styles.title}>Welcome back!</Text>
-        <Text style={styles.subtitle}>Login to continue your journey</Text>
-      </View>
-
-      {/* Email */}
-      <View style={styles.fieldGroup}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={[styles.input, emailError || loginError ? styles.inputError : null]}
-          placeholder="Enter your email"
-          placeholderTextColor="#9A9A9A"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          editable={!loading}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (emailError) setEmailError('');
-            if (loginError) setLoginError('');
-          }}
-        />
-        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-      </View>
-
-      {/* Password */}
-      <View style={styles.fieldGroup}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={[styles.input, passwordError || loginError ? styles.inputError : null]}
-          placeholder="Enter your password"
-          placeholderTextColor="#9A9A9A"
-          secureTextEntry
-          value={password}
-          editable={!loading}
-          onChangeText={(text) => {
-            setPassword(text);
-            if (passwordError) setPasswordError('');
-            if (loginError) setLoginError('');
-          }}
-        />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-        {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
-      </View>
-
-      {/* Forgot Password */}
-      <TouchableOpacity
-        style={styles.forgotWrapper}
-        disabled={loading}
-        onPress={() => navigation?.navigate('ForgotPassword', { email: email.trim() })}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.forgotText}>Forgot password?</Text>
-      </TouchableOpacity>
+        <View style={styles.headerWrapper}>
+          <Text style={styles.title}>Welcome back!</Text>
+          <Text style={styles.subtitle}>Login to continue your journey</Text>
+        </View>
 
-      {/* Login Button */}
-      <TouchableOpacity
-        style={[styles.primaryButton, loading && { opacity: 0.7 }]}
-        activeOpacity={0.85}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#FFFFFF" />
-        ) : (
-          <Text style={styles.primaryButtonText}>Login</Text>
-        )}
-      </TouchableOpacity>
+        {/* Email */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={[styles.input, emailError || loginError ? styles.inputError : null]}
+            placeholder="Enter your email"
+            placeholderTextColor="#9A9A9A"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            editable={!busy}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (emailError) setEmailError('');
+              if (loginError) setLoginError('');
+            }}
+          />
+          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+        </View>
 
-      {/* Divider */}
-      <View style={styles.dividerRow}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>OR</Text>
-        <View style={styles.dividerLine} />
-      </View>
+        {/* Password */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={[styles.input, passwordError || loginError ? styles.inputError : null]}
+            placeholder="Enter your password"
+            placeholderTextColor="#9A9A9A"
+            secureTextEntry
+            value={password}
+            editable={!busy}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (passwordError) setPasswordError('');
+              if (loginError) setLoginError('');
+            }}
+          />
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
+        </View>
 
-      {/* Google Button */}
-      <GoogleButton disabled={loading} />
-
-      {/* Sign Up */}
-      <View style={styles.signUpRow}>
-        <Text style={styles.signUpText}>Don't have an account yet?</Text>
-        <TouchableOpacity onPress={() => navigation?.navigate('Register')} disabled={loading}>
-          <Text style={styles.signUpLink}> Sign Up</Text>
+        {/* Forgot Password */}
+        <TouchableOpacity
+          style={styles.forgotWrapper}
+          disabled={busy}
+          onPress={() => navigation?.navigate('ForgotPassword', { email: email.trim() })}
+        >
+          <Text style={styles.forgotText}>Forgot password?</Text>
         </TouchableOpacity>
-      </View>
+
+        {/* Login Button */}
+        <TouchableOpacity
+          style={[styles.primaryButton, loading && { opacity: 0.7 }]}
+          activeOpacity={0.85}
+          onPress={handleLogin}
+          disabled={busy}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Login</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Divider */}
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>OR</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        {/* Google Button */}
+        <GoogleButton disabled={busy} />
+
+        {/* Continue as guest */}
+        <TouchableOpacity
+          style={styles.guestButton}
+          activeOpacity={0.85}
+          onPress={() => setShowGuest(!showGuest)}
+          disabled={busy}
+        >
+          <Text style={styles.guestButtonText}>👤 Continue as guest</Text>
+        </TouchableOpacity>
+
+        {showGuest && (
+          <View style={styles.guestPanel}>
+            <Text style={styles.label}>Choose a username</Text>
+            <TextInput
+              style={[styles.input, guestError ? styles.inputError : null]}
+              placeholder="Enter a username"
+              placeholderTextColor="#9A9A9A"
+              autoCapitalize="none"
+              autoCorrect={false}
+              maxLength={30}
+              value={guestName}
+              editable={!busy}
+              onChangeText={(text) => {
+                setGuestName(text);
+                if (guestError) setGuestError('');
+              }}
+              onSubmitEditing={handleGuestStart}
+            />
+            {guestError ? <Text style={styles.errorText}>{guestError}</Text> : null}
+            <Text style={styles.guestNote}>
+              No account needed. You can create one later and keep your progress.
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.primaryButton, styles.fullWidth, guestLoading && { opacity: 0.7 }]}
+              activeOpacity={0.85}
+              onPress={handleGuestStart}
+              disabled={busy}
+            >
+              {guestLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.primaryButtonText}>Start as guest</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Sign Up */}
+        <View style={styles.signUpRow}>
+          <Text style={styles.signUpText}>Don't have an account yet?</Text>
+          <TouchableOpacity onPress={() => navigation?.navigate('Register')} disabled={busy}>
+            <Text style={styles.signUpLink}> Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ... styles object remains unchanged to perfectly protect your exact UI design ...
+// Original styles are unchanged. Added: scrollContent, guestButton, guestButtonText,
+// guestPanel, guestNote, fullWidth.
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 24 },
+  scrollContent: { paddingBottom: 32 },
   headerWrapper: { alignItems: 'center', marginTop: 48, marginBottom: 32 },
   title: { fontSize: 26, fontWeight: '800', color: '#111111' },
   subtitle: { fontSize: 14, color: '#888888', marginTop: 6 },
@@ -179,4 +278,10 @@ const styles = StyleSheet.create({
   signUpRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20 },
   signUpText: { fontSize: 14, color: '#666666' },
   signUpLink: { fontSize: 14, color: PURPLE, fontWeight: '700' },
+
+  guestButton: { width: '90%', alignSelf: 'center', height: 50, borderRadius: 14, borderWidth: 1.5, borderColor: PURPLE, alignItems: 'center', justifyContent: 'center', marginTop: 14 },
+  guestButtonText: { color: PURPLE, fontSize: 15, fontWeight: '700' },
+  guestPanel: { width: '90%', alignSelf: 'center', marginTop: 16 },
+  guestNote: { fontSize: 12, color: '#888888', marginTop: 8, marginBottom: 14, lineHeight: 17 },
+  fullWidth: { width: '100%' },
 });

@@ -11,6 +11,10 @@ export function ProfileProvider({ session, children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // True while the user is on a guest (anonymous) account. It flips to false
+  // as soon as the guest upgrades to a full account on CreateAccountScreen.
+  const isGuest = !!session?.user?.is_anonymous;
+
   const fetchProfile = useCallback(async () => {
     if (!session?.user?.id) {
       setProfile(null);
@@ -45,7 +49,7 @@ export function ProfileProvider({ session, children }) {
 
   return (
     <ProfileContext.Provider
-      value={{ profile, loading, refreshProfile: fetchProfile, updateProfile }}
+      value={{ profile, loading, isGuest, refreshProfile: fetchProfile, updateProfile }}
     >
       {children}
     </ProfileContext.Provider>

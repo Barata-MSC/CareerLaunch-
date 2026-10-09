@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,15 +10,26 @@ import {
   PanResponder,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
-import { LESSONS } from './javascript-course/CourseData';
-import { useCourseProgress } from './javascript-course/CourseStore';
+import cssCourse from './css-course/course';
+import javascriptCourse from './javascript-course/course';
+import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
+import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+// Every course that has a roadmap step. Add a new course here AND give its
+// step a `course` and `route` below; its status then comes from saved progress.
+const COURSES = [cssCourse, javascriptCourse];
 
 // Each key is a selectable track. Add as many as you want here —
 // the chip row and roadmap below are both driven off this object,
 // so nothing else needs to change when you add a new track.
+//
+// A step has no `status` of its own. If it has a `course`, its status comes from
+// the user's saved progress in that course; a step without a course always shows
+// "Not started" until its course exists. `route` is the screen to open on tap.
 const TRACKS = {
   'Software Engineer': {
     estimatedTime: '5 Months',
@@ -26,44 +37,41 @@ const TRACKS = {
       {
         id: '1',
         title: 'HTML',
-        status: 'completed',
-        description: 'The building blocks of every web page. You know how to structure content with tags, forms, and semantic elements.',
+        description: 'The building blocks of every web page: structuring content with tags, forms, and semantic elements.',
       },
       {
         id: '2',
         title: 'CSS',
-        status: 'completed',
-        description: 'You can style layouts, use Flexbox/Grid, and make responsive designs.',
+        course: cssCourse,
+        route: 'CSSCourse',
+        description: 'Style layouts, use Flexbox/Grid, and make responsive designs.',
       },
       {
         id: '3',
         title: 'JavaScript',
-        status: 'completed',
-        description: 'You understand variables, functions, DOM manipulation, and async code — the language that powers interactivity.',
+        course: javascriptCourse,
+        route: 'JavaScriptCourse',
+        description: 'Learn variables, functions, DOM manipulation, and async code — the language that powers interactivity.',
       },
       {
         id: '4',
         title: 'React',
-        status: 'in-progress',
-        description: "You're currently learning components, props, state, and hooks. This is the step that turns JS into real apps.",
+        description: 'Learn components, props, state, and hooks. This is the step that turns JS into real apps.',
       },
       {
         id: '5',
         title: 'Node js',
-        status: 'not-started',
-        description: 'Up next: server-side JavaScript. You will learn to build APIs and handle backend logic.',
+        description: 'Server-side JavaScript: build APIs and handle backend logic.',
       },
       {
         id: '6',
         title: 'Database',
-        status: 'not-started',
-        description: 'Coming later: storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
+        description: 'Storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
         id: '7',
         title: 'Git & Github',
-        status: 'not-started',
-        description: 'Coming later: version control and collaboration — tracking changes and working with a team.',
+        description: 'Version control and collaboration — tracking changes and working with a team.',
       },
     ],
   },
@@ -73,38 +81,32 @@ const TRACKS = {
       {
         id: '1',
         title: 'Excel & Spreadsheets',
-        status: 'completed',
-        description: 'You can clean data, use formulas, and build pivot tables to summarize information.',
+        description: 'Clean data, use formulas, and build pivot tables to summarize information.',
       },
       {
         id: '2',
         title: 'SQL',
-        status: 'completed',
-        description: 'You know how to query, join, and filter data across relational database tables.',
+        description: 'Query, join, and filter data across relational database tables.',
       },
       {
         id: '3',
         title: 'Python (Pandas)',
-        status: 'in-progress',
-        description: "You're currently learning to clean and analyze datasets using Python and the Pandas library.",
+        description: 'Clean and analyze datasets using Python and the Pandas library.',
       },
       {
         id: '4',
         title: 'Data Visualization',
-        status: 'not-started',
-        description: 'Up next: telling stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
+        description: 'Tell stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
       },
       {
         id: '5',
         title: 'Statistics',
-        status: 'not-started',
-        description: 'Coming later: hypothesis testing, distributions, and the math behind trustworthy insights.',
+        description: 'Hypothesis testing, distributions, and the math behind trustworthy insights.',
       },
       {
         id: '6',
         title: 'Dashboards (Power BI / Tableau)',
-        status: 'not-started',
-        description: 'Coming later: building interactive dashboards stakeholders can explore on their own.',
+        description: 'Build interactive dashboards stakeholders can explore on their own.',
       },
     ],
   },
@@ -114,38 +116,32 @@ const TRACKS = {
       {
         id: '1',
         title: 'Design Fundamentals',
-        status: 'completed',
-        description: 'You understand color theory, typography, spacing, and visual hierarchy.',
+        description: 'Color theory, typography, spacing, and visual hierarchy.',
       },
       {
         id: '2',
         title: 'User Research',
-        status: 'completed',
-        description: 'You know how to interview users, run surveys, and turn findings into actionable insights.',
+        description: 'Interview users, run surveys, and turn findings into actionable insights.',
       },
       {
         id: '3',
         title: 'Wireframing',
-        status: 'in-progress',
-        description: "You're currently practicing low-fidelity wireframes to map out layouts before visual design.",
+        description: 'Practice low-fidelity wireframes to map out layouts before visual design.',
       },
       {
         id: '4',
         title: 'Figma / Prototyping',
-        status: 'not-started',
-        description: 'Up next: building interactive, high-fidelity prototypes that feel like the real app.',
+        description: 'Build interactive, high-fidelity prototypes that feel like the real app.',
       },
       {
         id: '5',
         title: 'Usability Testing',
-        status: 'not-started',
-        description: 'Coming later: testing your designs with real users and iterating on the feedback.',
+        description: 'Test your designs with real users and iterate on the feedback.',
       },
       {
         id: '6',
         title: 'Design Systems',
-        status: 'not-started',
-        description: 'Coming later: building reusable components and a consistent design language.',
+        description: 'Build reusable components and a consistent design language.',
       },
     ],
   },
@@ -158,14 +154,6 @@ const STATUS_LABEL = {
   'in-progress': 'In Progress',
   'not-started': 'Not started',
 };
-
-function getJavaScriptStatus(completedLessonIds, quizPassed) {
-  const hasStarted = completedLessonIds.length > 0 || quizPassed;
-
-  if (!hasStarted) return 'not-started';
-  if (completedLessonIds.length >= LESSONS.length && quizPassed) return 'completed';
-  return 'in-progress';
-}
 
 function ProgressBar({ percent }) {
   return (
@@ -208,20 +196,28 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
-  const { completedLessonIds, quizPassed } = useCourseProgress();
+
+  // Saved progress for every course. The roadmap stays mounted behind the course
+  // screens, so reload whenever it comes back into focus (including the first time).
+  const { progressByCourseId, refresh } = useAllCoursesProgress(COURSES);
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
 
   const trackData = TRACKS[selectedTrack];
-  const roadmapSteps = useMemo(() => {
-    const steps = trackData.steps.map((step) => {
-      if (selectedTrack !== 'Software Engineer' || step.title !== 'JavaScript') return step;
-      return {
+  const roadmapSteps = useMemo(
+    () =>
+      trackData.steps.map((step) => ({
         ...step,
-        status: getJavaScriptStatus(completedLessonIds, quizPassed),
-      };
-    });
-
-    return steps;
-  }, [trackData, selectedTrack, completedLessonIds, quizPassed]);
+        status: step.course
+          ? getCourseStatus(step.course, progressByCourseId[step.course.id])
+          : 'not-started',
+      })),
+    [trackData, progressByCourseId],
+  );
 
   const completedCount = roadmapSteps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / roadmapSteps.length) * 100);
@@ -261,12 +257,9 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   ).current;
 
   const handleStepPress = (step) => {
-    if (step.title === 'JavaScript') {
-      navigation.navigate('JavaScriptCourse');
-      return;
-    }
-    if (step.title === 'CSS') {
-      navigation.navigate('CSSCourse');
+    // Steps that have a course open it; the others show the detail panel.
+    if (step.route) {
+      navigation.navigate(step.route);
       return;
     }
     setSelectedStep(step);
@@ -413,8 +406,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   );
 }
 
-const PURPLE = '#5B2EFF';
-const GREEN = '#2ECC71';
+// PURPLE and GREEN come from ../shared/styles so the roadmap matches the courses.
 const GRAY = '#D9D9D9';
 
 const styles = StyleSheet.create({
