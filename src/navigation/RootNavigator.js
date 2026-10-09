@@ -10,6 +10,8 @@ export default function RootNavigator({
   authInitialRoute = 'Welcome',
   onRecoveryDone,
 }) {
+  const effectiveInitialRoute = authInitialRoute || 'Welcome';
+
   // While a password-reset link is being handled, always show the auth stack
   // (even if someone happens to be logged in) so the Reset screen can appear.
   const isAuthenticated = Boolean(session?.user);
@@ -22,7 +24,7 @@ export default function RootNavigator({
     ? 'recovery'
     : showApp
       ? 'app'
-      : `auth-${authInitialRoute}`;
+      : `auth-${effectiveInitialRoute}`;
 
   return (
     <NavigationContainer key={navigationKey}>
@@ -30,7 +32,7 @@ export default function RootNavigator({
         <AppNavigator />
       ) : (
         <AuthNavigator
-          initialRouteName={authInitialRoute}
+          initialRouteName={effectiveInitialRoute}
           recovery={recovery}
           onRecoveryDone={onRecoveryDone}
         />

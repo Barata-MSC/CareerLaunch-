@@ -18,13 +18,14 @@ import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
 import nodeCourse from './nodejs-course/course';
+import databaseCourse from './database-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse];
 
 
 
@@ -70,6 +71,8 @@ const TRACKS = {
       {
         id: '6',
         title: 'Database',
+        course: databaseCourse,
+        route: 'DatabaseCourse',
         description: 'Storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
