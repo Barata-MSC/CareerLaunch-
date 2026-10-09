@@ -10,13 +10,17 @@ import {
   JobApplicationTracker,
   AIInterviewCoachScreen,
   DatabaseCourseScreen,
-  DataCourseScreen,
+DataCourseScreen,
+ExcelCourseScreen,
+PandasCourseScreen,
+
   CSSCourseScreen,
   HTMLCourseScreen,
   JavaScriptCourseScreen,
   GitCourseScreen,
   ReactCourseScreen,
   NodeCourseScreen,
+  PandasCourseScreen,
 } from '@features';
 
 import {
@@ -30,6 +34,9 @@ import {
   SkillsScreen,
 } from '@features/resume-builder';
 import MainTabs from '@features/resume-builder/MainTabs';
+import DesignFundamentalsCourseScreen from '../features/learning-hub/ui-ux-designer/design-fundamentals-course/DesignFundamentalsCourse';
+import UserResearchCourseScreen from '../features/learning-hub/ui-ux-designer/user-research-course/UserResearchCourse';
+import WireframingCourseScreen from '../features/learning-hub/ui-ux-designer/wireframing-course/WireFramingCourse';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +51,9 @@ export default function AppNavigator() {
       <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
+      <Stack.Screen name="DesignFundamentalsCourse" component={DesignFundamentalsCourseScreen} />
+      <Stack.Screen name="UserResearchCourse" component={UserResearchCourseScreen} />
+      <Stack.Screen name="WireframingCourse" component={WireframingCourseScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
       <Stack.Screen name="CSSCourse" component={CSSCourseScreen} />
       <Stack.Screen name="HTMLCourse" component={HTMLCourseScreen} />
@@ -52,7 +62,10 @@ export default function AppNavigator() {
       <Stack.Screen name="ReactCourse" component={ReactCourseScreen} />
       <Stack.Screen name="NodeCourse" component={NodeCourseScreen} />
       <Stack.Screen name="DatabaseCourse" component={DatabaseCourseScreen} />
-      <Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
+<Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
+<Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
+<Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
+
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
