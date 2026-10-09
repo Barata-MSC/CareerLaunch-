@@ -15,6 +15,7 @@ export { default as DatabaseCourseScreen } from './learning-hub/software-enginee
 export { default as DataCourseScreen } from './learning-hub/software-engineering/data-visualization-course/DataCourse';
 export { default as ExcelCourseScreen } from './learning-hub/software-engineering/excel-course/ExcelCourse';
 export { default as PandasCourseScreen } from './learning-hub/software-engineering/panda-course/PandaCourse';
+export { default as SQLCourseScreen } from './learning-hub/software-engineering/sql-course/SQLCourse';
 export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';

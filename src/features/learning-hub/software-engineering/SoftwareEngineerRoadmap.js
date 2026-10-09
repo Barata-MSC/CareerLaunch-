@@ -19,7 +19,9 @@ import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
+import sqlCourse from './sql-course/course';
 import dataVisualizationCourse from './data-visualization-course/course';
+
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
 import designFundamentalsCourse from '../ui-ux-designer/design-fundamentals-course/course';
@@ -47,6 +49,7 @@ const COURSES = [
   designFundamentalsCourse,
   userResearchCourse,
   wireframingCourse,
+  sqlCourse,
 ];
 
 
@@ -116,6 +119,8 @@ const TRACKS = {
       {
         id: '2',
         title: 'SQL',
+        course: sqlCourse,
+        route: 'SQLCourse',
         description: 'Query, join, and filter data across relational database tables.',
       },
       {
