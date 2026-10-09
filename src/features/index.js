@@ -6,6 +6,7 @@ export { default as SplashScreen } from './auth/SplashScreen';
 export { default as JobFinderScreen } from './job-finder/JobFinderScreen';
 export { default as CareerRoadmapScreen } from './learning-hub/software-engineering/SoftwareEngineerRoadmap';
 export { default as CSSCourseScreen } from './learning-hub/software-engineering/css-course/CSSCourse';
+export { default as HTMLCourseScreen } from './learning-hub/software-engineering/html-course/HTMLCourse';
 export { default as JavaScriptCourseScreen } from './learning-hub/software-engineering/javascript-course/JavaScriptCourse';
 export { default as GitCourseScreen } from './learning-hub/software-engineering/git-github-course/GitCourse';
 export { default as ReactCourseScreen } from './learning-hub/software-engineering/react-course/ReactCourse';

@@ -43,9 +43,36 @@ export default function LessonScreen({
         <Text style={styles.contentTitle}>{lesson.contentTitle}</Text>
         <Text style={styles.description}>{lesson.description}</Text>
 
-        <View style={styles.codeCard}>
-          <Text style={styles.codeText}>{lesson.code}</Text>
-        </View>
+        {!!lesson.code && (
+          <View style={styles.codeCard}>
+            <Text style={styles.codeText}>{lesson.code}</Text>
+          </View>
+        )}
+
+        {/* Optional extra content: lessons without these fields look exactly as before */}
+        {(lesson.sections || []).map((section) => (
+          <View key={section.heading} style={styles.section}>
+            <Text style={styles.sectionHeading}>{section.heading}</Text>
+            {!!section.text && <Text style={styles.description}>{section.text}</Text>}
+            {!!section.code && (
+              <View style={styles.codeCard}>
+                <Text style={styles.codeText}>{section.code}</Text>
+              </View>
+            )}
+          </View>
+        ))}
+
+        {!!lesson.keyPoints?.length && (
+          <View style={styles.keyCard}>
+            <Text style={styles.keyTitle}>Key points</Text>
+            {lesson.keyPoints.map((point) => (
+              <View key={point} style={styles.keyRow}>
+                <Text style={styles.keyBullet}>✓</Text>
+                <Text style={styles.keyText}>{point}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <TouchableOpacity
           style={styles.completeCard}
@@ -112,6 +139,19 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
   },
+  section: { marginTop: 4 },
+  sectionHeading: { fontSize: 15, fontWeight: '700', color: '#222222', marginBottom: 6 },
+  keyCard: {
+    borderWidth: 1,
+    borderColor: PURPLE,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 15,
+  },
+  keyTitle: { fontSize: 13, fontWeight: '700', color: '#222222', marginBottom: 8 },
+  keyRow: { flexDirection: 'row', marginBottom: 6 },
+  keyBullet: { color: PURPLE, fontWeight: '800', fontSize: 12, marginRight: 8, lineHeight: 18 },
+  keyText: { flex: 1, fontSize: 12, lineHeight: 18, color: '#444444' },
   completeCard: {
     flexDirection: 'row',
     alignItems: 'center',

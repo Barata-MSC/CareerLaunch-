@@ -7,7 +7,7 @@ import { StyleSheet, BackHandler, View, Text, ActivityIndicator } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import useCourseProgress from './progress/useCourseProgress';
-import { withStatus } from './courseUtils';
+import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
 
 import LessonsScreen from './screens/LessonsScreen';
@@ -18,7 +18,12 @@ import QuizScreen from './screens/QuizScreen';
 import ResultScreen from './screens/ResultScreen';
 
 export default function CourseRunner({ course, navigation }) {
-  const { questions } = course;
+  // The quiz uses a set picked from the question bank (see pickQuizQuestions).
+  // Courses without `quizSize` use all of their questions, same as before.
+  const [questions, setQuestions] = useState(() =>
+    pickQuizQuestions(course.questions, course.quizSize),
+  );
+  const quizCourse = useMemo(() => ({ ...course, questions }), [course, questions]);
 
   const progress = useCourseProgress(course.id);
   const lessons = useMemo(
@@ -76,6 +81,7 @@ export default function CourseRunner({ course, navigation }) {
 
   // ---------- Quiz ----------
   const startQuiz = () => {
+    setQuestions(pickQuizQuestions(course.questions, course.quizSize));
     setQuestionIndex(0);
     setSelectedAnswer(null);
     setAnswers([]);
@@ -184,12 +190,12 @@ export default function CourseRunner({ course, navigation }) {
       )}
 
       {screen === 'quizIntro' && (
-        <QuizIntroScreen course={course} onBack={handleBack} onStart={startQuiz} />
+        <QuizIntroScreen course={quizCourse} onBack={handleBack} onStart={startQuiz} />
       )}
 
       {screen === 'quiz' && (
         <QuizScreen
-          course={course}
+          course={quizCourse}
           questionIndex={questionIndex}
           selectedAnswer={selectedAnswer}
           onSelectAnswer={setSelectedAnswer}
@@ -201,7 +207,7 @@ export default function CourseRunner({ course, navigation }) {
 
       {screen === 'result' && (
         <ResultScreen
-          course={{ ...course, lessons }}
+          course={{ ...quizCourse, lessons }}
           answers={answers}
           score={score}
           saveError={saveError}

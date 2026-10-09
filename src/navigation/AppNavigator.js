@@ -10,6 +10,7 @@ import {
   JobApplicationTracker,
   AIInterviewCoachScreen,
   CSSCourseScreen,
+  HTMLCourseScreen,
   JavaScriptCourseScreen,
   GitCourseScreen,
   ReactCourseScreen,
@@ -43,6 +44,7 @@ export default function AppNavigator() {
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
       <Stack.Screen name="CSSCourse" component={CSSCourseScreen} />
+      <Stack.Screen name="HTMLCourse" component={HTMLCourseScreen} />
       <Stack.Screen name="JavaScriptCourse" component={JavaScriptCourseScreen} />
       <Stack.Screen name="GitCourse" component={GitCourseScreen} />
       <Stack.Screen name="ReactCourse" component={ReactCourseScreen} />
