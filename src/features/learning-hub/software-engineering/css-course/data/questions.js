@@ -15,12 +15,12 @@ export const QUESTIONS = [
       'CSS stands for Cascading Style Sheets. It is the language used to style HTML elements.',
   },
   {
-    lessonId: 'css-1',
-    question: 'Which property changes the text color?',
-    answers: ['font-style', 'background', 'color', 'text-size'],
+    lessonId: 'css-2',
+    question: 'Which selector targets elements with the class "title"?',
+    answers: ['#title', 'title', '.title', '*title'],
     correct: 2,
     explanation:
-      'The color property sets the text color. background sets the background and font-style changes the text style.',
+      'A class selector starts with a dot, so .title targets class="title". An ID selector starts with #.',
   },
   {
     lessonId: 'css-3',
@@ -46,5 +46,50 @@ export const QUESTIONS = [
     correct: 2,
     explanation:
       '@media applies styles only when conditions such as screen width are met, which is how a page adapts to different screen sizes.',
+  },
+  {
+    lessonId: 'css-6',
+    question: 'Which property changes the text color?',
+    answers: ['font-style', 'background', 'color', 'text-size'],
+    correct: 2,
+    explanation:
+      'The color property sets the text color. background sets the background and font-style changes the text style.',
+  },
+  {
+    lessonId: 'css-7',
+    question: 'Which property sets the typeface of text?',
+    answers: ['font-family', 'font-type', 'text-style', 'font-name'],
+    correct: 0,
+    explanation:
+      'font-family sets the typeface. It is good practice to list a fallback such as sans-serif.',
+  },
+  {
+    lessonId: 'css-8',
+    question: 'What does display: none do?',
+    answers: [
+      'Makes the element transparent but keeps its space',
+      'Moves the element off the screen',
+      'Hides the element and removes its space',
+      'Makes the element inline',
+    ],
+    correct: 2,
+    explanation:
+      'display: none removes the element from the layout completely, so it takes up no space.',
+  },
+  {
+    lessonId: 'css-9',
+    question: 'Which selector styles a button while the mouse is over it?',
+    answers: ['button:focus', 'button::hover', 'button:click', 'button:hover'],
+    correct: 3,
+    explanation:
+      ':hover is the pseudo-class that applies while the mouse pointer is over an element.',
+  },
+  {
+    lessonId: 'css-10',
+    question: 'Which declaration creates a grid container?',
+    answers: ['grid: container;', 'display: grid;', 'layout: grid;', 'position: grid;'],
+    correct: 1,
+    explanation:
+      'Setting display: grid on a parent turns it into a grid container, and its children become grid items.',
   },
 ];

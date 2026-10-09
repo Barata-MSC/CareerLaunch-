@@ -89,22 +89,53 @@ export default function LoginScreen({ navigation }) {
     setGuestError('');
     setGuestLoading(true);
 
-    const { error } = await supabase.auth.signInAnonymously({
-      options: { data: { username: name } },
-    });
+    try {
+      const { data: usernameTaken, error: usernameCheckError } = await supabase.rpc(
+        'is_guest_username_taken',
+        { candidate_username: name },
+      );
 
-    setGuestLoading(false);
-
-    if (error) {
-      const message = (error.message || '').toLowerCase();
-
-      if (error.code === 'anonymous_provider_disabled' || message.includes('anonymous')) {
-        setGuestError('Guest access is not enabled yet. Turn on anonymous sign-ins in Supabase.');
-      } else if (message.includes('network') || message.includes('fetch')) {
-        setGuestError('Network error. Please check your connection and try again.');
-      } else {
-        setGuestError(error.message || 'Something went wrong. Please try again.');
+      if (usernameCheckError) {
+        setGuestError('Could not check username availability. Please try again.');
+        return;
       }
+
+      if (usernameTaken) {
+        setGuestError('Username already exists. Please choose another.');
+        return;
+      }
+
+      const { error } = await supabase.auth.signInAnonymously({
+        options: { data: { username: name } },
+      });
+
+      if (error) {
+        const message = (error.message || '').toLowerCase();
+        const duplicateUsername =
+          error.code === '23505' ||
+          message.includes('duplicate key') ||
+          message.includes('unique constraint') ||
+          message.includes('username already');
+
+        if (duplicateUsername) {
+          setGuestError('That username may already be taken. Please choose another.');
+        } else if (
+          error.code === 'anonymous_provider_disabled' ||
+          message.includes('anonymous')
+        ) {
+          setGuestError('Guest access is not enabled yet. Turn on anonymous sign-ins in Supabase.');
+        } else if (message.includes('network') || message.includes('fetch')) {
+          setGuestError('Network error. Please check your connection and try again.');
+        } else {
+          setGuestError(error.message || 'Something went wrong. Please try again.');
+        }
+      }
+    } catch (error) {
+      setGuestError(
+        error instanceof Error ? error.message : 'Could not create a guest account. Please try again.',
+      );
+    } finally {
+      setGuestLoading(false);
     }
   };
 
