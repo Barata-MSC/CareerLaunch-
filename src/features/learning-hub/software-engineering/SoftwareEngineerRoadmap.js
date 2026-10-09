@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
+import htmlCourse from './html-course/course';
 import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
@@ -22,7 +23,7 @@ import { PURPLE, GREEN } from '../shared/styles';
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [cssCourse, javascriptCourse, gitCourse, reactCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse];
 
 
 const TRACKS = {
@@ -32,6 +33,8 @@ const TRACKS = {
       {
         id: '1',
         title: 'HTML',
+        course: htmlCourse,
+        route: 'HTMLCourse',
         description: 'The building blocks of every web page: structuring content with tags, forms, and semantic elements.',
       },
       {
