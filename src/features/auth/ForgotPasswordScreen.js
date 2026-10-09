@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { supabase } from '@config/supabase';
 import { getRecoveryRedirectUrl } from './recoveryLink';
+import { isGuestEmail } from './guestAccount';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -42,6 +43,10 @@ export default function ForgotPasswordScreen({ navigation, route }) {
     }
     if (!EMAIL_REGEX.test(trimmed)) {
       setEmailError('Please enter a valid email address');
+      return;
+    }
+    if (isGuestEmail(trimmed)) {
+      setEmailError('Guest profiles have no real email, so their password cannot be reset.');
       return;
     }
 

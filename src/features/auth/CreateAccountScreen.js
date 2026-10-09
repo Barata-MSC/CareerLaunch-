@@ -56,8 +56,52 @@ const validateBirthday = (dateString) => {
   return day >= 1 && day <= daysInMonth;
 };
 
+// A guest who signed up with a username and password has a private email that
+// cannot receive mail, so Supabase's normal "confirm your new email" change cannot
+// work for them. The Edge Function supabase/functions/upgrade-guest-account swaps
+// the email on the server instead and clears the guest flag. The user id does not
+// change, so their Learning Hub progress stays with them.
+// Resolves to null on success, or { code, message } on failure.
+const upgradeGuestEmail = async (email) => {
+  const { error } = await supabase.functions.invoke('upgrade-guest-account', {
+    body: { email },
+  });
+
+  if (!error) return null;
+
+  if (error.name === 'FunctionsFetchError') {
+    return { code: 'network', message: 'Network error. Please check your connection.' };
+  }
+
+  // The function answers with { error: '<code>' }; read it from the response.
+  let code = '';
+  try {
+    const body = await error.context.json();
+    code = body?.error || '';
+  } catch (e) {
+    code = '';
+  }
+
+  if (code === 'email_exists') return { code, message: 'This email is already registered.' };
+  if (code === 'invalid_email') return { code, message: 'Please enter a valid email address.' };
+  if (code === 'not_a_guest') {
+    return { code, message: 'This account is not a guest account, so it cannot be upgraded.' };
+  }
+
+  return {
+    code: code || 'failed',
+    message:
+      'We could not switch your account to this email. Please try again in a moment. ' +
+      '(If this keeps happening, the upgrade function may not be deployed yet.)',
+  };
+};
+
 export default function CreateAccountScreen({ navigation }) {
-  const { updateProfile } = useProfile();
+  const { updateProfile, hasGuestLogin } = useProfile();
+
+  // A guest who signed up with a username and password already has a password, so
+  // only the old anonymous guests need to choose one here.
+  const needsPassword = !hasGuestLogin;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -89,10 +133,10 @@ export default function CreateAccountScreen({ navigation }) {
     const invalidContact = !missingContact && !/^9\d{9}$/.test(contactNumber);
     const missingBirthday = !birthday.trim();
     const invalidBirthday = !missingBirthday && !validateBirthday(birthday);
-    const missingPassword = !password;
-    const weakPassword = !missingPassword && !meetsAllRules(password);
-    const missingConfirm = !confirmPassword;
-    const mismatch = !missingConfirm && password !== confirmPassword;
+    const missingPassword = needsPassword && !password;
+    const weakPassword = needsPassword && !missingPassword && !meetsAllRules(password);
+    const missingConfirm = needsPassword && !confirmPassword;
+    const mismatch = needsPassword && !missingConfirm && password !== confirmPassword;
 
     setFirstNameError(missingFirstName ? 'Please enter your first name' : '');
     setLastNameError(missingLastName ? 'Please enter your last name' : '');
@@ -143,8 +187,13 @@ export default function CreateAccountScreen({ navigation }) {
 
     setLoading(true);
 
-    // 1. Attach the email to the guest's account.
-    const { error: emailUpdateError } = await supabase.auth.updateUser({ email: trimmedEmail });
+    // 1. Attach the email to the guest's account. A guest with a username and
+    // password goes through the server function, which swaps out the private email
+    // and clears the guest flag in one go, so the app stops treating the account as
+    // a guest. An old anonymous guest uses Supabase's normal email update.
+    const emailUpdateError = hasGuestLogin
+      ? await upgradeGuestEmail(trimmedEmail)
+      : (await supabase.auth.updateUser({ email: trimmedEmail })).error;
 
     if (emailUpdateError) {
       setLoading(false);
@@ -160,18 +209,20 @@ export default function CreateAccountScreen({ navigation }) {
       return;
     }
 
-    // 2. Set the password.
-    const { error: passwordUpdateError } = await supabase.auth.updateUser({ password });
+    // 2. Set the password (not needed for a guest who already has one).
+    if (needsPassword) {
+      const { error: passwordUpdateError } = await supabase.auth.updateUser({ password });
 
-    if (passwordUpdateError) {
-      setLoading(false);
-      showAlert(
-        'Almost there',
-        `Your email was saved, but the password could not be set: ${passwordUpdateError.message}. ` +
-          'Use "Forgot password" on the login screen to set one.',
-        () => navigation?.goBack(),
-      );
-      return;
+      if (passwordUpdateError) {
+        setLoading(false);
+        showAlert(
+          'Almost there',
+          `Your email was saved, but the password could not be set: ${passwordUpdateError.message}. ` +
+            'Use "Forgot password" on the login screen to set one.',
+          () => navigation?.goBack(),
+        );
+        return;
+      }
     }
 
     // 3. Save the personal details on the existing profile row (same user id).
@@ -191,9 +242,10 @@ export default function CreateAccountScreen({ navigation }) {
 
     showAlert(
       'Account created!',
-      profileError
+      (profileError
         ? 'Your account is ready and your progress is saved to it, but we could not save your details. You can add them on your Profile screen.'
-        : 'Your account is ready and your progress is saved to it.',
+        : 'Your account is ready and your progress is saved to it.') +
+        (hasGuestLogin ? ' From now on, log in with your email and password instead of your username.' : ''),
       () => navigation?.goBack(),
     );
   };
@@ -331,47 +383,56 @@ export default function CreateAccountScreen({ navigation }) {
           />
           {birthdayError ? <Text style={styles.errorText}>{birthdayError}</Text> : null}
 
-          {/* PASSWORD */}
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={[styles.input, passwordError ? styles.inputError : null]}
-            placeholder="Create a password"
-            placeholderTextColor="#9A9A9A"
-            value={password}
-            editable={!loading}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (passwordError) setPasswordError('');
-            }}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry
-          />
-          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+          {needsPassword ? (
+            <>
+              {/* PASSWORD */}
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={[styles.input, passwordError ? styles.inputError : null]}
+                placeholder="Create a password"
+                placeholderTextColor="#9A9A9A"
+                value={password}
+                editable={!loading}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (passwordError) setPasswordError('');
+                }}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry
+              />
+              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-          <PasswordRequirements password={password} />
+              <PasswordRequirements password={password} />
 
-          {/* CONFIRM PASSWORD */}
-          <Text style={styles.label}>Confirm password</Text>
-          <TextInput
-            style={[styles.input, confirmPasswordError ? styles.inputError : null]}
-            placeholder="Re-enter your password"
-            placeholderTextColor="#9A9A9A"
-            value={confirmPassword}
-            editable={!loading}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              if (confirmPasswordError) setConfirmPasswordError('');
-            }}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry
-          />
-          {confirmPasswordError ? (
-            <Text style={styles.errorText}>{confirmPasswordError}</Text>
-          ) : confirmPassword.length > 0 && confirmPassword === password ? (
-            <Text style={styles.matchText}>✓ Passwords match</Text>
-          ) : null}
+              {/* CONFIRM PASSWORD */}
+              <Text style={styles.label}>Confirm password</Text>
+              <TextInput
+                style={[styles.input, confirmPasswordError ? styles.inputError : null]}
+                placeholder="Re-enter your password"
+                placeholderTextColor="#9A9A9A"
+                value={confirmPassword}
+                editable={!loading}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  if (confirmPasswordError) setConfirmPasswordError('');
+                }}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry
+              />
+              {confirmPasswordError ? (
+                <Text style={styles.errorText}>{confirmPasswordError}</Text>
+              ) : confirmPassword.length > 0 && confirmPassword === password ? (
+                <Text style={styles.matchText}>✓ Passwords match</Text>
+              ) : null}
+            </>
+          ) : (
+            <Text style={styles.subtitle}>
+              You keep your current password. After this, log in with your email instead of your
+              username.
+            </Text>
+          )}
 
           <TouchableOpacity
             style={[styles.primaryButton, loading && { opacity: 0.7 }]}
