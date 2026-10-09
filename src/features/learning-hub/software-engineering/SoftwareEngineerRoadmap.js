@@ -14,22 +14,16 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
+import gitCourse from './git-github-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-// Every course that has a roadmap step. Add a new course here AND give its
-// step a `course` and `route` below; its status then comes from saved progress.
-const COURSES = [cssCourse, javascriptCourse];
 
-// Each key is a selectable track. Add as many as you want here —
-// the chip row and roadmap below are both driven off this object,
-// so nothing else needs to change when you add a new track.
-//
-// A step has no `status` of its own. If it has a `course`, its status comes from
-// the user's saved progress in that course; a step without a course always shows
-// "Not started" until its course exists. `route` is the screen to open on tap.
+const COURSES = [cssCourse, javascriptCourse, gitCourse];
+
+
 const TRACKS = {
   'Software Engineer': {
     estimatedTime: '5 Months',
@@ -71,6 +65,8 @@ const TRACKS = {
       {
         id: '7',
         title: 'Git & Github',
+        course: gitCourse,
+        route: 'GitCourse',
         description: 'Version control and collaboration — tracking changes and working with a team.',
       },
     ],

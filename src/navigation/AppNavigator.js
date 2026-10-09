@@ -11,6 +11,7 @@ import {
   AIInterviewCoachScreen,
   CSSCourseScreen,
   JavaScriptCourseScreen,
+  GitCourseScreen,
 } from '@features';
 
 import {
@@ -38,6 +39,7 @@ export default function AppNavigator() {
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
       <Stack.Screen name="CSSCourse" component={CSSCourseScreen} />
       <Stack.Screen name="JavaScriptCourse" component={JavaScriptCourseScreen} />
+      <Stack.Screen name="GitCourse" component={GitCourseScreen} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
