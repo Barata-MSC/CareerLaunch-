@@ -21,6 +21,7 @@ import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
 import dataVisualizationCourse from './data-visualization-course/course';
+import dashboardCourse from './dashboard-course/course';
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
@@ -44,6 +45,7 @@ const COURSES = [
   nodeCourse,
   databaseCourse,
   dataVisualizationCourse,
+  dashboardCourse,
   excelCourse,
   pandasCourse,
   designFundamentalsCourse,
@@ -145,6 +147,8 @@ const TRACKS = {
       {
         id: '6',
         title: 'Dashboards (Power BI / Tableau)',
+        course: dashboardCourse,
+        route: 'DashboardCourse',
         description: 'Build interactive dashboards stakeholders can explore on their own.',
       },
     ],

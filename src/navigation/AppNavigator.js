@@ -10,18 +10,17 @@ import {
   JobApplicationTracker,
   AIInterviewCoachScreen,
   DatabaseCourseScreen,
-DataCourseScreen,
-ExcelCourseScreen,
-PandasCourseScreen,
-
+  DataCourseScreen,
+  ExcelCourseScreen,
+  PandasCourseScreen,
   CSSCourseScreen,
   HTMLCourseScreen,
   JavaScriptCourseScreen,
   GitCourseScreen,
   ReactCourseScreen,
   NodeCourseScreen,
-  PandasCourseScreen,
   SQLCourseScreen,
+  DashboardCourseScreen,
 } from '@features';
 
 import {
@@ -63,11 +62,11 @@ export default function AppNavigator() {
       <Stack.Screen name="ReactCourse" component={ReactCourseScreen} />
       <Stack.Screen name="NodeCourse" component={NodeCourseScreen} />
       <Stack.Screen name="DatabaseCourse" component={DatabaseCourseScreen} />
-<Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
-<Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
-<Stack.Screen name="SQLCourse" component={SQLCourseScreen} />
-<Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
-
+      <Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
+      <Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
+      <Stack.Screen name="SQLCourse" component={SQLCourseScreen} />
+      <Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="DashboardCourse" component={DashboardCourseScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
