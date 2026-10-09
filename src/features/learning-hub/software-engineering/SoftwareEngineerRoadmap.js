@@ -22,6 +22,7 @@ import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
 import dataVisualizationCourse from './data-visualization-course/course';
 import dashboardCourse from './dashboard-course/course';
+import statisticsCourse from './statistics-course/course'; 
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
@@ -46,6 +47,7 @@ const COURSES = [
   databaseCourse,
   dataVisualizationCourse,
   dashboardCourse,
+  statisticsCourse,
   excelCourse,
   pandasCourse,
   designFundamentalsCourse,
@@ -92,11 +94,15 @@ const TRACKS = {
       {
         id: '5',
         title: 'Node js',
+        course: nodeCourse,
+        route: 'NodeCourse',
         description: 'Server-side JavaScript: build APIs and handle backend logic.',
       },
       {
         id: '6',
         title: 'Database',
+        course: databaseCourse,
+        route: 'DatabaseCourse',
         description: 'Storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
@@ -142,6 +148,8 @@ const TRACKS = {
       {
         id: '5',
         title: 'Statistics',
+        course: statisticsCourse,
+        route: 'StatisticsCourse',
         description: 'Hypothesis testing, distributions, and the math behind trustworthy insights.',
       },
       {
