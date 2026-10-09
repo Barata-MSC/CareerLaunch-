@@ -17,13 +17,15 @@ import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
+import nodeCourse from './nodejs-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse];
+
 
 
 const TRACKS = {
@@ -61,6 +63,8 @@ const TRACKS = {
       {
         id: '5',
         title: 'Node js',
+        course: nodeCourse,
+        route: 'NodeCourse',
         description: 'Server-side JavaScript: build APIs and handle backend logic.',
       },
       {
