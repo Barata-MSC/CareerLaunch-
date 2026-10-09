@@ -24,7 +24,7 @@ export default function DashboardScreen({ navigation }) {
   const [pressedId, setPressedId] = useState(null);
   const { profile } = useProfile();
 
-  const displayName = profile?.first_name || 'there';
+  const displayName = profile?.first_name || profile?.username || 'there';
   const filledCount = PROFILE_FIELDS.filter((key) => !!profile?.[key]).length;
   const profileProgress = profile ? filledCount / PROFILE_FIELDS.length : 0;
 

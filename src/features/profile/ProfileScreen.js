@@ -26,9 +26,33 @@ const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
+// Asks a guest to confirm before logging out, because logging out of a guest
+// account permanently loses access to its progress. Works on web and native.
+const confirmGuestLogout = () => {
+  const message =
+    'Logging out of a guest account means you can no longer get back to your progress. ' +
+    'Create an account first to keep it.';
+
+  if (Platform.OS === 'web') {
+    return Promise.resolve(window.confirm(`${message}\n\nLog out anyway?`));
+  }
+
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Log out of guest account?',
+      message,
+      [
+        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Log out anyway', style: 'destructive', onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+};
+
 export default function ProfileScreen({ navigation }) {
   // 2. Use the Profile Context to get the current profile and update function
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, isGuest } = useProfile();
 
   const [avatarUri, setAvatarUri] = useState(null);
   const [firstName, setFirstName] = useState('');
@@ -229,14 +253,66 @@ export default function ProfileScreen({ navigation }) {
   // LOGOUT
   // --------------------------------------------------
   const handleLogout = async () => {
-    
+    // A guest loses access to their progress when they log out, so confirm first.
+    if (isGuest) {
+      const confirmed = await confirmGuestLogout();
+      if (!confirmed) return;
+    }
+
     const { error } = await supabase.auth.signOut();
-    
+
     if (error) {
       Alert.alert('Logout Error', error.message);
     }
-    
   };
+
+  // --------------------------------------------------
+  // GUEST VIEW: banner + username + log out (the full form needs an account)
+  // --------------------------------------------------
+  if (isGuest) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation?.goBack()}>
+              <Text style={styles.backArrow}>‹</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.headerTitle}>Profile</Text>
+            <View style={styles.backButton} />
+          </View>
+
+          <View style={styles.guestCard}>
+            <Text style={styles.guestEmoji}>👤</Text>
+            <Text style={styles.guestTitle}>You're using a guest account</Text>
+            <Text style={styles.guestName}>Username: {profile?.username || 'Guest'}</Text>
+            <Text style={styles.guestBody}>
+              Your learning progress is saved to this guest account. Create an account to keep it
+              if you log out or switch devices.
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.primaryButton, styles.guestCreateButton]}
+              activeOpacity={0.85}
+              onPress={() => navigation?.navigate('CreateAccount')}
+            >
+              <Text style={styles.primaryButtonText}>Create account</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.logoutButton}
+            activeOpacity={0.85}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   // --------------------------------------------------
   // SCREEN
@@ -527,4 +603,25 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
   },
+
+  // Guest view
+  guestCard: {
+    borderWidth: 1,
+    borderColor: '#E2D9FF',
+    backgroundColor: '#F0EBFF',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+  },
+  guestEmoji: { fontSize: 36, marginBottom: 8 },
+  guestTitle: { fontSize: 17, fontWeight: '700', color: '#111111', textAlign: 'center' },
+  guestName: { fontSize: 14, fontWeight: '600', color: PURPLE, marginTop: 6 },
+  guestBody: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#555555',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  guestCreateButton: { alignSelf: 'stretch', marginTop: 18 },
 });

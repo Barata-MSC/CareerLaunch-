@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import {
   DashboardScreen,
+  CreateAccountScreen,
   ProfileScreen,
   JobFinderScreen,
   CareerRoadmapScreen,
@@ -31,6 +32,7 @@ export default function AppNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
