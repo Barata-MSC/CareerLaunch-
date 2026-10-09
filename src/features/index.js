@@ -13,6 +13,7 @@ export { default as ReactCourseScreen } from './learning-hub/software-engineerin
 export { default as NodeCourseScreen } from './learning-hub/software-engineering/nodejs-course/NodeCourse';
 export { default as DatabaseCourseScreen } from './learning-hub/software-engineering/database-course/DatabaseCourse';
 export { default as ExcelCourseScreen } from './learning-hub/software-engineering/excel-course/ExcelCourse';
+export { default as PandasCourseScreen } from './learning-hub/software-engineering/panda-course/PandaCourse';
 export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';

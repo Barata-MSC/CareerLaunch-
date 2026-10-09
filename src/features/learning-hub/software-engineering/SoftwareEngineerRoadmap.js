@@ -20,13 +20,14 @@ import reactCourse from './react-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import excelCourse from './excel-course/course';
+import pandasCourse from './panda-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse, excelCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse, excelCourse, pandasCourse];
 
 
 
@@ -103,6 +104,8 @@ const TRACKS = {
       {
         id: '3',
         title: 'Python (Pandas)',
+        course: pandasCourse,
+        route: 'PandasCourse',
         description: 'Clean and analyze datasets using Python and the Pandas library.',
       },
       {
