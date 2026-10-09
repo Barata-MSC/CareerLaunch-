@@ -49,25 +49,44 @@ export default function ForgotPasswordScreen({ navigation, route }) {
     setFormError('');
     setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
-      redirectTo: getRecoveryRedirectUrl(),
-    });
+    try {
+      const { data: emailExists, error: emailCheckError } = await supabase.rpc(
+        'does_auth_email_exist',
+        { candidate_email: trimmed },
+      );
 
-    setLoading(false);
-
-    if (error) {
-      if (error.status === 429 || error.code === 'over_email_send_rate_limit') {
-        setFormError('Too many requests. Please wait a minute before trying again.');
-      } else {
-        setFormError(error.message || 'Something went wrong. Please try again.');
+      if (emailCheckError) {
+        setFormError('Could not verify this email address. Please try again.');
+        return;
       }
-      return;
-    }
 
-    // Supabase gives the same response whether or not the account exists, so the
-    // message below is deliberately neutral (it doesn't reveal who has an account).
-    setSent(true);
-    setCooldown(COOLDOWN_SECONDS);
+      if (!emailExists) {
+        setFormError('Email address does not exist. Please check it or create an account.');
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: getRecoveryRedirectUrl(),
+      });
+
+      if (error) {
+        if (error.status === 429 || error.code === 'over_email_send_rate_limit') {
+          setFormError('Too many requests. Please wait a minute before trying again.');
+        } else {
+          setFormError(error.message || 'Something went wrong. Please try again.');
+        }
+        return;
+      }
+
+      setSent(true);
+      setCooldown(COOLDOWN_SECONDS);
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goToLogin = () => navigation?.navigate('Login');
@@ -107,9 +126,8 @@ export default function ForgotPasswordScreen({ navigation, route }) {
       {sent ? (
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            If an account exists for {email.trim()}, we've sent a link to reset your password.
-            Check your inbox (and your spam folder). The link opens the app so you can choose a
-            new password.
+            We've sent a link to {email.trim()} to reset your password. Check your inbox (and your
+            spam folder). The link opens the app so you can choose a new password.
           </Text>
         </View>
       ) : null}
