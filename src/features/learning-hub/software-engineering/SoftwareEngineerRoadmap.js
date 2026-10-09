@@ -21,13 +21,14 @@ import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
+import sqlCourse from './sql-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse, excelCourse, pandasCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse, excelCourse, pandasCourse, sqlCourse];
 
 
 
@@ -99,6 +100,8 @@ const TRACKS = {
       {
         id: '2',
         title: 'SQL',
+        course: sqlCourse,
+        route: 'SQLCourse',
         description: 'Query, join, and filter data across relational database tables.',
       },
       {
