@@ -14,10 +14,16 @@ export default function RootNavigator({
   // (even if someone happens to be logged in) so the Reset screen can appear.
   const showApp = session && session.user && !recovery;
 
-  // The key remounts the container when we enter/leave the recovery flow so the
-  // auth stack starts on the right screen (Reset Password, then Login).
+  // Remount when the active navigator changes so auth and app navigation state
+  // cannot leak across authentication or password-recovery transitions.
+  const navigationKey = recovery
+    ? 'recovery'
+    : showApp
+      ? 'app'
+      : `auth-${authInitialRoute}`;
+
   return (
-    <NavigationContainer key={recovery ? 'recovery' : authInitialRoute}>
+    <NavigationContainer key={navigationKey}>
       {showApp ? (
         <AppNavigator />
       ) : (

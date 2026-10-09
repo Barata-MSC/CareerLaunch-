@@ -15,13 +15,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
+import reactCourse from './react-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [cssCourse, javascriptCourse, gitCourse];
+const COURSES = [cssCourse, javascriptCourse, gitCourse, reactCourse];
 
 
 const TRACKS = {
@@ -50,6 +51,8 @@ const TRACKS = {
       {
         id: '4',
         title: 'React',
+        course: reactCourse,
+        route: 'ReactCourse',
         description: 'Learn components, props, state, and hooks. This is the step that turns JS into real apps.',
       },
       {

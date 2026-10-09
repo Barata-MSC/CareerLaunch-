@@ -8,6 +8,7 @@ export { default as CareerRoadmapScreen } from './learning-hub/software-engineer
 export { default as CSSCourseScreen } from './learning-hub/software-engineering/css-course/CSSCourse';
 export { default as JavaScriptCourseScreen } from './learning-hub/software-engineering/javascript-course/JavaScriptCourse';
 export { default as GitCourseScreen } from './learning-hub/software-engineering/git-github-course/GitCourse';
+export { default as ReactCourseScreen } from './learning-hub/software-engineering/react-course/ReactCourse';
 export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';

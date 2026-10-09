@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useResume } from './ResumeContext';
+import { ResumeProvider } from './ResumeContext';
 import ResumeBuilderScreen from './ResumeBuilder';
 import PersonalInfoScreen from './PersonalInfoScreen';
 import EducationScreen from './EducationScreen';
