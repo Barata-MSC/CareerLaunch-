@@ -13,6 +13,7 @@ import {
   HTMLCourseScreen,
   JavaScriptCourseScreen,
   GitCourseScreen,
+  ReactCourseScreen,
 } from '@features';
 
 import {
@@ -31,7 +32,10 @@ const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      initialRouteName="MainTabs"
+      screenOptions={{ headerShown: false }}
+    >
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="CreateAccount" component={CreateAccountScreen} />
@@ -42,6 +46,7 @@ export default function AppNavigator() {
       <Stack.Screen name="HTMLCourse" component={HTMLCourseScreen} />
       <Stack.Screen name="JavaScriptCourse" component={JavaScriptCourseScreen} />
       <Stack.Screen name="GitCourse" component={GitCourseScreen} />
+      <Stack.Screen name="ReactCourse" component={ReactCourseScreen} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
