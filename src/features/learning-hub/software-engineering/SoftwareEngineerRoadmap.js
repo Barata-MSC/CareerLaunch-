@@ -17,15 +17,20 @@ import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
+import nodeCourse from './nodejs-course/course';
+import databaseCourse from './database-course/course';
+import dataVisualizationCourse from './data-visualization-course/course';
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
 import designFundamentalsCourse from '../ui-ux-designer/design-fundamentals-course/course';
 import userResearchCourse from '../ui-ux-designer/user-research-course/course';
 import wireframingCourse from '../ui-ux-designer/wireframing-course/course';
+
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 
 
 const COURSES = [
@@ -34,12 +39,17 @@ const COURSES = [
   javascriptCourse,
   gitCourse,
   reactCourse,
+  nodeCourse,
+  databaseCourse,
+  dataVisualizationCourse,
   excelCourse,
   pandasCourse,
   designFundamentalsCourse,
   userResearchCourse,
   wireframingCourse,
 ];
+
+
 
 
 const TRACKS = {
@@ -118,6 +128,8 @@ const TRACKS = {
       {
         id: '4',
         title: 'Data Visualization',
+        course: dataVisualizationCourse,
+        route: 'DataCourse',
         description: 'Tell stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
       },
       {
@@ -388,8 +400,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           activeOpacity={1}
           onPress={closeModal}
         >
-          {/* Stop taps inside the card from closing the modal */}
-          <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
+          <View style={styles.modalCard}>
             {selectedStep && (
               <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -427,7 +438,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 </TouchableOpacity>
               </ScrollView>
             )}
-          </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </Modal>
     </SafeAreaView>
