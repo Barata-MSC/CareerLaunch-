@@ -19,13 +19,14 @@ import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
+import dataVisualizationCourse from './data-visualization-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse];
+const COURSES = [htmlCourse, cssCourse, javascriptCourse, gitCourse, reactCourse, nodeCourse, databaseCourse, dataVisualizationCourse];
 
 
 
@@ -105,6 +106,8 @@ const TRACKS = {
       {
         id: '4',
         title: 'Data Visualization',
+        course: dataVisualizationCourse,
+        route: 'DataCourse',
         description: 'Tell stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
       },
       {
@@ -369,8 +372,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           activeOpacity={1}
           onPress={closeModal}
         >
-          {/* Stop taps inside the card from closing the modal */}
-          <TouchableOpacity activeOpacity={1} style={styles.modalCard}>
+          <View style={styles.modalCard}>
             {selectedStep && (
               <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -408,7 +410,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 </TouchableOpacity>
               </ScrollView>
             )}
-          </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </Modal>
     </SafeAreaView>

@@ -12,10 +12,12 @@ export { default as GitCourseScreen } from './learning-hub/software-engineering/
 export { default as ReactCourseScreen } from './learning-hub/software-engineering/react-course/ReactCourse';
 export { default as NodeCourseScreen } from './learning-hub/software-engineering/nodejs-course/NodeCourse';
 export { default as DatabaseCourseScreen } from './learning-hub/software-engineering/database-course/DatabaseCourse';
+export { default as DataCourseScreen } from './learning-hub/software-engineering/data-visualization-course/DataCourse';
 export { default as ProfileScreen } from './profile/ProfileScreen';
 export { default as JobApplicationTracker } from './job-tracker/JobApplicationTracker';
 export { default as AIInterviewCoachScreen } from './interview-coach/AIInterviewCoachScreen';
 export { default as ResumeBuilderScreen } from './resume-builder/ResumeBuilder';
+
 
 export * from './auth';
 export * from './resume-builder';
