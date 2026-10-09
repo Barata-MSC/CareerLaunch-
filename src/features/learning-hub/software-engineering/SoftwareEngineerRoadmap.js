@@ -17,6 +17,8 @@ import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
+import excelCourse from './excel-course/course';
+import pandasCourse from './panda-course/course';
 import designFundamentalsCourse from '../ui-ux-designer/design-fundamentals-course/course';
 import userResearchCourse from '../ui-ux-designer/user-research-course/course';
 import wireframingCourse from '../ui-ux-designer/wireframing-course/course';
@@ -32,6 +34,8 @@ const COURSES = [
   javascriptCourse,
   gitCourse,
   reactCourse,
+  excelCourse,
+  pandasCourse,
   designFundamentalsCourse,
   userResearchCourse,
   wireframingCourse,
@@ -95,6 +99,8 @@ const TRACKS = {
       {
         id: '1',
         title: 'Excel & Spreadsheets',
+        course: excelCourse,
+        route: 'ExcelCourse',
         description: 'Clean data, use formulas, and build pivot tables to summarize information.',
       },
       {
@@ -105,6 +111,8 @@ const TRACKS = {
       {
         id: '3',
         title: 'Python (Pandas)',
+        course: pandasCourse,
+        route: 'PandasCourse',
         description: 'Clean and analyze datasets using Python and the Pandas library.',
       },
       {
