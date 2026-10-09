@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@config/supabase';
+import { isGuestUser, isGuestEmail } from '../features/auth/guestAccount';
 
 const ProfileContext = createContext(null);
 
@@ -11,9 +12,14 @@ export function ProfileProvider({ session, children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // True while the user is on a guest (anonymous) account. It flips to false
-  // as soon as the guest upgrades to a full account on CreateAccountScreen.
-  const isGuest = !!session?.user?.is_anonymous;
+  // True while the user is on a guest account: either an old anonymous guest, or a
+  // guest who signed up with a username and password (flagged is_guest). It flips
+  // to false as soon as the guest upgrades to a full account on CreateAccountScreen.
+  const isGuest = isGuestUser(session?.user);
+
+  // True for a guest who can log back in with a username and password. Old
+  // anonymous guests cannot, because they never set a password.
+  const hasGuestLogin = isGuest && isGuestEmail(session?.user?.email);
 
   const fetchProfile = useCallback(async () => {
     if (!session?.user?.id) {
@@ -49,7 +55,7 @@ export function ProfileProvider({ session, children }) {
 
   return (
     <ProfileContext.Provider
-      value={{ profile, loading, isGuest, refreshProfile: fetchProfile, updateProfile }}
+      value={{ profile, loading, isGuest, hasGuestLogin, refreshProfile: fetchProfile, updateProfile }}
     >
       {children}
     </ProfileContext.Provider>
