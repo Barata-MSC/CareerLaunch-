@@ -10,7 +10,10 @@ import {
   JobApplicationTracker,
   AIInterviewCoachScreen,
   DatabaseCourseScreen,
-  ExcelCourseScreen,
+DataCourseScreen,
+ExcelCourseScreen,
+PandasCourseScreen,
+
   CSSCourseScreen,
   HTMLCourseScreen,
   JavaScriptCourseScreen,
@@ -60,9 +63,11 @@ export default function AppNavigator() {
       <Stack.Screen name="ReactCourse" component={ReactCourseScreen} />
       <Stack.Screen name="NodeCourse" component={NodeCourseScreen} />
       <Stack.Screen name="DatabaseCourse" component={DatabaseCourseScreen} />
-      <Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
-      <Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
-      <Stack.Screen name="SQLCourse" component={SQLCourseScreen} />
+<Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
+<Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
+<Stack.Screen name="SQLCourse" component={SQLCourseScreen} />
+<Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
+
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
