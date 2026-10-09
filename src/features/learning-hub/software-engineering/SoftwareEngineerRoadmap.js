@@ -21,6 +21,7 @@ import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
 import dataVisualizationCourse from './data-visualization-course/course';
+import statisticsCourse from './statistics-course/course'; 
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
@@ -44,6 +45,7 @@ const COURSES = [
   nodeCourse,
   databaseCourse,
   dataVisualizationCourse,
+  statisticsCourse,
   excelCourse,
   pandasCourse,
   designFundamentalsCourse,
@@ -140,6 +142,8 @@ const TRACKS = {
       {
         id: '5',
         title: 'Statistics',
+        course: statisticsCourse,
+        route: 'StatisticsCourse',
         description: 'Hypothesis testing, distributions, and the math behind trustworthy insights.',
       },
       {

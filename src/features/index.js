@@ -13,6 +13,7 @@ export { default as ReactCourseScreen } from './learning-hub/software-engineerin
 export { default as NodeCourseScreen } from './learning-hub/software-engineering/nodejs-course/NodeCourse';
 export { default as DatabaseCourseScreen } from './learning-hub/software-engineering/database-course/DatabaseCourse';
 export { default as DataCourseScreen } from './learning-hub/software-engineering/data-visualization-course/DataCourse';
+export { default as StatisticsCourseScreen } from './learning-hub/software-engineering/statistics-course/StatisticsCourse';
 export { default as ExcelCourseScreen } from './learning-hub/software-engineering/excel-course/ExcelCourse';
 export { default as PandasCourseScreen } from './learning-hub/software-engineering/panda-course/PandaCourse';
 export { default as SQLCourseScreen } from './learning-hub/software-engineering/sql-course/SQLCourse';
