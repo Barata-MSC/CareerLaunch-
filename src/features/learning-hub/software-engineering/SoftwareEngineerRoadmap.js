@@ -92,11 +92,15 @@ const TRACKS = {
       {
         id: '5',
         title: 'Node js',
+        course: nodeCourse,
+        route: 'NodeCourse',
         description: 'Server-side JavaScript: build APIs and handle backend logic.',
       },
       {
         id: '6',
         title: 'Database',
+        course: databaseCourse,
+        route: 'DatabaseCourse',
         description: 'Storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
       },
       {
