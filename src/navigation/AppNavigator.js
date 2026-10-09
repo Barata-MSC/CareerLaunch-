@@ -20,7 +20,6 @@ PandasCourseScreen,
   GitCourseScreen,
   ReactCourseScreen,
   NodeCourseScreen,
-  PandasCourseScreen,
   SQLCourseScreen,
 } from '@features';
 
