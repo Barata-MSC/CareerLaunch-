@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+import { savePendingAvatar, uploadPendingAvatar } from './avatarUpload';
 import { createIsolatedClient } from './isolatedClient';
 import { meetsAllRules } from './passwordRules';
 import PasswordRequirements from './PasswordRequirements';
@@ -77,6 +78,8 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImageType, setProfileImageType] = useState(null);
+  const [profileImageBase64, setProfileImageBase64] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
   const [pendingBirthday, setPendingBirthday] = useState(new Date());
@@ -120,41 +123,17 @@ export default function RegisterScreen({ navigation }) {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
+      base64: true,
     });
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
-    }
-  };
-
-  // Uploads the picked photo to the "avatars" storage bucket and saves the
-  // public URL onto the user's profiles row. Only works once we have a
-  // session (i.e. email confirmation is off, or they're already verified).
-  // `client` is the temporary sign-up client that holds the new session.
-  const uploadAvatar = async (client, userId) => {
-    try {
-      const response = await fetch(profileImage);
-      const contentType = response.headers.get('content-type') || 'image/jpeg';
-      const fileData = await response.arrayBuffer();
-      const fileExt = profileImage.split('.').pop() || 'jpg';
-      const filePath = `${userId}/avatar.${fileExt}`;
-
-      const { error: uploadError } = await client.storage
-        .from('avatars')
-        .upload(filePath, fileData, { upsert: true, contentType });
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = client.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      await client
-        .from('profiles')
-        .update({ avatar_url: publicUrlData.publicUrl })
-        .eq('id', userId);
-    } catch (e) {
-      // Non-fatal: account was still created successfully.
-      console.log('Avatar upload failed:', e.message);
+    if (!result.canceled && result.assets?.length) {
+      const asset = result.assets[0];
+      if (!asset.base64) {
+        showAlert('Photo error', 'Could not read that image. Please select another photo.');
+        return;
+      }
+      setProfileImage(asset.uri);
+      setProfileImageType(asset.mimeType || 'image/jpeg');
+      setProfileImageBase64(asset.base64);
     }
   };
 
@@ -237,8 +216,32 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    if (session && profileImage && user) {
-      await uploadAvatar(signupClient, user.id);
+    let avatarUploadPending = false;
+    let avatarUploadFailed = false;
+    if (profileImage && user) {
+      const avatar = {
+        base64: profileImageBase64,
+        contentType: profileImageType,
+      };
+      try {
+        await savePendingAvatar(user.id, avatar);
+      } catch (error) {
+        avatarUploadFailed = true;
+        console.error('Could not save the profile photo for upload:', error);
+      }
+
+      if (!avatarUploadFailed) {
+        if (session) {
+          try {
+            await uploadPendingAvatar(signupClient, user.id);
+          } catch (error) {
+            avatarUploadPending = true;
+            console.error('Profile photo upload failed:', error);
+          }
+        } else {
+          avatarUploadPending = true;
+        }
+      }
     }
 
     setLoading(false);
@@ -246,8 +249,16 @@ export default function RegisterScreen({ navigation }) {
     showAlert(
       'Account created!',
       session
-        ? 'Your account is ready. Please log in to continue.'
-        : 'Please check your email inbox to confirm your account, then log in.',
+        ? avatarUploadPending
+          ? 'Your account is ready. The profile photo will be uploaded after you log in.'
+          : avatarUploadFailed
+            ? 'Your account is ready, but we could not save the profile photo. You can add it later from your profile.'
+            : 'Your account is ready. Please log in to continue.'
+        : avatarUploadPending
+          ? 'Please check your email inbox to confirm your account, then log in. Your profile photo will be uploaded after login.'
+          : avatarUploadFailed
+            ? 'Please check your email inbox to confirm your account, then log in. We could not save the profile photo, but you can add it later from your profile.'
+            : 'Please check your email inbox to confirm your account, then log in.',
       () => navigation?.navigate('Login'),
     );
   };

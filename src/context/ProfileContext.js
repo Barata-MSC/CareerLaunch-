@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@config/supabase';
 import { isGuestUser, isGuestEmail } from '../features/auth/guestAccount';
+import { uploadPendingAvatar } from '../features/auth/avatarUpload';
 
 const ProfileContext = createContext(null);
 
@@ -27,6 +28,12 @@ export function ProfileProvider({ session, children }) {
       return;
     }
     setLoading(true);
+    try {
+      await uploadPendingAvatar(supabase, session.user.id);
+    } catch (error) {
+      console.error('Pending profile photo upload failed:', error);
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
