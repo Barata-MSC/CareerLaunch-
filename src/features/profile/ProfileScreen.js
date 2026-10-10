@@ -144,13 +144,14 @@ export default function ProfileScreen({ navigation }) {
 
     try {
       const response = await fetch(avatarUri);
-      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      const fileData = await response.arrayBuffer();
       const fileExt = avatarUri.split('.').pop() || 'jpg';
       const filePath = `${userId}/avatar.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+        .upload(filePath, fileData, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 

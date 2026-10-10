@@ -133,13 +133,14 @@ export default function RegisterScreen({ navigation }) {
   const uploadAvatar = async (client, userId) => {
     try {
       const response = await fetch(profileImage);
-      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      const fileData = await response.arrayBuffer();
       const fileExt = profileImage.split('.').pop() || 'jpg';
       const filePath = `${userId}/avatar.${fileExt}`;
 
       const { error: uploadError } = await client.storage
         .from('avatars')
-        .upload(filePath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+        .upload(filePath, fileData, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
