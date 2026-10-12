@@ -1,263 +1,206 @@
 # CareerLaunch!
 
-CareerLaunch! is a React Native mobile application developed for the Mobile Computing final project. The project is built with JavaScript and Expo, organized into reusable screens, components, contexts, configuration files, and assets.
+CareerLaunch! is a JavaScript mobile application for the **Mobile Computing final project**. It is built with **React Native and Expo** and organized into feature modules, reusable components, shared context, configuration, navigation, and assets.
 
-The application currently includes career-related features such as:
+The project brings several career-development tools together in one application: job discovery, interview preparation, resume building, career learning, job application tracking, and profile management. Expo Web support is also configured in the project setup, where supported by the installed dependencies.
 
-- Jobs Finder
-- AI Interview Coach
-- Resume Builder
-- Career Roadmap
-- Job Application Tracker
-- Profile
+> **Project status:** In development. This README describes the current repository organization and development setup. A folder or screen existing in the source tree does not necessarily mean its feature is complete; update this document as functionality is implemented and tested.
 
-The project uses Supabase for authentication/session handling and stores application-related state through React context providers.
+## Contents
 
-### Prerequisites
+- [Project Goals](#project-goals)
+- [Feature Modules](#feature-modules)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Local Setup](#local-setup)
+- [Environment Configuration](#environment-configuration)
+- [Run the Application](#run-the-application)
+- [Code Quality and Troubleshooting](#code-quality-and-troubleshooting)
+- [GitHub Team Workflow](#github-team-workflow)
+- [Security Notes](#security-notes)
+- [Project Status and Documentation](#project-status-and-documentation)
 
-1. Install the **GitHub Pull Requests** extension in VS Code (if it is not already installed).
-2. Sign in to GitHub from VS Code so the extension can access the repository.
-3. Have an active GitHub Copilot subscription (the free tier does not support this generation feature).
+## Project Goals
 
-### Configure Copilot PR Description Instructions
+- Organize the application by feature so each major part can be developed and maintained separately.
+- Reuse shared UI components, configuration, navigation, and application state where appropriate.
+- Use Supabase for authentication/session handling and backend services as configured by the project.
+- Support development and testing through Expo on supported targets, including Android and web.
+- Collaborate through Git and GitHub using feature branches and pull requests.
 
-Create or open the following file in the project:
+## Feature Modules
+
+The current `src/features/` tree contains the following feature areas. Their exact functionality and completion status should be verified in the code before being described as finished.
+
+| Feature module | Purpose |
+|---|---|
+| `auth/` | Authentication-related screens and flows. |
+| `dashboard/` | Main dashboard experience. |
+| `interview-coach/` | AI interview preparation experience. |
+| `job-finder/` | Job discovery and listing experience. |
+| `job-tracker/` | Job application tracking. |
+| `learning-hub/` | Learning screens, course navigation, lessons, quizzes, and progress-related code. The visible source structure includes shared learning components and a `software-engineering/` area. |
+| `profile/` | User profile experience. |
+| `resume-builder/` | Resume creation and related screens. |
+
+These modules are organized under `src/features/`, rather than being collected in a single root-level `screens/` folder. Shared components, contexts, configuration, and navigation remain outside the feature folders where appropriate.
+
+## Technology Stack
+
+| Area | Technology | Purpose |
+|---|---|---|
+| Language | JavaScript | Application and UI logic. |
+| UI framework | React Native | Build mobile interfaces using React components. |
+| App platform and tooling | Expo | Run and develop the application. |
+| Navigation | React Navigation | Navigation between application screens, including stack and bottom-tab navigation where configured. |
+| Backend / authentication | Supabase | Authentication/session handling and configured backend services. |
+| Shared state | React Context | Share profile, job-application, resume, or other app state where implemented. |
+| Web support | Expo Web / React Native Web | Run a web version when supported by the project's dependencies and configuration. |
+| Dependency management | npm | Install dependencies from `package.json` and `package-lock.json`. |
+| Development environment | Visual Studio Code | Editing, debugging, and project workflow. |
+| Version control | Git and GitHub | Collaboration, code history, branches, and pull requests. |
+
+The root `package.json` and `package-lock.json` are the source of truth for installed packages and scripts. Older command notes may list packages that were installed during setup but are not necessarily still required. Check the current package files before installing or removing dependencies.
+
+## Architecture
+
+The project uses a feature-oriented structure with shared infrastructure:
+
+1. **Feature modules (`src/features/`)** — group screens and feature-specific logic by domain, such as `job-finder` and `resume-builder`.
+2. **Reusable components (`src/components/`)** — UI building blocks intended to be shared across features.
+3. **Context (`src/context/`)** — shared React Context providers for application state.
+4. **Configuration (`src/config/`)** — configuration such as the Supabase client.
+5. **Navigation (`src/navigation/`)** — application navigation configuration.
+6. **Assets (`src/assets/`)** — images and other static resources used by the application.
+7. **Supabase resources (`supabase/`)** — project-related Supabase files, if maintained in this repository.
+
+Keep feature-specific code close to its feature. Move logic to shared components or utilities only when it is genuinely reused or needs a clear shared responsibility. Avoid putting all screen logic into `App.js`.
+
+## Project Structure
+
+The following tree reflects the repository organization visible in the current project explorer. Some feature folders may contain additional files or nested folders not shown here.
 
 ```text
-.vscode/settings.json
+CareerLaunch-/
+├── .claude/                       # Local/project AI assistant configuration, if used
+├── .vscode/                       # VS Code workspace settings, if shared
+├── src/
+│   ├── assets/                    # Images and other UI assets
+│   ├── components/                # Reusable UI components
+│   ├── config/                    # App configuration, including service clients
+│   ├── context/                   # React Context providers
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── dashboard/
+│   │   ├── interview-coach/
+│   │   ├── job-finder/
+│   │   ├── job-tracker/
+│   │   ├── learning-hub/
+│   │   │   ├── shared/             # Shared learning screens, components, and progress utilities
+│   │   │   └── software-engineering/
+│   │   ├── profile/
+│   │   └── resume-builder/
+│   ├── navigation/                # Navigation configuration
+│   └── index.js                   # Source-level exports or entry helpers, as configured
+├── supabase/                      # Supabase-related project files, if maintained here
+├── .env                           # Local environment values; do not commit
+├── .gitignore
+├── App.js                         # Root application component
+├── app.config.js
+├── app.json
+├── babel.config.js
+├── eslint.config.js
+├── index.js                       # Expo/React Native entry point
+├── jsconfig.json                  # JavaScript editor settings and path aliases
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-Add (or merge) the following configuration:
+Generated or local-only folders such as `node_modules/`, `dist/`, and Expo cache folders should not be treated as source code. The repository's `.gitignore` should exclude generated outputs and local secrets.
 
-```json
-{
-  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
-    {
-      "text": "Generate a highly detailed pull request description based only on the actual changes in the current branch compared with the base branch. Do not invent information. Explain WHAT changed, WHY it changed, and HOW it was implemented. Identify the relevant files, components, functions, screens, or modules affected. Explain important implementation details and how the changes interact with the existing system. Describe user-facing behavior when applicable. Include testing performed or evidence available from the changes, but do not claim tests were performed if there is no evidence. Mention important limitations, known issues, or follow-up work when applicable. Use clear Markdown headings and bullet points. Begin with a concise summary, followed by detailed sections. Make the description thorough enough that another team member can understand the purpose, implementation, and impact of the changes without inspecting every file manually."
-    }
-  ]
-}
-```
+### Where to add code
 
-These instructions are used only when generating the title/description from inside VS Code.
+- Add new feature screens and feature-specific helpers under the relevant directory in `src/features/`.
+- Add components reused by multiple features under `src/components/` or a clearly scoped shared feature directory.
+- Add cross-feature React Context providers under `src/context/`.
+- Keep Supabase client/configuration in `src/config/` and read local settings through the project's environment configuration.
+- Update navigation in `src/navigation/` when a screen needs to be reachable.
+- Add images and other app assets under `src/assets/`, keeping asset references consistent with the project's configured path aliases.
 
-### Pull Request Workflow (VS Code)
+### Path aliases
 
-1. Switch to the latest `main` branch:
+The project has `jsconfig.json` and `babel.config.js` for editor path resolution and Babel module resolution. The current documentation identifies the `@features` / `@features/*` alias and earlier setup notes include aliases such as `@components` and `@assets`. Check the actual mappings in both configuration files before adding or changing an alias; editor resolution and runtime resolution should agree.
+
+## Prerequisites
+
+Install the following before running the project:
+
+- **Node.js** — use a version compatible with the Expo SDK in `package.json`.
+- **npm** — normally installed with Node.js.
+- **Git** — for cloning and collaborating on the repository.
+- **Visual Studio Code** or another JavaScript-compatible editor.
+- A supported device/emulator for native testing, or a compatible browser for Expo Web.
+- A Supabase project and the required client configuration if the feature being run depends on Supabase.
+
+Recommended VS Code extensions from the team's setup notes include ESLint, Path Intellisense, React Native Tools, React/React Native snippets, and GitHub Pull Requests and Issues. These extensions are optional editor tools, not runtime dependencies.
+
+## Local Setup
+
+### 1. Clone the repository
+
+Use the repository URL provided by the team:
 
 ```powershell
-git checkout main
-git pull
+git clone <GITHUB_REPOSITORY_URL>
+cd <REPOSITORY_FOLDER>
 ```
 
-2. Create a new feature branch:
+Open the cloned repository folder in VS Code. Do not run `git init` inside a repository that has already been cloned.
+
+### 2. Install dependencies
+
+Run from the project root, where `package.json` is located:
 
 ```powershell
-git checkout -b JobFinderUpdate
+npm install
 ```
 
-3. Develop and test the feature.
+Keep `package-lock.json` committed so teammates install a consistent dependency tree. When adding a package, follow the Expo-compatible installation approach described in the package's documentation; for native modules that Expo manages, use `npx expo install <package>` when appropriate.
 
-4. Check the current Git status:
+### 3. Configure Supabase
+
+Create a local `.env` file at the project root if the current Supabase configuration expects environment variables. The current project documentation uses these variable names:
+
+```dotenv
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-or-anon-key
+```
+
+Confirm the actual names expected by the Supabase configuration in `src/config/` before running the app. Do not copy real credentials into this README or commit your `.env` file.
+
+`EXPO_PUBLIC_` variables are bundled into client code and must not contain service-role keys or other privileged secrets. Configure appropriate Supabase Row Level Security policies and permissions for exposed data.
+
+### 4. Start the development server
 
 ```powershell
-git status
+npx expo start
 ```
 
-5. Stage the changes:
+Use the terminal instructions shown by Expo to open the app on a connected device, emulator, or supported web target.
 
-```powershell
-git add .
-```
+## Environment Configuration
 
-6. Commit the changes:
+- Keep personal environment values in a local `.env` file that is ignored by Git.
+- If an environment variable is added or renamed, update the relevant local setup instructions without publishing its real value.
+- If `.env` was previously committed, adding it to `.gitignore` does not remove it from Git history. Remove it from tracking and rotate any exposed privileged credentials.
+- Do not put Supabase service-role keys in a React Native client. Client-side configuration is visible to users of the application.
 
-```powershell
-git commit -m "Update Job Finder"
-```
+## Run the Application
 
-7. Push the feature branch to GitHub:
-
-```powershell
-git push -u origin JobFinderUpdate
-```
-
-8. In VS Code, open the **GitHub Pull Requests** view (usually the GitHub icon in the Activity Bar).
-
-9. Click **Create Pull Request**.
-
-10. Select the base branch (`main`) and the compare branch (`JobFinderUpdate`).
-
-11. Click the **Copilot / Generate** (sparkle) icon next to the title or description fields. Copilot uses the project’s configured instructions and the actual branch changes to generate the title and description.
-
-12. Review the generated description carefully. Edit anything that is inaccurate, incomplete, or missing important context.
-
-13. Submit the Pull Request.
-
-### Workflow Summary
-
-```text
-main
-  │
-  ├── git pull
-  │
-  └── JobFinderUpdate
-          │
-          ├── Develop feature
-          ├── git status
-          ├── git add .
-          ├── git commit
-          └── git push origin JobFinderUpdate
-                    │
-                    ▼
-              VS Code
-              (GitHub Pull Requests extension)
-                    │
-                    ▼
-             Create Pull Request
-                    │
-                    ▼
-          Generate title + description
-             with GitHub Copilot
-             (uses .vscode/settings.json instructions)
-                    │
-                    ▼
-             Review & edit description
-                    │
-                    ▼
-                PR → main
-```
-
-### Important
-
-- The feature branch must be pushed to GitHub before (or while) creating the Pull Request from VS Code.
-- Do not push the feature directly to `main` when the team workflow requires a Pull Request.
-- Always review the Copilot-generated description before submitting. It should accurately reflect only the changes that were actually made and tested.
-- The custom instructions in `.vscode/settings.json` apply to generation performed inside VS Code. They do not control the separate “Summary” button that appears on the GitHub website.
-
----
-
-## README Guide
-
-| Sections | Contents |
-|---|---|
-| **1–10** | Setup + Dependencies |
-| **11–18** | Project Configuration + Architecture |
-| **19–27** | Git / GitHub + Development Workflow |
-| **28–31** | Current Status + Reference Information |
-
----
-
-## 1. Technology Stack
-
-- **Language:** JavaScript
-- **Framework:** React Native
-- **Development Platform:** Expo
-- **Editor:** Visual Studio Code
-- **Version Control:** Git & GitHub
-- **Database / Backend Services:** Supabase
-- **Navigation:** React Navigation
-- **Project Structure:** Modular `src` directory with path aliases
-- **Web Support:** Expo Web / React Native Web
-
----
-
-## 2. Development Environment Setup
-
-Before starting development, download and install the required tools:
-
-### Required Software
-
-1. **Git** (Git for Windows or platform equivalent)
-2. **Node.js** (LTS version recommended)
-3. **Visual Studio Code**
-4. **Expo CLI & React Native dependencies**
-
-Once Git and Node.js are installed, open Visual Studio Code to begin workspace configuration.
-
----
-
-## 3. Recommended VS Code Extensions
-
-The following extensions are recommended to streamline development and ensure code consistency:
-
-| Extension | Purpose |
-|---|---|
-| **Path Intellisense** | Auto-completes filenames and module paths during imports. |
-| **ESLint** | Detects potential JavaScript and React Native code quality issues. |
-| **ES7+ React/Redux/React-Native Snippets** | Provides quick code snippet shortcuts for React/React Native components. |
-| **React Native Tools** | Adds debugging and command support for React Native projects in VS Code. |
-| **vscode-styled-components** | Provides syntax highlighting and formatting for styled-components. |
-| **Mobile Preview - Phone & Tablet Simulator** | Previews web-rendered mobile and tablet layouts directly in the editor. |
-| **GitHub Pull Requests and Issues** | Enables local PR creation, review, and integration within VS Code. |
-
----
-
-## 4. Project Initialization
-
-The Expo project structure was initialized using the default blank template:
-
-```powershell
-npx create-expo-app "CareerLaunch!" --template blank
-```
-
-Additional dependencies and supporting Expo libraries are installed incrementally as required.
-
----
-
-## 5. React Navigation Setup
-
-The project uses React Navigation for screen navigation.
-
-### Native Stack Navigation
-
-```powershell
-npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context
-```
-
-### Bottom Tab Navigation
-
-```powershell
-npx expo install @react-navigation/bottom-tabs
-```
-
-Other navigation-related installation commands used during development included:
-
-```powershell
-npm install @react-navigation/native @react-navigation/native-stack
-npx expo install react-native-screens react-native-safe-area-context
-```
-
----
-
-## 6. Other Packages and Development Dependencies
-
-Packages installed during development included:
-
-```powershell
-npx expo install expo
-npx expo install react-dom react-native-web
-npx expo install expo-image-picker
-npx expo install expo-linking
-npm install react-native-url-polyfill
-```
-
-For path aliasing and Babel configuration:
-
-```powershell
-npm install --save-dev babel-plugin-module-resolver
-npm install babel-preset-expo --save-dev
-```
-
-For ESLint support:
-
-```powershell
-npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-react eslint-plugin-react-native
-```
-
----
-
-## 7. Running the Project
+Run commands from the project root.
 
 ### Start Expo
 
@@ -265,19 +208,23 @@ npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-reac
 npx expo start
 ```
 
-### Start Expo with cache cleared
+### Start with cache cleared
+
+Use this when Metro is holding stale cached state or after certain configuration changes:
 
 ```powershell
 npx expo start -c
 ```
 
-### Start Expo for Web
+### Run the web version
+
+If Expo Web dependencies and project configuration are installed:
 
 ```powershell
-npx expo start --web -c
+npx expo start --web
 ```
 
-or:
+The project's npm script may also provide:
 
 ```powershell
 npm run web
@@ -285,1049 +232,90 @@ npm run web
 
 ### Run Android
 
+If the `android` script exists in `package.json`:
+
 ```powershell
 npm run android
 ```
 
----
+Otherwise, start Expo with `npx expo start` and use the Expo CLI's available Android option. The exact command and device workflow depend on the current Expo SDK and local Android tooling.
 
-## 8. Fixing / Synchronizing Dependencies
+### Test on a physical phone
 
-During development, dependency problems were handled using:
+Start Expo and follow the CLI instructions. Your phone and development computer typically need to be able to reach one another over the network. If the normal local connection does not work, you can try:
 
 ```powershell
-Remove-Item -Recurse -Force node_modules
+npx expo start --tunnel
+```
+
+Tunnel mode can be slower and may require additional setup depending on your network and Expo tooling. Prefer the standard local connection when it works.
+
+## Code Quality and Troubleshooting
+
+### Check current scripts and packages
+
+Before running a script or installing a package, check `package.json`. Do not reinstall dependencies manually from old command notes unless there is a specific need.
+
+### Fix dependency mismatches
+
+If Expo reports incompatible package versions, review the diagnostic message first. The following commands may help after confirming the project's package configuration:
+
+```powershell
 npm install
 npx expo install --fix
 ```
 
-Another cache reset procedure used during development was:
+Deleting `node_modules/` and reinstalling everything should be a later troubleshooting step, not the routine first response to every error. Do not delete `package-lock.json` casually, because that can change the installed dependency tree.
 
-```powershell
-npm cache clean --force
-npm install
-```
-
-These commands can be useful when installed packages and the project configuration become out of sync.
-
----
-
-## 9. Expo Tunnel Setup
-
-When a local connection was difficult, Expo tunnel mode was used.
-
-The project notes record the following setup:
-
-```powershell
-npm uninstall -g @expo/ngrok
-npm install -g @expo/ngrok@4.1.0
-npm install @expo/ngrok@4.1.0
-npx expo login
-npx expo start --tunnel
-```
-
----
-
-## 10. Project Structure
-
-The project follows a modular `src` structure.
-
-```text
-CareerLaunch-
-│
-├── .expo/
-├── .vscode/
-├── dist/
-├── node_modules/
-│
-├── src/
-│   ├── assets/
-│   │   ├── ai_coach.png
-│   │   ├── dashboard.png
-│   │   ├── google-icon.png
-│   │   ├── icon-profile.png
-│   │   ├── job_applicationTracker.png
-│   │   ├── job_search.png
-│   │   ├── mic-icon.png
-│   │   ├── profile.png
-│   │   ├── resume_builder.png
-│   │   ├── roadmap.png
-│   │   ├── rocket-icon.png
-│   │   └── student-illustration.png
-│   │
-│   ├── components/
-│   ├── config/
-│   ├── context/
-│   └── screens/
-│
-├── .env
-├── .eslintrc.json
-├── app.config.js
-├── App.js
-├── babel.config.js
-├── index.js
-├── jsconfig.json
-├── package.json
-└── package-lock.json
-```
-
-### Main folders
-
-#### `src/assets`
-Stores images and visual assets used by the application.
-
-#### `src/components`
-Stores reusable UI components that can be shared by multiple screens.
-
-#### `src/config`
-Stores configuration files such as the Supabase configuration.
-
-#### `src/context`
-Stores React Context providers used for shared application state.
-
-#### `src/screens`
-Stores the application's main screens and screen-specific features.
-
----
-
-## 11. Path Aliasing
-
-To make imports cleaner and avoid long relative paths, the project uses path aliases.
-
-### `jsconfig.json`
-
-The development notes configure aliases for:
-
-```text
-@components/*
-@screens/*
-@assets/*
-```
-
-These point to:
-
-```text
-src/components/*
-src/screens/*
-src/assets/*
-```
-
-### Example
-
-Instead of:
-
-```javascript
-import DashboardScreen from '../screens/DashboardScreen';
-```
-
-the project can use:
-
-```javascript
-import DashboardScreen from '@screens/DashboardScreen';
-```
-
-This makes imports easier to read and reduces problems caused by deeply nested relative paths.
-
----
-
-## 12. Babel Configuration
-
-The project uses `babel-plugin-module-resolver` together with `babel-preset-expo`.
-
-The aliases are mapped approximately as:
-
-```javascript
-alias: {
-  '@components': './src/components',
-  '@screens': './src/screens',
-  '@assets': './src/assets',
-}
-```
-
-After changing Babel configuration, restart Expo with a cleared cache:
+### Clear the Metro cache
 
 ```powershell
 npx expo start -c
 ```
 
----
+### ESLint
 
-## 13. ESLint Configuration
+The repository contains `eslint.config.js`. Use the lint script defined in `package.json` if one exists. If no lint script is configured, check the project's ESLint setup before inventing a command or adding configuration.
 
-ESLint was added for JavaScript and React Native code checking.
+### Testing
 
-The project notes include the `react-native` ESLint plugin and the following configuration rule:
+Test the affected behavior on the target platform before opening a pull request. At minimum, review:
 
-```json
-{
-  "rules": {
-    "react-native/no-inline-styles": 0
-  }
-}
-```
+- Authentication and logged-in/logged-out navigation, when relevant.
+- Navigation into and out of the changed feature.
+- Loading, empty, success, and error states for data-dependent screens.
+- Layout and interactions on the target mobile size; check web behavior too if the change affects web support.
+- Supabase permission and error behavior for features that read or write remote data.
+- Resume, learning progress, or job-tracker state persistence where the change touches those flows.
 
-This allows inline styles in the project while still keeping ESLint active for other checks.
+Do not claim a test passed unless you actually ran it.
 
----
+## GitHub Team Workflow
 
-## 14. Application Architecture
+Use `main` as the stable branch. Work on a task branch, push it to GitHub, and submit a pull request targeting `main`. Detailed commands are in [`GIT_WORKFLOW.md`](GIT_WORKFLOW.md).
 
-The application is organized around screens, reusable components, shared contexts, configuration, and navigation.
+Recommended branch names:
 
-The main `App.js` currently:
+- `feature/job-finder-filters`
+- `feature/interview-coach`
+- `feature/learning-hub-progress`
+- `feature/resume-builder`
+- `fix/auth-session-loading`
+- `docs/update-readme`
 
-1. Initializes the Supabase authentication session.
-2. Listens for authentication state changes.
-3. Shows a loading indicator while authentication is being checked.
-4. Provides shared state through:
-   - `ProfileProvider`
-   - `ApplicationsProvider`
-   - `ResumeProvider`
-5. Displays protected application screens when a user is logged in.
-6. Displays the authentication screens when a user is logged out.
-7. Wraps the application in a React Navigation container.
-8. Displays the CareerLaunch splash screen.
+The team also uses VS Code's GitHub Pull Requests workflow. If Copilot or another assistant generates a PR title or description, review it and ensure it reflects the actual diff and tests. Never accept invented testing claims or changes that were not made.
 
----
+## Security Notes
 
-## 15. Main Navigation / Screens
+- Never commit `.env` or private credentials.
+- Treat any `EXPO_PUBLIC_` environment variable as public client configuration; do not place privileged keys in it.
+- Keep Supabase access policies and Row Level Security appropriately configured for tables exposed to the client.
+- Validate access on the backend/database, not only by hiding buttons or screens in the app.
+- Avoid logging authentication tokens, secrets, or private user data.
+- Review dependencies and AI-generated code before committing changes.
 
-The current application contains the following major screens and flows:
+## Project Status and Documentation
 
-### Authentication
+The visible source tree is organized into the following feature areas: `auth`, `dashboard`, `interview-coach`, `job-finder`, `job-tracker`, `learning-hub`, `profile`, and `resume-builder`. The application also has shared `components`, `config`, `context`, `navigation`, and `assets` directories, plus a `supabase/` folder.
 
-- Welcome
-- Login
-- Register
-
-### Main Application
-
-- Main Tabs
-- Dashboard
-- Profile
-- Job Finder
-- Career Roadmap
-- AI Interview Coach
-- Job Application Tracker
-
-### Resume Builder
-
-The Resume Builder is divided into several screens:
-
-- Resume Builder
-- Personal Information
-- Education
-- Skills
-- Experience
-- Certificates
-- Projects
-- Resume Preview
-
----
-
-## 16. Authentication and Supabase
-
-The application imports the Supabase client from:
-
-```text
-src/config/supabase
-```
-
-The main application checks the current Supabase session when it starts:
-
-```javascript
-supabase.auth.getSession()
-```
-
-It also listens for authentication changes:
-
-```javascript
-supabase.auth.onAuthStateChange(...)
-```
-
-This allows the application to switch between the public authentication screens and the logged-in application screens.
-
-### Environment Variables
-
-Add these values to a root-level `.env` file before starting the app:
-
-```dotenv
-EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
-```
-
-These are client-side Supabase settings and are included in the application
-bundle. Use only the project's publishable/anon key, never a service-role key,
-and configure Supabase row-level security for exposed data. The app reports a
-session-loading error with a retry action if it cannot read the persisted
-session.
-
-The Git workflow notes specifically include removing `.env` from Git tracking:
-
-```powershell
-git rm --cached .env
-git commit -m "Remove .env from tracking"
-```
-
-Do not commit private keys, secrets, or environment credentials to the repository.
-
-### Feature imports
-
-Feature screens and APIs are exported from `src/features/index.js` or their
-domain barrel files, such as `src/features/auth/index.js` and
-`src/features/resume-builder/index.js`. Babel and `jsconfig.json` map
-`@features` and `@features/*` to `src/features`, so use imports such as
-`@features/auth` and `@features/resume-builder` instead of long relative paths.
-
----
-
-## 17. Shared Application State
-
-The current application wraps its navigation inside several React Context providers.
-
-```text
-ProfileProvider
-    └── ApplicationsProvider
-        └── ResumeProvider
-            └── Navigation
-```
-
-### Profile Context
-
-Handles shared user profile/session information.
-
-### Applications Context
-
-Handles shared job application tracker state.
-
-### Resume Context
-
-Handles shared resume-builder information across the resume creation screens.
-
----
-
-## 18. Current Application Flow
-
-A simplified flow of the application is:
-
-```text
-Start Application
-       │
-       ▼
-Authentication Check
-       │
-       ├── Not Logged In
-       │      ├── Welcome
-       │      ├── Login
-       │      └── Register
-       │
-       └── Logged In
-              │
-              ▼
-          Main Application
-              │
-              ├── Dashboard
-              ├── Profile
-              ├── Job Finder
-              ├── Career Roadmap
-              ├── AI Interview Coach
-              ├── Job Application Tracker
-              └── Resume Builder
-                     ├── Personal Information
-                     ├── Education
-                     ├── Skills
-                     ├── Experience
-                     ├── Certificates
-                     ├── Projects
-                     └── Resume Preview
-```
-
----
-
-# 19–25. Git / GitHub Development Workflow
-
-## 19. Git and GitHub Basics
-
-Git is used to track project changes, while GitHub is used as the team's remote repository.
-
-### Clone an Existing Repository
-
-```powershell
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-
-Then enter the project folder:
-
-```powershell
-cd "folderName"
-```
-
-### Check Repository Status
-
-```powershell
-git status
-```
-
----
-
-## 20. Starting Any New Task: Always Create a New Branch
-
-For this project, **one task = one branch**.
-
-This applies to both small changes and large features.
-
-Before starting:
-
-```powershell
-git checkout main
-git pull
-git status
-```
-
-Make sure you are on the latest `main` and there are no unwanted local changes.
-
-Then create a new branch:
-
-```powershell
-git checkout -b "your-feature-name"
-```
-
-You can also use the newer `git switch` command:
-
-```powershell
-git switch -c "your-feature-name"
-```
-
-Both commands create a new local branch and switch you to it.
-
-Example:
-
-```powershell
-git checkout -b CareerRoadmapUpdate
-```
-
-or:
-
-```powershell
-git switch -c CareerRoadmapUpdate
-```
-
-### Important
-
-- Do not continue developing directly on `main`.
-- Start every new task from the latest `main`.
-- Create a new branch for both small fixes and large features.
-- Do not create a new update branch under an old completed feature branch.
-
----
-
-## 21. Develop, Commit, and Push
-
-After completing the task:
-
-```powershell
-git status
-git add .
-git commit -m "Describe what you changed"
-git push origin "your-feature-name"
-```
-
-Example:
-
-```powershell
-git add .
-git commit -m "Update Career Roadmap screen"
-git push origin CareerRoadmapUpdate
-```
-
-Then open GitHub and create a Pull Request:
-
-```text
-your-feature-name → main
-```
-
----
-
-## 22. Uploading a Local Branch to a Remote Branch for Review
-
-A branch does **not** need to be merged into `main` immediately. A team member can upload their local branch to GitHub so another teammate can inspect and test the source code first.
-
-### From the member's local branch
-
-Make sure the member is currently on the correct branch:
-
-```powershell
-git branch
-git status
-```
-
-Then push that local branch to the remote repository:
-
-```powershell
-git push -u origin "your-feature-name"
-```
-
-Example:
-
-```powershell
-git push -u origin CareerRoadmap
-```
-
-This creates or updates the remote branch:
-
-```text
-Local:  CareerRoadmap
-          ↓
-Remote: origin/CareerRoadmap
-```
-
-The branch is now available on GitHub without changing `main`.
-
-### Checking a teammate's remote branch locally
-
-First update your list of remote branches:
-
-```powershell
-git fetch origin
-```
-
-If you do not already have a local copy of the branch, create one that tracks the remote branch:
-
-```powershell
-git checkout -b "your-feature-name" origin/"your-feature-name"
-```
-
-Example:
-
-```powershell
-git checkout -b CareerRoadmap origin/CareerRoadmap
-```
-
-You can then inspect, run, and test the code locally before deciding whether it is ready to merge into `main`.
-
-### Important
-
-Pushing a branch to GitHub **does not merge it into `main`**.
-
-The branch can stay on GitHub while the team reviews it. After review, create a Pull Request:
-
-```text
-CareerRoadmap → main
-```
-
-Then merge it into `main` only when the team is ready.
-
-## 23. Pull Requests and Merge Conflicts
-
-After a branch is pushed, create a Pull Request so the changes can be reviewed and merged into `main`.
-
-Another teammate may have already merged changes into `main` while your branch is still being developed. This does **not** automatically mean there will be a merge conflict.
-
-A conflict is more likely when two branches modify the same files or the same lines of code.
-
-A branch can still be pushed and submitted as a Pull Request:
-
-```powershell
-git add .
-git commit -m "Describe changes"
-git push origin "your-feature-name"
-```
-
-If GitHub reports a merge conflict, resolve the conflict before completing the merge.
-
-### Optional: Update a Long-Running Branch
-
-If a branch has been under development for a while and needs the latest `main`, it can be updated with:
-
-```powershell
-git checkout main
-git pull
-git checkout "your-feature-name"
-git merge main
-```
-
-This is optional and is not required every time `main` changes.
-
----
-
-## 24. Canceling, Undoing, or Recovering Git Changes
-
-These commands are for different situations. **Do not run all of them as one sequence.** Choose the command based on what you are trying to cancel or undo.
-
-### Temporarily set aside local changes
-
-Use `git stash` when you have unfinished local changes but need a clean working tree temporarily.
-
-```powershell
-git stash
-git pull
-git stash pop
-```
-
-What this does:
-
-```text
-git stash     → temporarily stores your uncommitted changes
-git pull      → gets the latest changes from the tracked remote branch
-git stash pop → reapplies your saved local changes
-```
-
-If `git stash pop` causes conflicts, resolve the conflicts manually before continuing.
-
-### Cancel an unfinished merge
-
-If a merge has started and Git reports conflicts, you can cancel the merge and return to the state before the merge began:
-
-```powershell
-git merge --abort
-```
-
-Use this when you want to stop the current merge without keeping the merge result.
-
-### Undo the most recent commit but keep the changes
-
-```powershell
-git reset --soft HEAD~1
-```
-
-This removes the latest commit from the current branch history, but keeps the changes from that commit staged so they can be edited or recommitted.
-
-### Recover the latest remote `main` state
-
-```powershell
-git fetch origin
-git reset --hard origin/main
-```
-
-This updates the local knowledge of the remote repository and then makes the current branch match `origin/main`. **Uncommitted changes and local commits on the current branch can be discarded by `--hard`.** Only use this when you are certain those local changes are no longer needed.
-
-### Quick guide
-
-| Situation | Command | Result |
-|---|---|---|
-| Temporarily save unfinished changes | `git stash` | Stores changes temporarily |
-| Reapply stashed changes | `git stash pop` | Restores the latest stash |
-| Cancel an active merge | `git merge --abort` | Stops the merge and returns to the previous state |
-| Undo the latest commit but keep its changes | `git reset --soft HEAD~1` | Removes the commit, keeps changes staged |
-| Discard local work and match remote `main` | `git fetch origin` + `git reset --hard origin/main` | Resets the current branch to remote `main` |
-
----
-
-## 25. Merging and Deleting Completed Branches
-
-Once a Pull Request has been successfully merged into `main`, the feature branch can be deleted.
-
-Deleting a branch **after it has been merged does not remove the merged commits from `main`**. The commits remain part of `main`'s history.
-
-This keeps the repository clean and prevents old completed branches from piling up.
-
-### Example
-
-```text
-main
-  │
-  └── CareerRoadmapUpdate
-             ↓
-        Pull Request
-             ↓
-        Merge into main
-             ↓
-      Delete the branch
-```
-
-### Delete a completed local branch
-
-First switch back to `main`:
-
-```powershell
-git checkout main
-git pull
-```
-
-Then delete the merged local branch:
-
-```powershell
-git branch -d CareerRoadmapUpdate
-```
-
-If Git says the branch has not been fully merged, **do not use `-D` unless you are certain the branch is no longer needed**:
-
-```powershell
-git branch -D CareerRoadmapUpdate
-```
-
-### Delete the remote GitHub branch
-
-After deleting the local branch, remove the remote branch from GitHub:
-
-```powershell
-git push origin --delete CareerRoadmapUpdate
-```
-
-This removes the branch name from the remote repository but does not remove commits that were already merged into `main`.
-
-### Important: Do not use `git checkout -d` to delete a branch
-
-For example, this is **not** a branch-deletion command:
-
-```powershell
-git checkout -d readmeUpdate
-```
-
-It can place Git into a **detached HEAD** state instead of deleting the branch.
-
-If this happens, return to `main` first:
-
-```powershell
-git checkout main
-```
-
-Then delete the branch normally:
-
-```powershell
-git branch -d readmeUpdate
-```
-
-And, if the branch was pushed to GitHub:
-
-```powershell
-git push origin --delete readmeUpdate
-```
-
-### Updating a completed feature later
-
-If the same feature needs another update later, create a **new branch from the latest `main`**:
-
-```powershell
-git checkout main
-git pull
-git checkout -b CareerRoadmapFix
-```
-
-Do not create:
-
-```text
-CareerRoadmap
-   └── CareerRoadmapFix
-```
-
-unless there is a specific reason to make the work dependent on the old branch.
-
----
-
-## 26. Initial GitHub Upload / Repository Setup
-
-The original project notes used the following process for uploading a project to GitHub for the first time:
-
-```powershell
-git init
-git remote add origin https://github.com/Barata-MSC/Main-Career-Launch-.git
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git push -u origin main
-```
-
-For a different repository, replace the remote URL with the team's repository URL.
-
-### Changing a Git Remote
-
-```powershell
-git remote set-url origin <NEW_URL>
-```
-
-To completely remove the Git repository metadata from the local project:
-
-```powershell
-Remove-Item -Recurse -Force .git
-```
-
-Use this carefully because it removes the local Git history/configuration.
-
----
-
-## 27. Team Workflow Rules
-
-### Before starting any task
-
-```powershell
-git checkout main
-git pull
-git status
-git checkout -b "your-feature-name"
-```
-
-### While developing
-
-```powershell
-git status
-```
-
-Commit regularly when a meaningful part of the task is complete.
-
-### After finishing
-
-```powershell
-git add .
-git commit -m "Describe what you changed"
-git push origin "your-feature-name"
-```
-
-Create a Pull Request and merge into `main`.
-
-### After merging
-
-Delete the completed branch.
-
-```text
-One task
-   ↓
-One branch
-   ↓
-Develop
-   ↓
-Commit
-   ↓
-Push
-   ↓
-Pull Request
-   ↓
-Merge into main
-   ↓
-Delete branch
-```
-
-### Team reminders
-
-- Do not develop directly on `main`.
-- Start every new task from the latest `main`.
-- Create a new branch for both small fixes and large features.
-- Do not keep old merged branches unless there is a specific reason.
-- Do not commit `.env` or private credentials.
-- Avoid editing the same large files at the same time when possible, especially:
-  - `App.js`
-  - `babel.config.js`
-  - `jsconfig.json`
-  - shared context files
-
----
-
-## 28. Project Status
-
-This README documents the current development setup and workflow of CareerLaunch!.
-
-The project currently uses a database/backend service through Supabase, so GitHub Pages is not part of the current deployment workflow.
-
-The old GitHub Pages deployment notes are intentionally not included in the active development instructions.
-
----
-
-## 29. Useful Command Reference
-
-### Project
-
-```powershell
-npx expo start
-npx expo start -c
-npx expo start --web -c
-npm run android
-npm run web
-```
-
-### Dependencies
-
-```powershell
-npm install
-npx expo install --fix
-Remove-Item -Recurse -Force node_modules
-npm cache clean --force
-```
-
-### Git
-
-```powershell
-git status
-git checkout main
-git pull
-git checkout -b "branch-name"
-git switch -c "branch-name"
-git add .
-git commit -m "message"
-git push origin "branch-name"
-```
-
-### Expo Tunnel
-
-```powershell
-npx expo login
-npx expo start --tunnel
-```
-
----
-
-## 30. Project Repository
-
-GitHub repository:
-
-```text
-https://github.com/Barata-MSC/Main-Career-Launch-
-```
-
-If the team moves the project to another repository, update this section with the new repository URL.
-
----
-
-## 31. Credits / Development
-
-**Project:** CareerLaunch!  
-**Course:** Mobile Computing  
-**Technology:** React Native + Expo + JavaScript  
-**Repository:** GitHub  
-**Backend / Database Service:** Supabase
-
----
-
-## 32. Deploying AI Coding Agents / Assistants in VS Code
-
-AI coding assistants can be integrated into Visual Studio Code to help with code generation, debugging, refactoring, code explanation, and project-level development tasks.
-
-For this project, the following AI coding tools are used:
-
-* **GitHub Copilot** — everyday coding assistance, code completion, and AI chat.
-* **OpenAI Codex** — project-level AI coding agent for understanding and modifying the codebase.
-
----
-
-### 32.1 GitHub Copilot
-
-GitHub Copilot provides AI-powered coding assistance directly inside Visual Studio Code.
-
-#### Installation and Setup
-
-1. Open **VS Code Extensions** and search for **GitHub Copilot** / **GitHub Copilot Chat**.
-   * Newer versions of Visual Studio Code may include Copilot functionality directly.
-2. Click the **Accounts** icon in the bottom-left corner of VS Code.
-3. Select **Sign in with GitHub** to authenticate GitHub Copilot.
-4. Follow the browser prompt to authenticate your GitHub account.
-5. Once connected, the Copilot status icon should appear in the VS Code status bar.
-6. Open the **GitHub Copilot Chat** interface from the VS Code sidebar.
-7. At the bottom of the Copilot Chat interface, open the **model selector**.
-8. Select the desired available model, such as **Claude**, when available.
-
-#### Recommended Uses
-
-GitHub Copilot can be used for:
-
-* Code completion
-* Generating small code snippets
-* Explaining code
-* Fixing simple errors
-* Refactoring code
-* Asking questions about the current file
-* Generating common React Native patterns
-
----
-
-### 32.2 OpenAI Codex
-
-OpenAI Codex is an AI coding agent that can be used directly within VS Code.
-
-Unlike a basic autocomplete tool, Codex can work with the project's codebase to understand the relationships between files and perform larger development tasks.
-
-#### Installation and Setup
-
-1. Open **VS Code Extensions**.
-2. Search for the official **Codex** extension from OpenAI.
-3. Install the extension.
-4. Open the **Codex** panel in VS Code.
-5. Sign in using your **ChatGPT account** when prompted.
-6. Open the **CareerLaunch** project folder in VS Code.
-7. Give Codex a coding task through the Codex interface.
-
-#### Example Tasks
-
-Codex can be used for larger development tasks such as:
-
-```text
-Analyze the Job Finder feature and explain how the components,
-screens, and data flow are connected.
-```
-
-```text
-Find the cause of this navigation error and fix it.
-```
-
-```text
-Add a loading state to the Job Finder screen.
-Keep the existing project structure and styling.
-```
-
-```text
-Review the Resume Builder and identify possible bugs
-without changing the code.
-```
-
-Codex can inspect relevant project files and, depending on the task and permissions, make code changes within the project.
-
----
-
-### 32.3 GitHub Copilot vs. OpenAI Codex
-
-Both tools can assist with programming, but they are useful for different types of work.
-
-| Tool | Primary Use |
-| --- | --- |
-| **GitHub Copilot** | Everyday coding assistance and code completion |
-| **GitHub Copilot Chat** | Questions, explanations, and smaller coding tasks |
-| **OpenAI Codex** | Larger project-level coding and agentic development tasks |
-
-#### Recommended Workflow
-
-For this project, GitHub Copilot can be used as the primary everyday coding assistant while Codex can be used when a task requires deeper understanding of multiple files.
-
-```text
-VS Code
-│
-├── GitHub Copilot
-│   ├── Code completion
-│   ├── Quick fixes
-│   ├── Code explanations
-│   └── Everyday coding
-│
-└── OpenAI Codex
-    ├── Understand project structure
-    ├── Analyze multiple files
-    ├── Debug larger problems
-    ├── Implement features
-    └── Review/refactor code
-```
-
-#### Important
-
-AI coding agents should be treated as development assistants rather than replacements for understanding the source code.
-
-Before accepting major changes:
-
-1. Review the generated code.
-2. Check which files were modified.
-3. Run the application.
-4. Test the affected functionality.
-5. Review the Git diff before committing.
-
-This is especially important when working on shared project files such as:
-
-```text
-App.js
-babel.config.js
-jsconfig.json
-src/context/
-src/screens/
-```
-
-AI-generated changes should be reviewed before they are committed and pushed to the team's GitHub repository.
-
----
-
-### 32.4 GitHub Copilot Pull Request Description Generation (VS Code)
-
-The team generates detailed Pull Request descriptions **inside Visual Studio Code** using the **GitHub Pull Requests** extension together with GitHub Copilot. Custom instructions in the project control the style and depth of the generated description.
+This README intentionally does not claim that every feature is complete. Update feature descriptions, setup instructions, and the project structure when the implementation changes. Keep `GIT_WORKFLOW.md` focused on Git commands, branching, pull requests, review, and recovery procedures.
