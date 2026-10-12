@@ -134,6 +134,57 @@ Generated or local-only folders such as `node_modules/`, `dist/`, and Expo cache
 
 The project has `jsconfig.json` and `babel.config.js` for editor path resolution and Babel module resolution. The current documentation identifies the `@features` / `@features/*` alias and earlier setup notes include aliases such as `@components` and `@assets`. Check the actual mappings in both configuration files before adding or changing an alias; editor resolution and runtime resolution should agree.
 
+### Barrel Exporting
+
+The project also uses **barrel exporting** to organize module exports and simplify imports. A barrel file is usually named `index.js` and re-exports components, screens, functions, or other modules from a directory.
+
+Instead of importing directly from a deeply nested file, other parts of the application can import from the directory's barrel file.
+
+#### Example folder structure
+
+```text
+src/features/job-finder/
+├── JobFinderScreen.js
+├── components/
+│   └── JobCard.js
+└── index.js
+```
+
+#### `src/features/job-finder/index.js`
+
+```javascript
+export { default as JobFinderScreen } from './JobFinderScreen';
+export { default as JobCard } from './components/JobCard';
+```
+
+#### Importing through the barrel file
+
+Instead of importing directly from individual files:
+
+```javascript
+import JobFinderScreen from '@features/job-finder/JobFinderScreen';
+import JobCard from '@features/job-finder/components/JobCard';
+```
+
+The application can import the exported modules from the feature directory:
+
+```javascript
+import {
+  JobFinderScreen,
+  JobCard,
+} from '@features/job-finder';
+```
+
+The `@features` path alias resolves the feature directory, while the directory's `index.js` provides the exports.
+
+**Path aliases and barrel exporting serve different purposes:**
+
+- **Path aliases** simplify file paths by mapping aliases such as `@features/*` to directories under `src/`.
+- **Barrel exporting** provides a central entry point for importing multiple exports from a directory.
+
+Use barrel files where they improve organization and readability. Keep exports intentional, and avoid unnecessary re-exports that could introduce circular dependencies or make module relationships harder to understand.
+
+
 ## Prerequisites
 
 Install the following before running the project:
