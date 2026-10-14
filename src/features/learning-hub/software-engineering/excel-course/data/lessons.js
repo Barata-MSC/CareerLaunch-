@@ -1,5 +1,12 @@
 // Lesson content for the Excel & Spreadsheets course (follows the W3Schools Excel tutorial order).
 
+// References shown at the end of every lesson (APA 7th, no date available -> n.d.).
+// Swap in the exact page you read for a lesson if it differs.
+const REFS = [
+  { text: 'W3Schools. (n.d.). Excel tutorial. W3Schools.', url: 'https://www.w3schools.com/excel/' },
+  { text: 'Microsoft. (n.d.). Excel help & learning. Microsoft Support.', url: 'https://support.microsoft.com/Excel' },
+];
+
 export const LESSONS = [
   {
     id: 'excel-getting-started',
@@ -33,6 +40,28 @@ A1:C3   a block of 9 cells`,
         text: 'Click a cell, type, then press Enter. By default text is aligned to the left and numbers to the right, which helps you spot numbers that were typed as text.',
       },
     ],
+    activities: [
+      {
+        type: 'miniSheet',
+        title: 'Try it: tap the cells',
+        columns: ['A', 'B', 'C'],
+        rows: [
+          ['Name', 'Sales', 'Region'],
+          ['Ana', 1200, 'North'],
+          ['Ben', 950, 'South'],
+        ],
+        challenge: { text: "Challenge: tap the cell with Ben's sales.", target: 'B3' },
+      },
+      {
+        type: 'quickCheck',
+        question: 'Which cell holds the word "North"?',
+        options: ['A2', 'C2', 'B3', 'C3'],
+        correct: 1,
+        hint: 'Say the column letter first, then the row number.',
+        explanation: 'North is in column C, row 2, so its address is C2.',
+      },
+    ],
+    references: REFS,
     keyPoints: [
       'A workbook contains worksheets; a worksheet is a grid of cells',
       'A cell address is column letter + row number (C4)',
@@ -73,6 +102,7 @@ A1=1  A2=2  A3=3  A4=4  A5=5`,
         text: 'Made a mistake? Press Ctrl+Z to undo the last action and Ctrl+Y to redo it.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Drag the fill handle to copy values or continue a series',
       'Ctrl+X / Ctrl+C / Ctrl+V cut, copy, and paste',
@@ -108,6 +138,7 @@ A1=1  A2=2  A3=3  A4=4  A5=5`,
         text: 'Select the cell and edit in the Formula Bar, or press F2 to edit inside the cell. The cell shows the result, while the Formula Bar shows the formula.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Formulas always start with =',
       'Operators: + - * / ^',
@@ -141,6 +172,7 @@ D3:  =C3*$F$1   (after copying down)`,
         text: '$A1 locks only the column, and A$1 locks only the row. On Windows, press F4 while editing a formula to cycle through the options.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Relative references (A1) change when copied',
       'Absolute references ($A$1) never change',
@@ -181,6 +213,7 @@ D3:  =C3*$F$1   (after copying down)`,
         text: 'Select a cell under a column of numbers and click AutoSum (on the Home tab) to insert =SUM for you.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'A function looks like =NAME(arguments)',
       'SUM, AVERAGE, MIN, and MAX summarize numbers',
@@ -223,6 +256,7 @@ D3:  =C3*$F$1   (after copying down)`,
 =AVERAGEIF(C2:C10,"North",B2:B10)`,
       },
     ],
+    references: REFS,
     keyPoints: [
       'IF returns one of two results based on a test',
       'AND is TRUE only if all conditions are true',
@@ -257,6 +291,7 @@ Percentage format shows: 25%`,
         text: 'Press Ctrl+1 to open Format Cells with every option. Double-click the border between two column letters to AutoFit the width to its content.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Formatting changes the look, not the stored value',
       'Format Painter copies formatting to other cells',
@@ -295,6 +330,7 @@ Percentage format shows: 25%`,
         text: 'On the Data tab, Text to Columns splits one column into several using a separator such as a comma or space.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'TRIM, LOWER, UPPER, PROPER, LEFT, and CONCAT fix text',
       'Data > Remove Duplicates deletes repeated rows',
@@ -323,6 +359,7 @@ Percentage format shows: 25%`,
         text: 'Select your data and press Ctrl+T (or Insert > Table). A table gets filter buttons, banded rows, and it grows automatically when you add new rows below it.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Sort puts rows in order (A-Z, Z-A, or custom)',
       'Filter hides rows that do not match; nothing is deleted',
@@ -355,6 +392,7 @@ Percentage format shows: 25%`,
         text: 'Use Chart Elements (the + button) or the Chart Design tab to add a title, axis titles, and a legend. A clear title tells the reader what they are looking at.',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Conditional formatting changes cell look based on values',
       'Data bars, color scales, and icon sets show relative size',
@@ -392,6 +430,7 @@ South    1800`,
         text: 'A pivot table does not update by itself when the source data changes. Right-click it and choose Refresh (or press Alt+F5).',
       },
     ],
+    references: REFS,
     keyPoints: [
       'Insert > PivotTable summarizes data without formulas',
       'Rows and Columns group, Values calculate, Filters limit',
