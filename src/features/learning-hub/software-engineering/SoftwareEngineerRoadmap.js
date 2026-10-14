@@ -26,9 +26,7 @@ import statisticsCourse from './statistics-course/course';
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
-import designFundamentalsCourse from '../ui-ux-designer/design-fundamentals-course/course';
-import userResearchCourse from '../ui-ux-designer/user-research-course/course';
-import wireframingCourse from '../ui-ux-designer/wireframing-course/course';
+
 
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
@@ -50,9 +48,6 @@ const COURSES = [
   statisticsCourse,
   excelCourse,
   pandasCourse,
-  designFundamentalsCourse,
-  userResearchCourse,
-  wireframingCourse,
   sqlCourse,
 ];
 
@@ -167,22 +162,16 @@ const TRACKS = {
       {
         id: '1',
         title: 'Design Fundamentals',
-        course: designFundamentalsCourse,
-        route: 'DesignFundamentalsCourse',
         description: 'Color theory, typography, spacing, and visual hierarchy.',
       },
       {
         id: '2',
         title: 'User Research',
-        course: userResearchCourse,
-        route: 'UserResearchCourse',
         description: 'Interview users, run surveys, and turn findings into actionable insights.',
       },
       {
         id: '3',
         title: 'Wireframing',
-        course: wireframingCourse,
-        route: 'WireframingCourse',
         description: 'Practice low-fidelity wireframes to map out layouts before visual design.',
       },
       {
