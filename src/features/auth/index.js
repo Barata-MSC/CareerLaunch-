@@ -6,3 +6,4 @@ export { default as ResetPasswordScreen } from './ResetPasswordScreen';
 export { default as SplashScreen } from './SplashScreen';
 export { default as WelcomeScreen } from './WelcomeScreen';
 export { getRecoveryRedirectUrl, parseRecoveryUrl } from './recoveryLink';
+export { default as LearningHubScreen } from '../learning-hub/LearningHubScreen/LearningHubScreen';
