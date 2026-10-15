@@ -1,11 +1,4 @@
-// Live React editor for React lessons: write a component named App, press Run, and use
-// the real result in the preview. It runs in a sandboxed iframe (web) or WebView (app).
-// React, ReactDOM and Babel load from cdnjs, so the device needs an internet connection
-// (Babel is large: the first run can take a few seconds).
-//   activity = { type: 'reactRunner', title, task, goal, starter, expectText, click, checks, hint }
-// expectText = text the preview must show (string or /regex/). click = { selector, expectText }
-// presses that element and checks the text afterwards. checks = patterns the code must contain.
-// useState, useEffect and useRef are already available; import lines are ignored.
+
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { PURPLE, GREEN, RED } from '../styles';
