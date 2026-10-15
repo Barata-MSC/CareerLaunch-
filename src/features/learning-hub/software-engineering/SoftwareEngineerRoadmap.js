@@ -17,12 +17,13 @@ import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
+import designFundamentalsCourse from './design-fundamentals-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
 import dataVisualizationCourse from './data-visualization-course/course';
 import dashboardCourse from './dashboard-course/course';
-import statisticsCourse from './statistics-course/course'; 
+import statisticsCourse from './statistics-course/course';
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
@@ -41,6 +42,7 @@ const COURSES = [
   javascriptCourse,
   gitCourse,
   reactCourse,
+  designFundamentalsCourse,
   nodeCourse,
   databaseCourse,
   dataVisualizationCourse,
@@ -180,12 +182,12 @@ export const TRACKS = {
         description: 'Build interactive, high-fidelity prototypes that feel like the real app.',
       },
       {
-        id: '5',
+        id: '3',
         title: 'Usability Testing',
         description: 'Test your designs with real users and iterate on the feedback.',
       },
       {
-        id: '6',
+        id: '4',
         title: 'Design Systems',
         description: 'Build reusable components and a consistent design language.',
       },
