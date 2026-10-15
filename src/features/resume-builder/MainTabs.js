@@ -3,15 +3,14 @@ import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Import screens from the feature barrel.
-import { DashboardScreen, JobFinderScreen, CareerRoadmapScreen, ProfileScreen } from '@features';
-
+import { DashboardScreen, JobFinderScreen, LearningHubScreen, ProfileScreen } from '@features';
 import ResumeBuilderScreen from './ResumeBuilder';
 
 const ICONS = {
   Dashboard: require('@assets/dashboard.png'),
   ResumeBuilder: require('@assets/resume_builder.png'),
   JobFinder: require('@assets/job_search.png'),
-  CareerRoadmap: require('@assets/roadmap.png'),
+  LearningHub: require('@assets/roadmap.png'),
   Profile: require('@assets/profile.png'),
 };
 
@@ -38,7 +37,7 @@ export default function MainTabs() {
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Tab.Screen name="JobFinder" component={JobFinderScreen} />
-      <Tab.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+      <Tab.Screen name="LearningHub" component={LearningHubScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

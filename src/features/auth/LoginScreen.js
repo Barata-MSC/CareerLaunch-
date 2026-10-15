@@ -15,8 +15,51 @@ import GoogleButton from '@components/GoogleButton';
 // Explicit alias pointing to your configuration
 import { supabase } from '@config/supabase';
 
+import { meetsAllRules } from './passwordRules';
+import PasswordRequirements from './PasswordRequirements';
+import {
+  GUEST_EMAIL_DOMAIN,
+  guestEmailFromUsername,
+  validateGuestUsername,
+} from './guestAccount';
+
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
+
+// Turns a Supabase sign-up error into a message a guest can act on.
+const describeGuestSignUpError = (error) => {
+  const message = (error.message || '').toLowerCase();
+
+  if (
+    error.code === 'user_already_exists' ||
+    error.code === 'email_exists' ||
+    message.includes('already registered') ||
+    message.includes('already been registered')
+  ) {
+    return 'Username already exists. Please choose another.';
+  }
+  if (
+    error.code === '23505' ||
+    message.includes('duplicate key') ||
+    message.includes('unique constraint') ||
+    message.includes('database error saving new user')
+  ) {
+    return 'We could not save that username. It may already be taken. Please choose another.';
+  }
+  if (error.code === 'email_address_invalid' || (message.includes('email') && message.includes('invalid'))) {
+    return `Supabase rejected the guest email domain (${GUEST_EMAIL_DOMAIN}). Change GUEST_EMAIL_DOMAIN in guestAccount.js to a domain you control.`;
+  }
+  if (error.code === 'signup_disabled' || message.includes('signups not allowed')) {
+    return 'New sign-ups are turned off in Supabase.';
+  }
+  if (error.code === 'weak_password') {
+    return error.message || 'That password is too weak. Please choose a stronger one.';
+  }
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'Network error. Please check your connection and try again.';
+  }
+  return error.message || 'Something went wrong. Please try again.';
+};
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -26,13 +69,20 @@ export default function LoginScreen({ navigation }) {
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Guest sign-in
+  // Guest profile: a username and a password, no email needed.
   const [showGuest, setShowGuest] = useState(false);
+  const [guestMode, setGuestMode] = useState('create'); // 'create' | 'login'
   const [guestName, setGuestName] = useState('');
+  const [guestPassword, setGuestPassword] = useState('');
+  const [guestConfirm, setGuestConfirm] = useState('');
   const [guestError, setGuestError] = useState('');
+  const [guestPasswordError, setGuestPasswordError] = useState('');
+  const [guestConfirmError, setGuestConfirmError] = useState('');
+  const [showGuestUpgradeHint, setShowGuestUpgradeHint] = useState(false);
   const [guestLoading, setGuestLoading] = useState(false);
 
   const busy = loading || guestLoading;
+  const isCreate = guestMode === 'create';
 
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
@@ -50,14 +100,14 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: trimmedEmail,
-      password: password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      });
 
-    setLoading(false);
+      if (!error) return;
 
-    if (error) {
       const message = (error.message || '').toLowerCase();
 
       if (error.code === 'email_not_confirmed' || message.includes('not confirmed')) {
@@ -71,22 +121,64 @@ export default function LoginScreen({ navigation }) {
       } else {
         setLoginError(error.message || 'Something went wrong. Please try again.');
       }
+    } catch (error) {
+      const message = error instanceof Error ? error.message.toLowerCase() : '';
+      setLoginError(
+        message.includes('network') || message.includes('fetch')
+          ? 'Network error. Please check your connection and try again.'
+          : error instanceof Error
+            ? error.message
+            : 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Guest sign-in: Supabase creates an anonymous user (a real user id with no
-  // personal info). The username travels as metadata, and the new-user trigger
-  // copies it into profiles.username. When the session arrives, App.js /
-  // RootNavigator switch to the app by themselves, so no navigation is needed.
-  const handleGuestStart = async () => {
-    const name = guestName.trim();
-
-    if (name.length < 2) {
-      setGuestError('Please enter a username (at least 2 characters)');
-      return;
-    }
-
+  const clearGuestErrors = () => {
     setGuestError('');
+    setGuestPasswordError('');
+    setGuestConfirmError('');
+    setShowGuestUpgradeHint(false);
+  };
+
+  const switchGuestMode = (mode) => {
+    if (busy || mode === guestMode) return;
+    setGuestMode(mode);
+    clearGuestErrors();
+    setGuestPassword('');
+    setGuestConfirm('');
+  };
+
+  // Create a guest profile. Supabase signs up an account whose email is built from
+  // the username (see guestAccount.js) and flags it as a guest in its sign-up data.
+  // The new-user trigger copies the username into profiles.username. When the
+  // session arrives, App.js / RootNavigator switch to the app by themselves, so no
+  // navigation is needed.
+  const handleGuestCreate = async () => {
+    if (busy) return;
+
+    const name = guestName.trim();
+    const nameProblem = validateGuestUsername(name);
+    const missingPassword = !guestPassword;
+    const weakPassword = !missingPassword && !meetsAllRules(guestPassword);
+    const missingConfirm = !guestConfirm;
+    const mismatch = !missingConfirm && guestPassword !== guestConfirm;
+
+    setGuestError(nameProblem);
+    setGuestPasswordError(
+      missingPassword
+        ? 'Please create a password'
+        : weakPassword
+          ? 'Your password does not meet all the requirements below'
+          : '',
+    );
+    setGuestConfirmError(
+      missingConfirm ? 'Please confirm your password' : mismatch ? 'Passwords do not match' : '',
+    );
+
+    if (nameProblem || missingPassword || weakPassword || missingConfirm || mismatch) return;
+
     setGuestLoading(true);
 
     try {
@@ -96,43 +188,106 @@ export default function LoginScreen({ navigation }) {
       );
 
       if (usernameCheckError) {
-        setGuestError('Could not check username availability. Please try again.');
+        console.error('Guest username availability check failed:', {
+          code: usernameCheckError.code,
+          message: usernameCheckError.message,
+          details: usernameCheckError.details,
+          hint: usernameCheckError.hint,
+        });
+
+        if (
+          usernameCheckError.code === 'PGRST202' ||
+          usernameCheckError.message?.toLowerCase().includes('schema cache')
+        ) {
+          setGuestError(
+            "Supabase's API has not loaded the username check yet. Refresh its schema cache in Supabase, then try again.",
+          );
+        } else {
+          setGuestError('Could not check username availability. Please try again.');
+        }
         return;
       }
 
       if (usernameTaken) {
-        setGuestError('Username already exists. Please choose another.');
+        setGuestError('Username already exists. Choose another, or tap "I already have one" if it is yours.');
         return;
       }
 
-      const { error } = await supabase.auth.signInAnonymously({
-        options: { data: { username: name } },
+      const { data, error } = await supabase.auth.signUp({
+        email: guestEmailFromUsername(name),
+        password: guestPassword,
+        options: { data: { username: name, is_guest: true } },
+      });
+
+      if (error) {
+        setGuestError(describeGuestSignUpError(error));
+        return;
+      }
+
+      if (!data?.session) {
+        // The account exists but Supabase did not sign it in, which happens when
+        // "Confirm email" is switched on. A guest has no inbox to confirm from.
+        setGuestError(
+          'Guest sign-up needs "Confirm email" turned off in Supabase (Authentication, Sign In / Providers, Email).',
+        );
+      }
+    } catch (error) {
+      setGuestError(
+        error instanceof Error ? error.message : 'Could not create a guest profile. Please try again.',
+      );
+    } finally {
+      setGuestLoading(false);
+    }
+  };
+
+  // Log back in to an existing guest profile with username + password.
+  const handleGuestLogin = async () => {
+    if (busy) return;
+    setShowGuestUpgradeHint(false);
+
+    const name = guestName.trim();
+    const missingName = !name;
+    const missingPassword = !guestPassword;
+    const wrongCredentials = 'Incorrect username or password.';
+
+    setGuestError(missingName ? 'Please enter your username' : '');
+    setGuestPasswordError(missingPassword ? 'Please enter your password' : '');
+    setGuestConfirmError('');
+
+    if (missingName || missingPassword) return;
+
+    // Names with spaces or symbols cannot belong to a guest who signed up with a
+    // password, so there is no point asking Supabase.
+    if (validateGuestUsername(name)) {
+      setGuestPasswordError(wrongCredentials);
+      return;
+    }
+
+    setGuestLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: guestEmailFromUsername(name),
+        password: guestPassword,
       });
 
       if (error) {
         const message = (error.message || '').toLowerCase();
-        const duplicateUsername =
-          error.code === '23505' ||
-          message.includes('duplicate key') ||
-          message.includes('unique constraint') ||
-          message.includes('username already');
+        const invalidCredentials =
+          error.code === 'invalid_credentials' || message.includes('invalid login credentials');
 
-        if (duplicateUsername) {
-          setGuestError('That username may already be taken. Please choose another.');
-        } else if (
-          error.code === 'anonymous_provider_disabled' ||
-          message.includes('anonymous')
-        ) {
-          setGuestError('Guest access is not enabled yet. Turn on anonymous sign-ins in Supabase.');
+        if (invalidCredentials) {
+          setGuestPasswordError(wrongCredentials);
+          setShowGuestUpgradeHint(true);
         } else if (message.includes('network') || message.includes('fetch')) {
-          setGuestError('Network error. Please check your connection and try again.');
+          setGuestPasswordError('Network error. Please check your connection and try again.');
         } else {
-          setGuestError(error.message || 'Something went wrong. Please try again.');
+          setGuestPasswordError(error.message || 'Something went wrong. Please try again.');
         }
       }
     } catch (error) {
-      setGuestError(
-        error instanceof Error ? error.message : 'Could not create a guest account. Please try again.',
+      setGuestPasswordError(
+        error instanceof Error ? error.message : 'Could not log in. Please try again.',
       );
     } finally {
       setGuestLoading(false);
@@ -238,10 +393,34 @@ export default function LoginScreen({ navigation }) {
 
         {showGuest && (
           <View style={styles.guestPanel}>
-            <Text style={styles.label}>Choose a username</Text>
+            {/* Create a guest profile / log back in to one */}
+            <View style={styles.segmentRow}>
+              <TouchableOpacity
+                style={[styles.segment, isCreate && styles.segmentActive]}
+                activeOpacity={0.85}
+                onPress={() => switchGuestMode('create')}
+                disabled={busy}
+              >
+                <Text style={[styles.segmentText, isCreate && styles.segmentTextActive]}>
+                  Create guest profile
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.segment, !isCreate && styles.segmentActive]}
+                activeOpacity={0.85}
+                onPress={() => switchGuestMode('login')}
+                disabled={busy}
+              >
+                <Text style={[styles.segmentText, !isCreate && styles.segmentTextActive]}>
+                  I already have one
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>{isCreate ? 'Choose a username' : 'Username'}</Text>
             <TextInput
               style={[styles.input, guestError ? styles.inputError : null]}
-              placeholder="Enter a username"
+              placeholder={isCreate ? 'Enter a username' : 'Enter your username'}
               placeholderTextColor="#9A9A9A"
               autoCapitalize="none"
               autoCorrect={false}
@@ -251,24 +430,82 @@ export default function LoginScreen({ navigation }) {
               onChangeText={(text) => {
                 setGuestName(text);
                 if (guestError) setGuestError('');
+                if (!isCreate && guestPasswordError) setGuestPasswordError('');
+                if (showGuestUpgradeHint) setShowGuestUpgradeHint(false);
               }}
-              onSubmitEditing={handleGuestStart}
             />
             {guestError ? <Text style={styles.errorText}>{guestError}</Text> : null}
+
+            <Text style={[styles.label, styles.guestFieldGap]}>Password</Text>
+            <TextInput
+              style={[styles.input, guestPasswordError ? styles.inputError : null]}
+              placeholder={isCreate ? 'Create a password' : 'Enter your password'}
+              placeholderTextColor="#9A9A9A"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry
+              value={guestPassword}
+              editable={!busy}
+              onChangeText={(text) => {
+                setGuestPassword(text);
+                if (guestPasswordError) setGuestPasswordError('');
+                if (showGuestUpgradeHint) setShowGuestUpgradeHint(false);
+              }}
+              onSubmitEditing={isCreate ? undefined : handleGuestLogin}
+            />
+            {guestPasswordError ? <Text style={styles.errorText}>{guestPasswordError}</Text> : null}
+            {showGuestUpgradeHint && !isCreate ? (
+              <Text style={styles.errorText}>
+                If you upgraded this guest profile, log in with your email and password above.
+              </Text>
+            ) : null}
+
+            {isCreate ? <PasswordRequirements password={guestPassword} /> : null}
+
+            {isCreate ? (
+              <>
+                <Text style={[styles.label, styles.guestFieldGap]}>Confirm password</Text>
+                <TextInput
+                  style={[styles.input, guestConfirmError ? styles.inputError : null]}
+                  placeholder="Re-enter your password"
+                  placeholderTextColor="#9A9A9A"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry
+                  value={guestConfirm}
+                  editable={!busy}
+                  onChangeText={(text) => {
+                    setGuestConfirm(text);
+                    if (guestConfirmError) setGuestConfirmError('');
+                  }}
+                  onSubmitEditing={handleGuestCreate}
+                />
+                {guestConfirmError ? (
+                  <Text style={styles.errorText}>{guestConfirmError}</Text>
+                ) : guestConfirm.length > 0 && guestConfirm === guestPassword ? (
+                  <Text style={styles.matchText}>✓ Passwords match</Text>
+                ) : null}
+              </>
+            ) : null}
+
             <Text style={styles.guestNote}>
-              No account needed. You can create one later and keep your progress.
+              {isCreate
+                ? 'No email needed. Remember your password: a guest password cannot be reset. You can create a full account later and keep your progress.'
+                : 'Guest passwords cannot be reset because guests have no email.'}
             </Text>
 
             <TouchableOpacity
               style={[styles.primaryButton, styles.fullWidth, guestLoading && { opacity: 0.7 }]}
               activeOpacity={0.85}
-              onPress={handleGuestStart}
+              onPress={isCreate ? handleGuestCreate : handleGuestLogin}
               disabled={busy}
             >
               {guestLoading ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.primaryButtonText}>Start as guest</Text>
+                <Text style={styles.primaryButtonText}>
+                  {isCreate ? 'Start as guest' : 'Log in as guest'}
+                </Text>
               )}
             </TouchableOpacity>
           </View>
@@ -287,7 +524,8 @@ export default function LoginScreen({ navigation }) {
 }
 
 // Original styles are unchanged. Added: scrollContent, guestButton, guestButtonText,
-// guestPanel, guestNote, fullWidth.
+// guestPanel, guestNote, fullWidth, segmentRow, segment, segmentActive, segmentText,
+// segmentTextActive, guestFieldGap, matchText.
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 24 },
   scrollContent: { paddingBottom: 32 },
@@ -315,4 +553,11 @@ const styles = StyleSheet.create({
   guestPanel: { width: '90%', alignSelf: 'center', marginTop: 16 },
   guestNote: { fontSize: 12, color: '#888888', marginTop: 8, marginBottom: 14, lineHeight: 17 },
   fullWidth: { width: '100%' },
+  segmentRow: { flexDirection: 'row', backgroundColor: '#F1EEFF', borderRadius: 12, padding: 4, marginBottom: 18 },
+  segment: { flex: 1, height: 40, borderRadius: 9, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  segmentActive: { backgroundColor: PURPLE },
+  segmentText: { fontSize: 13, fontWeight: '600', color: PURPLE, textAlign: 'center' },
+  segmentTextActive: { color: '#FFFFFF' },
+  guestFieldGap: { marginTop: 14 },
+  matchText: { color: '#2E9E5B', fontSize: 12, marginTop: 6 },
 });

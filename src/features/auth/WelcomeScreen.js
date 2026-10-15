@@ -30,7 +30,7 @@ export default function WelcomeScreen({ navigation }) {
       <View style={styles.logoRow}>
         <Image source={ROCKET_ICON} style={styles.logoIcon} resizeMode="contain" />
         <Text style={styles.logoText}>
-          Career<Text style={styles.logoTextAccent}>Launch</Text>
+          Career<Text style={styles.logoTextAccent}>Launch!</Text>
         </Text>
       </View>
 

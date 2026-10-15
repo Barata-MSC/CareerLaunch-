@@ -1,6 +1,6 @@
 {
   "homepage": "https://barata-msc.github.io/CareerLaunch-/",
-  "name": "finalproject",
+  "name": "careerlaunch",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
@@ -11,9 +11,9 @@
     "@react-navigation/native": "^7.4.1",
     "@react-navigation/native-stack": "^7.19.2",
     "@supabase/supabase-js": "^2.117.2",
-    "expo": "~57.0.25",
+    "expo": "~57.0.27",
     "expo-image-picker": "~57.0.20",
-    "expo-linking": "~57.0.11",
+    "expo-linking": "~57.0.12",
     "expo-print": "~57.0.2",
     "expo-sharing": "~57.0.22",
     "expo-status-bar": "~57.0.1",
@@ -24,7 +24,8 @@
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-url-polyfill": "^4.0.0",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "^0.21.2",
+    "react-native-webview": "^13.16.1"
   },
   "scripts": {
     "predeploy": "npx expo export -p web",
@@ -37,6 +38,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@types/react": "~19.2.4",
     "babel-plugin-module-resolver": "^5.0.3",
     "babel-preset-expo": "^57.0.13",
     "eslint": "^9.39.5",
@@ -44,6 +46,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-native": "^5.0.0",
     "gh-pages": "^6.3.0",
-    "prettier": "^3.9.8"
+    "prettier": "^3.9.8",
+    "typescript": "~6.0.3"
   }
 }

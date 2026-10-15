@@ -1,7 +1,7 @@
 module.exports = {
   expo: {
-    name: "finalProject",
-    slug: "finalProject",
+    name: "CareerLaunch!",
+    slug: "careerlaunch",
     scheme: "careerlaunch",
     version: "1.0.0",
     plugins: ["@react-native-community/datetimepicker"],

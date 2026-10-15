@@ -1,8 +1,10 @@
 // Lesson content for the Excel & Spreadsheets course (follows the W3Schools Excel tutorial order).
+// Videos, activities and references live in lessonExtras.js and are merged in at the bottom.
+import { EXTRAS } from './lessonExtras';
 
-export const LESSONS = [
+const BASE_LESSONS = [
   {
-    id: 'excel-getting-started',
+    id: 'excel-1',
     title: 'Getting Started',
     subtitle: 'Workbooks, cells, and ranges',
     contentTitle: 'Meet the spreadsheet',
@@ -41,7 +43,7 @@ A1:C3   a block of 9 cells`,
     ],
   },
   {
-    id: 'excel-fill-move',
+    id: 'excel-2',
     title: 'Fill, Move, Add & Delete',
     subtitle: 'Edit cells quickly',
     contentTitle: 'Working with cells',
@@ -81,7 +83,7 @@ A1=1  A2=2  A3=3  A4=4  A5=5`,
     ],
   },
   {
-    id: 'excel-formulas',
+    id: 'excel-3',
     title: 'Formulas & Operators',
     subtitle: 'Let Excel do the math',
     contentTitle: 'Your first formulas',
@@ -116,7 +118,7 @@ A1=1  A2=2  A3=3  A4=4  A5=5`,
     ],
   },
   {
-    id: 'excel-references',
+    id: 'excel-4',
     title: 'Cell References',
     subtitle: 'Relative and absolute',
     contentTitle: 'How references behave when copied',
@@ -148,7 +150,7 @@ D3:  =C3*$F$1   (after copying down)`,
     ],
   },
   {
-    id: 'excel-functions',
+    id: 'excel-5',
     title: 'Basic Functions',
     subtitle: 'SUM, AVERAGE, COUNT and more',
     contentTitle: 'Functions save time',
@@ -188,7 +190,7 @@ D3:  =C3*$F$1   (after copying down)`,
     ],
   },
   {
-    id: 'excel-logical',
+    id: 'excel-6',
     title: 'Logical & Conditional Functions',
     subtitle: 'IF, IFS, AND, COUNTIF',
     contentTitle: 'Make Excel decide',
@@ -231,7 +233,7 @@ D3:  =C3*$F$1   (after copying down)`,
     ],
   },
   {
-    id: 'excel-formatting',
+    id: 'excel-7',
     title: 'Formatting Data',
     subtitle: 'Make data readable',
     contentTitle: 'Formatting basics',
@@ -265,7 +267,7 @@ Percentage format shows: 25%`,
     ],
   },
   {
-    id: 'excel-cleaning',
+    id: 'excel-8',
     title: 'Cleaning Data',
     subtitle: 'Fix messy data before analysis',
     contentTitle: 'Clean data first',
@@ -303,7 +305,7 @@ Percentage format shows: 25%`,
     ],
   },
   {
-    id: 'excel-sort-filter',
+    id: 'excel-9',
     title: 'Sort, Filter & Tables',
     subtitle: 'Organize and explore data',
     contentTitle: 'Find what matters',
@@ -331,7 +333,7 @@ Percentage format shows: 25%`,
     ],
   },
   {
-    id: 'excel-conditional-charts',
+    id: 'excel-10',
     title: 'Conditional Formatting & Charts',
     subtitle: 'Visualize your data',
     contentTitle: 'Show, do not just tell',
@@ -363,7 +365,7 @@ Percentage format shows: 25%`,
     ],
   },
   {
-    id: 'excel-pivot-tables',
+    id: 'excel-11',
     title: 'Pivot Tables',
     subtitle: 'Summarize big data in seconds',
     contentTitle: 'Summarize with a pivot table',
@@ -399,3 +401,5 @@ South    1800`,
     ],
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));

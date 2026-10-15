@@ -26,12 +26,15 @@ const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
 
-// Asks a guest to confirm before logging out, because logging out of a guest
-// account permanently loses access to its progress. Works on web and native.
-const confirmGuestLogout = () => {
-  const message =
-    'Logging out of a guest account means you can no longer get back to your progress. ' +
-    'Create an account first to keep it.';
+// Asks a guest to confirm before logging out. An old anonymous guest permanently
+// loses access to their progress; a guest with a username and password can log
+// back in, but cannot reset a forgotten password. Works on web and native.
+const confirmGuestLogout = (hasGuestLogin) => {
+  const message = hasGuestLogin
+    ? 'You can log back in with your username and password. A guest password cannot be reset, ' +
+      'so make sure you remember it, or create an account to keep your progress safe.'
+    : 'Logging out of a guest account means you can no longer get back to your progress. ' +
+      'Create an account first to keep it.';
 
   if (Platform.OS === 'web') {
     return Promise.resolve(window.confirm(`${message}\n\nLog out anyway?`));
@@ -52,7 +55,7 @@ const confirmGuestLogout = () => {
 
 export default function ProfileScreen({ navigation }) {
   // 2. Use the Profile Context to get the current profile and update function
-  const { profile, updateProfile, isGuest } = useProfile();
+  const { profile, updateProfile, isGuest, hasGuestLogin } = useProfile();
 
   const [avatarUri, setAvatarUri] = useState(null);
   const [firstName, setFirstName] = useState('');
@@ -141,13 +144,14 @@ export default function ProfileScreen({ navigation }) {
 
     try {
       const response = await fetch(avatarUri);
-      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      const fileData = await response.arrayBuffer();
       const fileExt = avatarUri.split('.').pop() || 'jpg';
       const filePath = `${userId}/avatar.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+        .upload(filePath, fileData, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
@@ -255,7 +259,7 @@ export default function ProfileScreen({ navigation }) {
   const handleLogout = async () => {
     // A guest loses access to their progress when they log out, so confirm first.
     if (isGuest) {
-      const confirmed = await confirmGuestLogout();
+      const confirmed = await confirmGuestLogout(hasGuestLogin);
       if (!confirmed) return;
     }
 
@@ -289,8 +293,9 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.guestTitle}>You're using a guest account</Text>
             <Text style={styles.guestName}>Username: {profile?.username || 'Guest'}</Text>
             <Text style={styles.guestBody}>
-              Your learning progress is saved to this guest account. Create an account to keep it
-              if you log out or switch devices.
+              {hasGuestLogin
+                ? 'Your learning progress is saved to this guest account. Log back in any time with your username and password. Create an account with your email so you can recover it if you forget your password.'
+                : 'Your learning progress is saved to this guest account. Create an account to keep it if you log out or switch devices.'}
             </Text>
 
             <TouchableOpacity

@@ -14,3 +14,5 @@ $$;
 
 revoke all on function public.is_guest_username_taken(text) from public;
 grant execute on function public.is_guest_username_taken(text) to anon, authenticated;
+
+notify pgrst, 'reload schema';

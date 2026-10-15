@@ -1,5 +1,7 @@
+import { EXTRAS } from './lessonExtras';
+
 // Database lessons. Each lesson's status is derived from saved progress.
-export const LESSONS = [
+const BASE_LESSONS = [
   {
     id: 'db-1',
     title: 'What is a database?',
@@ -131,3 +133,8 @@ WHERE id = 2;
 COMMIT;`,
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => ({
+  ...lesson,
+  ...EXTRAS[lesson.id],
+}));

@@ -9,15 +9,21 @@ import {
   CareerRoadmapScreen,
   JobApplicationTracker,
   AIInterviewCoachScreen,
+  LearningHubScreen,
   DatabaseCourseScreen,
+  DataCourseScreen,
+  StatisticsCourseScreen,
   ExcelCourseScreen,
+  PandasCourseScreen,
+
   CSSCourseScreen,
   HTMLCourseScreen,
   JavaScriptCourseScreen,
   GitCourseScreen,
   ReactCourseScreen,
   NodeCourseScreen,
-  PandasCourseScreen,
+  SQLCourseScreen,
+  DashboardCourseScreen,
 } from '@features';
 
 import {
@@ -57,6 +63,10 @@ export default function AppNavigator() {
       <Stack.Screen name="DatabaseCourse" component={DatabaseCourseScreen} />
       <Stack.Screen name="ExcelCourse" component={ExcelCourseScreen} />
       <Stack.Screen name="PandasCourse" component={PandasCourseScreen} />
+      <Stack.Screen name="SQLCourse" component={SQLCourseScreen} />
+      <Stack.Screen name="DataCourse" component={DataCourseScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="DashboardCourse" component={DashboardCourseScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="StatisticsCourse" component={StatisticsCourseScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
@@ -67,6 +77,7 @@ export default function AppNavigator() {
       <Stack.Screen name="projects" component={ProjectsScreen} />
       <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
       <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
+      <Stack.Screen name="LearningHub" component={LearningHubScreen} />
     </Stack.Navigator>
   );
 }

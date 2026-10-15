@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
+import LessonActivities from '../components/LessonActivities';
+import LessonReferences from '../components/LessonReferences';
+import LessonVideo from '../components/LessonVideo';
 import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
 
 export default function LessonScreen({
@@ -73,6 +76,10 @@ export default function LessonScreen({
             ))}
           </View>
         )}
+
+        <LessonVideo video={lesson.video} />
+        <LessonActivities key={lesson.id} activities={lesson.activities} />
+        <LessonReferences references={lesson.references} />
 
         <TouchableOpacity
           style={styles.completeCard}

@@ -1,10 +1,7 @@
-// Lesson content only. Progress is NOT stored here: it comes from the lessons the
-// user has completed in Supabase. ids are saved as lesson_id, so don't rename them later.
-//
-// Optional fields (shown by the updated shared LessonScreen):
-//   sections:  [{ heading, text, code }]  extra explanations and code examples
-//   keyPoints: [ 'short summary line', ... ]
-export const LESSONS = [
+
+import { EXTRAS } from './lessonExtras';
+
+const BASE_LESSONS = [
   {
     id: "html-1",
     title: "What is HTML?",
@@ -512,3 +509,6 @@ and this is <mark>highlighted</mark>.</p>`,
     ],
   },
 ];
+
+// Videos, activities and references live in lessonExtras.js and are merged in here.
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));
