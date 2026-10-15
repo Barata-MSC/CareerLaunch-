@@ -1,8 +1,18 @@
 // Run-JavaScript editor for JS lessons: type code, press Run, read the console output.
 // Code runs in a sandboxed iframe (web) or hidden WebView (app), never in the app itself,
 // so a mistake like an infinite loop cannot freeze the app (it is stopped after 3 seconds).
-//   activity = { type: 'jsRunner', title, task, starter, expected: ['line', ...], checks: [/regex/], hint }
+//   activity = { type: 'jsRunner', title, task, starter, expected: ['line', ...], checks: [/regex/], hint, node }
 // expected = the exact lines the code must print. checks = patterns the code must contain.
+//
+// Optional `node` turns on a Node.js practice mode (for the Node.js course). Real files and
+// servers cannot run in a phone app, so this mode provides safe stand-ins:
+//   - require('fs') and require('fs/promises') use a small in-memory disk
+//   - require('http') and require('express') answer sample requests instead of opening a port
+//   - require('./name') loads one of the provided files
+//   - document and window are undefined, like in Node.js
+//   node = { disk: { 'note.txt': 'text' }, files: { './math': 'module code' },
+//            requests: [{ method: 'GET', path: '/' }, { method: 'POST', path: '/users', body: {} }],
+//            wait: 400 }  // wait = ms to let async code finish
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { PURPLE, GREEN, RED } from '../styles';
@@ -17,9 +27,129 @@ const getWebView = () => {
 
 const TIMEOUT_MS = 3000;
 
+// Stand-ins for Node.js modules (only used when an activity has `node`)
+const buildNodeShim = (node) => {
+  const cfg = JSON.stringify({
+    files: node.files || {},
+    disk: node.disk || {},
+    requests: node.requests || [],
+  }).replace(/</g, '\\u003c');
+
+  return `
+  var CFG = ${cfg};
+  var disk = {};
+  Object.keys(CFG.disk).forEach(function (k) { disk[k] = CFG.disk[k]; });
+  var cache = {};
+
+  function noFile(p) {
+    var e = new Error("ENOENT: no such file or directory, open '" + p + "'");
+    e.code = 'ENOENT';
+    return e;
+  }
+  var fs = {
+    writeFile: function (p, d, cb) {
+      setTimeout(function () { disk[p] = String(d); if (cb) cb(null); }, 10);
+    },
+    readFile: function (p, enc, cb) {
+      if (typeof enc === 'function') cb = enc;
+      setTimeout(function () {
+        if (!(p in disk)) cb(noFile(p)); else cb(null, disk[p]);
+      }, 10);
+    },
+    promises: {
+      writeFile: function (p, d) {
+        return new Promise(function (ok) { setTimeout(function () { disk[p] = String(d); ok(); }, 10); });
+      },
+      readFile: function (p) {
+        return new Promise(function (ok, fail) {
+          setTimeout(function () { if (!(p in disk)) fail(noFile(p)); else ok(disk[p]); }, 10);
+        });
+      }
+    }
+  };
+
+  function makeRes(label) {
+    var r = { statusCode: 200 };
+    function finish(body) { console.log(label + ' -> ' + r.statusCode + ' ' + body); return r; }
+    r.status = function (c) { r.statusCode = c; return r; };
+    r.writeHead = function (c) { r.statusCode = c; return r; };
+    r.setHeader = function () { return r; };
+    r.send = function (b) { return finish(typeof b === 'string' ? b : JSON.stringify(b)); };
+    r.json = function (o) { return finish(JSON.stringify(o)); };
+    r.end = function (b) { return finish(b === undefined ? '' : String(b)); };
+    return r;
+  }
+  function runRequests(handle) {
+    CFG.requests.forEach(function (rq) {
+      var req = { method: rq.method, url: rq.path, path: rq.path, body: rq.body || {} };
+      handle(req, makeRes(rq.method + ' ' + rq.path));
+    });
+  }
+
+  var http = {
+    createServer: function (cb) {
+      return {
+        listen: function (port, done) {
+          console.log('Server listening on port ' + port);
+          runRequests(cb);
+          if (done) done();
+          return this;
+        }
+      };
+    }
+  };
+
+  function express() {
+    var routes = [];
+    var mws = [];
+    var app = {};
+    ['get', 'post', 'put', 'delete'].forEach(function (m) {
+      app[m] = function (path, h) { routes.push({ m: m.toUpperCase(), p: path, h: h }); return app; };
+    });
+    app.use = function (fn) { mws.push(fn); return app; };
+    app.listen = function (port, done) {
+      console.log('Server listening on port ' + port);
+      runRequests(function (req, res) {
+        var i = 0;
+        function next() {
+          if (i < mws.length) { return mws[i++](req, res, next); }
+          var hit = routes.filter(function (x) { return x.m === req.method && x.p === req.path; })[0];
+          if (!hit) { return res.status(404).send('Cannot ' + req.method + ' ' + req.path); }
+          hit.h(req, res);
+        }
+        next();
+      });
+      if (done) done();
+      return app;
+    };
+    return app;
+  }
+  express.json = function () { return function (req, res, next) { next(); }; };
+
+  var builtins = { fs: fs, 'fs/promises': fs.promises, http: http, express: express };
+  window.require = function (name) {
+    if (builtins[name]) return builtins[name];
+    var key = name.slice(-3) === '.js' ? name.slice(0, -3) : name;
+    if (cache[key]) return cache[key].exports;
+    if (!(key in CFG.files)) throw new Error("Cannot find module '" + name + "'");
+    var m = { exports: {} };
+    cache[key] = m;
+    new Function('module', 'exports', 'require', CFG.files[key])(m, m.exports, window.require);
+    return m.exports;
+  };
+  window.module = { exports: {} };
+  window.exports = window.module.exports;
+`;
+};
+
 // The page that runs the learner's code and sends console output back as JSON messages
-const buildRunner = (code, run) => {
+const buildRunner = (code, run, node) => {
   const safeCode = JSON.stringify(code).replace(/</g, '\\u003c');
+  const wait = node ? (node.wait === undefined ? 400 : node.wait) : 0;
+  const make = node
+    ? `new Function('document', 'window', 'navigator', ${safeCode})()`
+    : `new Function(${safeCode})()`;
+
   return `<!DOCTYPE html><html><body><script>
 (function () {
   var RUN = ${run};
@@ -37,14 +167,18 @@ const buildRunner = (code, run) => {
   console.log = console.info = function () { send('log', join(arguments)); };
   console.warn = console.error = function () { send('warn', join(arguments)); };
   window.onerror = function (msg) { send('error', String(msg)); return true; };
-  try { new Function(${safeCode})(); }
+  window.addEventListener('unhandledrejection', function (e) {
+    send('error', String((e.reason && e.reason.message) || e.reason));
+  });
+  ${node ? buildNodeShim(node) : ''}
+  try { ${make}; }
   catch (e) { send('error', e.name + ': ' + e.message); }
-  send('done', '');
+  setTimeout(function () { send('done', ''); }, ${wait});
 })();
 <\/script></body></html>`;
 };
 
-export default function JsPlayground({ title, task, starter, expected, checks, hint }) {
+export default function JsPlayground({ title, task, starter, expected, checks, hint, node }) {
   const [code, setCode] = useState(starter);
   const [output, setOutput] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | running | done | timeout
@@ -133,7 +267,7 @@ export default function JsPlayground({ title, task, starter, expected, checks, h
   // The runner is only mounted while code is running; unmounting stops it
   let runner = null;
   if (status === 'running') {
-    const page = buildRunner(codeRef.current, runId);
+    const page = buildRunner(codeRef.current, runId, node);
     runner = isWeb ? (
       <iframe
         key={runId}
@@ -156,9 +290,15 @@ export default function JsPlayground({ title, task, starter, expected, checks, h
 
   return (
     <View style={styles.card}>
-      <Text style={styles.label}>TRY IT · JAVASCRIPT</Text>
+      <Text style={styles.label}>{node ? 'TRY IT · NODE.JS PRACTICE MODE' : 'TRY IT · JAVASCRIPT'}</Text>
       {!!title && <Text style={styles.title}>{title}</Text>}
       {!!task && <Text style={styles.task}>{task}</Text>}
+      {!!node && (
+        <Text style={styles.note}>
+          Practice mode: files use a small in-memory disk, and servers answer sample requests instead of opening a
+          port.
+        </Text>
+      )}
 
       {!!expected && (
         <View style={styles.goal}>
@@ -226,6 +366,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 10, fontWeight: '800', color: PURPLE, marginBottom: 6 },
   title: { fontSize: 14, fontWeight: '700', color: '#222222', marginBottom: 4 },
   task: { fontSize: 12, lineHeight: 18, color: '#555555', marginBottom: 10 },
+  note: { fontSize: 11, lineHeight: 16, color: '#8A8A8A', marginBottom: 10 },
   goal: { backgroundColor: '#F7F7F7', borderRadius: 8, padding: 10, marginBottom: 10 },
   goalLabel: { fontSize: 10, fontWeight: '700', color: '#929292', marginBottom: 4 },
   goalText: { fontSize: 12, lineHeight: 18, color: '#333333', fontFamily: mono },

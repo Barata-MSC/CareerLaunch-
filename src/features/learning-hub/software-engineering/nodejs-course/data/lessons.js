@@ -1,7 +1,9 @@
+import { EXTRAS } from './lessonExtras';
+
 // Node.js lessons. Each lesson's status (completed / in-progress / not-started)
 // is derived from saved progress, so it is NOT written here.
 // `id` must match the `lessonId` used in questions.js.
-export const LESSONS = [
+const BASE_LESSONS = [
   {
     id: 'node-1',
     title: 'What is Node.js?',
@@ -158,3 +160,6 @@ app.post('/users', (req, res) => {
 });`,
   },
 ];
+
+// Videos, activities and references live in lessonExtras.js (matched by lesson id)
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));
