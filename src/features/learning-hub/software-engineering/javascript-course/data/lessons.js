@@ -1,4 +1,8 @@
-export const LESSONS = [
+import { EXTRAS } from './lessonExtras';
+
+// Lesson text lives here. Videos, activities and references are in lessonExtras.js.
+// ids are saved as lesson_id in Supabase, so don't rename them later.
+const BASE_LESSONS = [
   {
     id: 'js-1',
     title: 'What is JavaScript?',
@@ -45,3 +49,5 @@ export const LESSONS = [
     code: "const skills = ['HTML', 'CSS'];\nskills.push('JavaScript');\n\nfor (const skill of skills) {\n  console.log(skill);\n}",
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));
