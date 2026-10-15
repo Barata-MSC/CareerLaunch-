@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../context/ProfileContext';
+import { playSound } from '../../utils/sounds';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -51,6 +52,7 @@ export default function DashboardScreen({ navigation }) {
     : 0;
 
   const handleQuickAction = (action) => {
+    playSound('tap');
     if (action.label === 'Learning Hub' || action.label === 'Career Roadmap') {
       navigation.navigate('LearningHub');
     } else if (action.label === 'Job Finder') {
@@ -76,8 +78,10 @@ export default function DashboardScreen({ navigation }) {
         <TouchableOpacity
           style={styles.profileCard}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('Profile')}
-        >
+          onPress={() => {
+            playSound('tap');
+            navigation.navigate('Profile');
+          }}        >
           <View style={styles.profileTextWrap}>
             <Text style={styles.profileTitle}>
               Complete your profile
