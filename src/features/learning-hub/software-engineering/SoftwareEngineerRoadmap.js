@@ -164,6 +164,8 @@ export const TRACKS = {
       {
         id: '1',
         title: 'Design Fundamentals',
+        course: designFundamentalsCourse,
+        route: 'DesignFundamentalsCourse',
         description: 'Color theory, typography, spacing, and visual hierarchy.',
       },
       {
@@ -182,12 +184,12 @@ export const TRACKS = {
         description: 'Build interactive, high-fidelity prototypes that feel like the real app.',
       },
       {
-        id: '3',
+        id: '5',
         title: 'Usability Testing',
         description: 'Test your designs with real users and iterate on the feedback.',
       },
       {
-        id: '4',
+        id: '6',
         title: 'Design Systems',
         description: 'Build reusable components and a consistent design language.',
       },
