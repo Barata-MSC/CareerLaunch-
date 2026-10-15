@@ -20,7 +20,7 @@ const doc = (title, path) => ({
   url: `https://react.dev/${path}`,
 });
 const videoRef = {
-  text: text: 'Bro Code. (2024). React full course for free [Video]. YouTube.',,
+  text: 'Bro Code. (2024). React full course for free [Video]. YouTube.',
   url: `https://youtu.be/${VIDEO_ID}`,
 };
 
