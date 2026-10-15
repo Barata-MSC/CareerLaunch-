@@ -1,6 +1,4 @@
-// 100 questions: 10 per lesson. Each quiz attempt shows 10 of them (one per lesson,
-// picked at random - see quizSize in course.js and pickQuizQuestions in courseUtils.js).
-// lessonId links a question to the lesson to review when it is missed.
+
 export const QUESTIONS = [
   {
     lessonId: "html-1",

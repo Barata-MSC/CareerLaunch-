@@ -1,6 +1,10 @@
-// Try-it editor for CSS lessons: type CSS, press Run, see the result instantly.
-// CSS is rendered (not compiled), so a WebView is the "compiler". Local HTML only, JS off.
-//   activity = { type: 'playground', title, task, html, baseCss, starter, checks: [/regex/i], hint }
+// Try-it editor for HTML and CSS lessons: type code, press Run, see the result instantly.
+// HTML/CSS are rendered (not compiled), so a WebView is the "compiler". Local HTML only, JS off.
+//   CSS mode (default): { type: 'playground', title, task, html, baseCss, starter, checks, hint }
+//     the learner edits CSS; `html` is the fixed page it styles.
+//   HTML mode:          { type: 'playground', mode: 'html', title, task, baseCss, starter, checks, hint }
+//     the learner edits the HTML itself (`html` is not used).
+//   checks: regex, string, or function(text). The text is lowercase, comments removed, spaces collapsed.
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
@@ -13,16 +17,21 @@ const getWebView = () => {
   }
 };
 
-const buildPage = (css, html, baseCss = '') =>
-  `<!DOCTYPE html><html><head>
+const buildPage = (code, html, baseCss = '', mode = 'css') =>
+  mode === 'html'
+    ? `<!DOCTYPE html><html><head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>body{font-family:Arial,sans-serif;margin:12px}${baseCss}</style>
-<style>${css.replace(/<\/style/gi, '')}</style>
+</head><body>${code.replace(/<script[\s\S]*?(<\/script>|$)/gi, '')}</body></html>`
+    : `<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{font-family:Arial,sans-serif;margin:12px}${baseCss}</style>
+<style>${code.replace(/<\/style/gi, '')}</style>
 </head><body>${html}</body></html>`;
 
-const normalizeCssForCheck = (css = '') =>
+const normalizeCssForCheck = (css = '', mode = 'css') =>
   css
-    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(mode === 'html' ? /<!--[\s\S]*?-->/g : /\/\*[\s\S]*?\*\//g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
@@ -45,15 +54,16 @@ const evaluateCheck = (check, cssText) => {
   return Boolean(check);
 };
 
-export default function CodePlayground({ title, task, html, baseCss, starter, checks, hint }) {
+export default function CodePlayground({ title, task, html, baseCss, starter, checks, hint, mode = 'css' }) {
   const [code, setCode] = useState(starter);
   const [ran, setRan] = useState(starter); // CSS shown in the preview
   const [passed, setPassed] = useState(null); // null = not run yet
   const isWeb = Platform.OS === 'web';
+  const isHtml = mode === 'html';
   const WebViewComponent = getWebView();
 
   const run = () => {
-    const normalized = normalizeCssForCheck(code);
+    const normalized = normalizeCssForCheck(code, mode);
     setRan(code);
     if (checks?.length) {
       setPassed(checks.every((check) => evaluateCheck(check, normalized)));
@@ -66,15 +76,15 @@ export default function CodePlayground({ title, task, html, baseCss, starter, ch
     setPassed(null);
   };
 
-  const previewPage = buildPage(ran, html, baseCss);
+  const previewPage = buildPage(ran, html, baseCss, mode);
 
   const previewContent = isWeb ? (
     <iframe
       key={ran}
-      title="CSS preview"
+      title="Preview"
       srcDoc={previewPage}
       style={styles.iframe}
-      sandbox="allow-scripts allow-same-origin"
+      sandbox={isHtml ? 'allow-same-origin' : 'allow-scripts allow-same-origin'}
     />
   ) : WebViewComponent ? (
     <WebViewComponent
@@ -82,6 +92,7 @@ export default function CodePlayground({ title, task, html, baseCss, starter, ch
       source={{ html: previewPage }}
       originWhitelist={['*']}
       javaScriptEnabled={false}
+      onShouldStartLoadWithRequest={(request) => !/^https?:/i.test(request.url)}
       scrollEnabled={false}
       style={styles.web}
     />
@@ -121,7 +132,7 @@ export default function CodePlayground({ title, task, html, baseCss, starter, ch
       <Text style={styles.previewLabel}>Preview</Text>
       <View style={styles.preview}>{previewContent}</View>
 
-      {passed === true && <Text style={[styles.feedback, { color: GREEN }]}>Correct! Your CSS does it.</Text>}
+      {passed === true && <Text style={[styles.feedback, { color: GREEN }]}>Correct! Your {isHtml ? 'HTML' : 'CSS'} does it.</Text>}
       {passed === false && (
         <Text style={[styles.feedback, { color: RED }]}>
           Not quite yet. {hint || 'Re-read the task and try again.'}
