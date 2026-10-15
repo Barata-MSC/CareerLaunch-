@@ -6,12 +6,16 @@ import MiniSheet from './MiniSheet';
 import QuickCheck from './QuickCheck';
 import CodePlayground from './CodePlayground';
 import JsPlayground from './JsPlayground';
+import ReactPlayground from './ReactPlayground';
+import StepOrder from './StepOrder';
 
 const MAP = {
   miniSheet: MiniSheet,
   quickCheck: QuickCheck,
   playground: CodePlayground,
   jsRunner: JsPlayground,
+  reactRunner: ReactPlayground,
+  order: StepOrder,
 };
 
 export default function LessonActivities({ activities }) {
