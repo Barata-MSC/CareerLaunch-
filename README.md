@@ -102,14 +102,12 @@ CareerLaunch-/
 │   │   │   └── software-engineering/
 │   │   ├── profile/
 │   │   └── resume-builder/
-│   ├── navigation/                # Navigation configuration
-│   └── index.js                   # Source-level exports or entry helpers, as configured
+│   └── navigation/                # Navigation configuration
 ├── supabase/                      # Supabase-related project files, if maintained here
 ├── .env                           # Local environment values; do not commit
 ├── .gitignore
 ├── App.js                         # Root application component
 ├── app.config.js
-├── app.json
 ├── babel.config.js
 ├── eslint.config.js
 ├── index.js                       # Expo/React Native entry point

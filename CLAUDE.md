@@ -8,6 +8,8 @@ CareerLaunch is a JavaScript application built with React Native and Expo. It pr
 
 The installed stack and commands in the root `package.json` are authoritative. The project currently uses Expo SDK 57, React Native, React Navigation, Supabase, and npm.
 
+Use `README.md` for project overview, setup, and team onboarding. This file adds repository-specific guidance for coding tasks; if the README and actual source/configuration disagree, verify the repository and update the relevant documentation rather than assuming either is current.
+
 ## Repository conventions
 
 - Keep feature screens and feature-specific logic in the relevant `src/features/` module.
