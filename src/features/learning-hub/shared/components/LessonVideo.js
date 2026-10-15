@@ -1,6 +1,7 @@
 // Embedded YouTube video for a lesson. Lessons without `video` show nothing.
 //   video = { id, start (seconds), chapter, title, channel }
-// "Open in YouTube" is the fallback if the embed is blocked on the device.
+// Web uses an iframe; the mobile app uses a WebView with an HTML wrapper and a real
+// base URL (a bare embed uri can render black). "Open in YouTube" is the fallback.
 import React from 'react';
 import { View, Text, TouchableOpacity, Linking, StyleSheet, Platform } from 'react-native';
 import { PURPLE } from '../styles';
@@ -21,6 +22,14 @@ export default function LessonVideo({ video }) {
   const start = video.start || 0;
   const embedUrl = `https://www.youtube.com/embed/${video.id}?start=${start}&rel=0&playsinline=1`;
 
+  const nativeHtml = `<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html,body{margin:0;height:100%;background:#000}
+iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}</style>
+</head><body>
+<iframe src="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+</body></html>`;
+
   return (
     <View style={styles.wrap}>
       <Text style={styles.heading}>Watch</Text>
@@ -36,13 +45,14 @@ export default function LessonVideo({ video }) {
           />
         ) : WebViewComponent ? (
           <WebViewComponent
-            source={{ uri: embedUrl }}
+            source={{ html: nativeHtml, baseUrl: 'https://www.youtube.com' }}
             originWhitelist={['*']}
             javaScriptEnabled
             allowsInlineMediaPlayback
             allowsFullscreenVideo
             mediaPlaybackRequiresUserAction={false}
             domStorageEnabled
+            setSupportMultipleWindows={false}
             scrollEnabled={false}
             style={styles.web}
           />
@@ -66,15 +76,14 @@ export default function LessonVideo({ video }) {
 const styles = StyleSheet.create({
   wrap: { marginBottom: 18 },
   heading: { fontSize: 15, fontWeight: '700', color: '#222222', marginBottom: 10 },
+  // No centering here: it shrinks the native WebView to zero width (the black box)
   player: {
     aspectRatio: 16 / 9,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  web: { flex: 1, backgroundColor: '#000' },
+  web: { width: '100%', height: '100%', backgroundColor: '#000' },
   iframe: {
     width: '100%',
     height: '100%',
@@ -88,6 +97,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 16,
     lineHeight: 18,
+    alignSelf: 'center',
+    marginTop: '20%',
   },
   caption: { fontSize: 11, lineHeight: 17, color: '#777777', marginTop: 8 },
   link: { fontSize: 12, fontWeight: '700', color: PURPLE, marginTop: 4 },
