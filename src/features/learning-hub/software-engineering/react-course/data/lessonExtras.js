@@ -1,19 +1,13 @@
-// Interactive extras for each React lesson, matched by lesson id (ids must stay the same).
-// lessons.js merges these into the lessons, so the original text content is untouched.
-//
-// TODO: fill in each `start` (seconds) from the chapter list in the YouTube description
-// (e.g. a chapter at 1:02:30 -> 3750). Until then every video starts at the beginning.
-//
-// Live React exercises ('reactRunner') need internet: React and Babel load from cdnjs.
 
-const VIDEO_ID = 'CgkZ7MvWUAA'; // SuperSimpleDev: React Tutorial Full Course (React 19, 2025)
+
+const VIDEO_ID = 'CgkZ7MvWUAA'; // Bro Code: React Full Course for free
 
 const video = (chapter, start = 0) => ({
   id: VIDEO_ID,
   start,
   chapter,
-  title: 'React Tutorial Full Course - Beginner to Pro (React 19, 2025)',
-  channel: 'SuperSimpleDev',
+  title: 'React Full Course for free',
+  channel: 'Bro Code',
 });
 
 // References are in APA 7th style (LessonReferences shows text + link)
@@ -26,7 +20,7 @@ const doc = (title, path) => ({
   url: `https://react.dev/${path}`,
 });
 const videoRef = {
-  text: 'SuperSimpleDev. (2025). React tutorial full course - Beginner to pro (React 19, 2025) [Video]. YouTube.',
+  text: text: 'Bro Code. (2024). React full course for free [Video]. YouTube.',,
   url: `https://youtu.be/${VIDEO_ID}`,
 };
 
