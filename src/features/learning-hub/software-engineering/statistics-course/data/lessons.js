@@ -2,7 +2,12 @@
 // it comes from the lessons the user has completed in Supabase.
 // ids are saved as lesson_id in Supabase, so don't rename them later.
 // Optional fields used by LessonScreen: code, sections[{heading, text, code}], keyPoints[].
-export const LESSONS = [
+import { LESSON_EXTRAS } from './lessonExtras';
+
+const VIDEO_ID = 'xxpc-HPKN28';
+const VIDEO_TITLE = 'Statistics - A Full University Course on Data Science Basics';
+
+const BASE_LESSONS = [
   {
     id: 'stats-1',
     title: 'Introduction to statistics',
@@ -355,3 +360,28 @@ x = 4  ->  y-hat = 20 + 5 * 4 = 40`,
     ],
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => {
+  const extras = LESSON_EXTRAS[lesson.id] ?? {};
+
+  return {
+    ...lesson,
+    ...extras,
+    video: extras.video
+      ? {
+          ...extras.video,
+          id: VIDEO_ID,
+          title: VIDEO_TITLE,
+          channel: 'freeCodeCamp.org',
+        }
+      : undefined,
+    activities: extras.activities?.map(({ answer, ...activity }) => ({
+      ...activity,
+      correct: activity.correct ?? answer,
+    })),
+    references: extras.references?.map(({ title, author, ...reference }) => ({
+      ...reference,
+      text: reference.text ?? `${author}. ${title}.`,
+    })),
+  };
+});

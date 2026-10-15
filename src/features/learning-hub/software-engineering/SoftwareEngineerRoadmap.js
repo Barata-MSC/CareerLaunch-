@@ -365,7 +365,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         <Text style={styles.sectionTitle}>Your Roadmap</Text>
 
         <View style={styles.roadmapList}>
-          {roadmapSteps.map((step, index) => {
+          {roadmapSteps?.map((step, index) => {
             return (
               <TouchableOpacity
                 key={step.id}
