@@ -22,6 +22,7 @@ import {
   guestEmailFromUsername,
   validateGuestUsername,
 } from './guestAccount';
+import { playSound } from '../../utils/sounds';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -106,7 +107,10 @@ export default function LoginScreen({ navigation }) {
         password,
       });
 
-      if (!error) return;
+      if (!error) {
+        playSound('success');
+        return;
+      }
 
       const message = (error.message || '').toLowerCase();
 
@@ -122,6 +126,7 @@ export default function LoginScreen({ navigation }) {
         setLoginError(error.message || 'Something went wrong. Please try again.');
       }
     } catch (error) {
+      playSound('error');
       const message = error instanceof Error ? error.message.toLowerCase() : '';
       setLoginError(
         message.includes('network') || message.includes('fetch')
@@ -144,6 +149,7 @@ export default function LoginScreen({ navigation }) {
 
   const switchGuestMode = (mode) => {
     if (busy || mode === guestMode) return;
+    playSound('tap');
     setGuestMode(mode);
     clearGuestErrors();
     setGuestPassword('');
@@ -177,7 +183,10 @@ export default function LoginScreen({ navigation }) {
       missingConfirm ? 'Please confirm your password' : mismatch ? 'Passwords do not match' : '',
     );
 
-    if (nameProblem || missingPassword || weakPassword || missingConfirm || mismatch) return;
+    if (nameProblem || missingPassword || weakPassword || missingConfirm || mismatch) {
+      playSound('error');
+      return;
+    }
 
     setGuestLoading(true);
 
@@ -188,6 +197,7 @@ export default function LoginScreen({ navigation }) {
       );
 
       if (usernameCheckError) {
+        playSound('error');
         console.error('Guest username availability check failed:', {
           code: usernameCheckError.code,
           message: usernameCheckError.message,
@@ -209,6 +219,7 @@ export default function LoginScreen({ navigation }) {
       }
 
       if (usernameTaken) {
+        playSound('error');
         setGuestError('Username already exists. Choose another, or tap "I already have one" if it is yours.');
         return;
       }
@@ -220,18 +231,23 @@ export default function LoginScreen({ navigation }) {
       });
 
       if (error) {
+        playSound('error');
         setGuestError(describeGuestSignUpError(error));
         return;
       }
 
-      if (!data?.session) {
+      if (data?.session) {
+        playSound('success');
+      } else {
         // The account exists but Supabase did not sign it in, which happens when
         // "Confirm email" is switched on. A guest has no inbox to confirm from.
+        playSound('error');
         setGuestError(
           'Guest sign-up needs "Confirm email" turned off in Supabase (Authentication, Sign In / Providers, Email).',
         );
       }
     } catch (error) {
+      playSound('error');
       setGuestError(
         error instanceof Error ? error.message : 'Could not create a guest profile. Please try again.',
       );
@@ -254,11 +270,15 @@ export default function LoginScreen({ navigation }) {
     setGuestPasswordError(missingPassword ? 'Please enter your password' : '');
     setGuestConfirmError('');
 
-    if (missingName || missingPassword) return;
+    if (missingName || missingPassword) {
+      playSound('error');
+      return;
+    }
 
     // Names with spaces or symbols cannot belong to a guest who signed up with a
     // password, so there is no point asking Supabase.
     if (validateGuestUsername(name)) {
+      playSound('error');
       setGuestPasswordError(wrongCredentials);
       return;
     }
@@ -272,6 +292,7 @@ export default function LoginScreen({ navigation }) {
       });
 
       if (error) {
+        playSound('error');
         const message = (error.message || '').toLowerCase();
         const invalidCredentials =
           error.code === 'invalid_credentials' || message.includes('invalid login credentials');
@@ -284,8 +305,11 @@ export default function LoginScreen({ navigation }) {
         } else {
           setGuestPasswordError(error.message || 'Something went wrong. Please try again.');
         }
+      } else {
+        playSound('success');
       }
     } catch (error) {
+      playSound('error');
       setGuestPasswordError(
         error instanceof Error ? error.message : 'Could not log in. Please try again.',
       );
@@ -352,7 +376,10 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.forgotWrapper}
           disabled={busy}
-          onPress={() => navigation?.navigate('ForgotPassword', { email: email.trim() })}
+          onPress={() => {
+            playSound('tap');
+            navigation?.navigate('ForgotPassword', { email: email.trim() });
+          }}
         >
           <Text style={styles.forgotText}>Forgot password?</Text>
         </TouchableOpacity>
@@ -385,7 +412,10 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.guestButton}
           activeOpacity={0.85}
-          onPress={() => setShowGuest(!showGuest)}
+          onPress={() => {
+            playSound('tap');
+            setShowGuest(!showGuest);
+          }}
           disabled={busy}
         >
           <Text style={styles.guestButtonText}>👤 Continue as guest</Text>
@@ -514,8 +544,15 @@ export default function LoginScreen({ navigation }) {
         {/* Sign Up */}
         <View style={styles.signUpRow}>
           <Text style={styles.signUpText}>Don't have an account yet?</Text>
-          <TouchableOpacity onPress={() => navigation?.navigate('Register')} disabled={busy}>
-            <Text style={styles.signUpLink}> Sign Up</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playSound('tap');
+              navigation?.navigate('Register');
+            }}
+            disabled={busy}
+          >
+            <Text style={styles.signUpLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
