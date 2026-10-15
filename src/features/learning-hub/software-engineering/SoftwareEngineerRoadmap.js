@@ -17,9 +17,7 @@ import cssCourse from './css-course/course';
 import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
-import designFundamentalsCourse from '../ui-ux-designer/design-fundamentals-course/course';
-import userResearchCourse from '../ui-ux-designer/user-research-course/course';
-import wireframingCourse from '../ui-ux-designer/wireframing-course/course';
+import designFundamentalsCourse from './design-fundamentals-course/course';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
 
@@ -33,8 +31,6 @@ const COURSES = [
   gitCourse,
   reactCourse,
   designFundamentalsCourse,
-  userResearchCourse,
-  wireframingCourse,
 ];
 
 
@@ -136,30 +132,16 @@ const TRACKS = {
       },
       {
         id: '2',
-        title: 'User Research',
-        course: userResearchCourse,
-        route: 'UserResearchCourse',
-        description: 'Interview users, run surveys, and turn findings into actionable insights.',
-      },
-      {
-        id: '3',
-        title: 'Wireframing',
-        course: wireframingCourse,
-        route: 'WireframingCourse',
-        description: 'Practice low-fidelity wireframes to map out layouts before visual design.',
-      },
-      {
-        id: '4',
         title: 'Figma / Prototyping',
         description: 'Build interactive, high-fidelity prototypes that feel like the real app.',
       },
       {
-        id: '5',
+        id: '3',
         title: 'Usability Testing',
         description: 'Test your designs with real users and iterate on the feedback.',
       },
       {
-        id: '6',
+        id: '4',
         title: 'Design Systems',
         description: 'Build reusable components and a consistent design language.',
       },
