@@ -3,6 +3,7 @@
 // so a mistake like an infinite loop cannot freeze the app (it is stopped after 3 seconds).
 //   activity = { type: 'jsRunner', title, task, starter, expected: ['line', ...], checks: [/regex/], hint, node }
 // expected = the exact lines the code must print. checks = patterns the code must contain.
+// wait = ms to let async code (timers, promises) finish before checking; default 0.
 //
 // Optional `node` turns on a Node.js practice mode (for the Node.js course). Real files and
 // servers cannot run in a phone app, so this mode provides safe stand-ins:
@@ -143,9 +144,9 @@ const buildNodeShim = (node) => {
 };
 
 // The page that runs the learner's code and sends console output back as JSON messages
-const buildRunner = (code, run, node) => {
+const buildRunner = (code, run, node, waitMs) => {
   const safeCode = JSON.stringify(code).replace(/</g, '\\u003c');
-  const wait = node ? (node.wait === undefined ? 400 : node.wait) : 0;
+  const wait = waitMs !== undefined ? waitMs : node ? (node.wait === undefined ? 400 : node.wait) : 0;
   const make = node
     ? `new Function('document', 'window', 'navigator', ${safeCode})()`
     : `new Function(${safeCode})()`;
@@ -178,7 +179,7 @@ const buildRunner = (code, run, node) => {
 <\/script></body></html>`;
 };
 
-export default function JsPlayground({ title, task, starter, expected, checks, hint, node }) {
+export default function JsPlayground({ title, task, starter, expected, checks, hint, node, wait }) {
   const [code, setCode] = useState(starter);
   const [output, setOutput] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | running | done | timeout
@@ -267,7 +268,7 @@ export default function JsPlayground({ title, task, starter, expected, checks, h
   // The runner is only mounted while code is running; unmounting stops it
   let runner = null;
   if (status === 'running') {
-    const page = buildRunner(codeRef.current, runId, node);
+    const page = buildRunner(codeRef.current, runId, node, wait);
     runner = isWeb ? (
       <iframe
         key={runId}

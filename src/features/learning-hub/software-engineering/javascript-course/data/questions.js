@@ -44,4 +44,49 @@ export const QUESTIONS = [
     explanation:
       'push() adds to the end. pop() removes the last item and shift() removes the first.',
   },
+  {
+    lessonId: 'js-6',
+    question: 'What do we call a function stored inside an object?',
+    answers: ['A method', 'A property name', 'A module', 'A loop'],
+    correct: 0,
+    explanation:
+      'A function stored as a property of an object is called a method, and it can use this to reach the object.',
+  },
+  {
+    lessonId: 'js-7',
+    question: 'Which array method keeps only the items that pass a test?',
+    answers: ['map()', 'filter()', 'push()', 'join()'],
+    correct: 1,
+    explanation:
+      'filter() returns a new array with only the items for which the test function returns true. map() changes every item.',
+  },
+  {
+    lessonId: 'js-8',
+    question: 'Which syntax lets you put a variable inside a string with ${}?',
+    answers: ['Single quotes', 'Double quotes', 'Backticks (template literals)', 'Parentheses'],
+    correct: 2,
+    explanation:
+      'Template literals use backticks, and ${} inserts the value of an expression into the string.',
+  },
+  {
+    lessonId: 'js-9',
+    question: 'Which method finds the first element that matches a CSS selector?',
+    answers: ['document.getAll()', 'document.querySelector()', 'document.find()', 'document.select()'],
+    correct: 1,
+    explanation:
+      'document.querySelector() takes a CSS selector, such as #save or .title, and returns the first matching element.',
+  },
+  {
+    lessonId: 'js-10',
+    question: 'What does the await keyword do inside an async function?',
+    answers: [
+      'Waits for a promise to finish before continuing',
+      'Stops the whole page',
+      'Creates a loop',
+      'Declares a variable',
+    ],
+    correct: 0,
+    explanation:
+      'await pauses the async function until the promise settles, then gives you its result.',
+  },
 ];

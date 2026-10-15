@@ -1,8 +1,4 @@
-// Interactive extras for each JavaScript lesson, matched by lesson id (ids must stay the same).
-// lessons.js merges these into the lessons, so the original text content is untouched.
-//
-// TODO: fill in each `start` (seconds) from the chapter list in the YouTube description
-// (e.g. a chapter at 1:02:30 -> 3750). Until then every video starts at the beginning.
+
 
 const VIDEO_ID = 'lfmg-EJ8gm4'; // Bro Code: JavaScript Full Course for free
 
@@ -23,6 +19,7 @@ const mdn = (title, path) => ({
   text: `MDN Web Docs. (n.d.). ${title}.`,
   url: `https://developer.mozilla.org/en-US/docs/Web/JavaScript/${path}`,
 });
+const mdnWeb = (title, url) => ({ text: `MDN Web Docs. (n.d.). ${title}.`, url });
 const videoRef = {
   text: 'Bro Code. (2024). JavaScript full course for free [Video]. YouTube.',
   url: `https://youtu.be/${VIDEO_ID}`,
@@ -161,6 +158,155 @@ export const EXTRAS = {
     references: [
       w3('JavaScript arrays', 'js_arrays.asp'),
       mdn('Array.prototype.push()', 'Reference/Global_Objects/Array/push'),
+      videoRef,
+    ],
+  },
+
+  'js-6': {
+    video: video('Objects'),
+    activities: [
+      {
+        type: 'jsRunner',
+        title: 'Update an object and add a method',
+        task: "Change age to 21 and add a greet() method that returns 'Hi, I am ' + this.name.",
+        starter:
+          "const user = {\n  name: 'Ana',\n  age: 20,\n};\n\n// 1. change age to 21\n// 2. add a method greet() that returns 'Hi, I am ' + this.name\n\nconsole.log(user.age);\nconsole.log(user.greet());",
+        expected: ['21', 'Hi, I am Ana'],
+        checks: [/greet\s*(\(|:)/],
+        hint: "Inside the object, write greet() { return 'Hi, I am ' + this.name; } and set age: 21.",
+      },
+      {
+        type: 'quickCheck',
+        question: 'How do you read the name property of an object called user?',
+        options: ['user.name', 'user->name', 'name.user', 'user(name)'],
+        correct: 0,
+        hint: 'Use a dot between the object and the property.',
+        explanation: 'Dot notation reads a property: user.name.',
+      },
+    ],
+    references: [
+      w3('JavaScript objects', 'js_objects.asp'),
+      mdn('this', 'Reference/Operators/this'),
+      videoRef,
+    ],
+  },
+
+  'js-7': {
+    video: video('Array methods / map / filter'),
+    activities: [
+      {
+        type: 'jsRunner',
+        title: 'Filter, then map',
+        task: 'Keep only the even numbers with filter, then double them with map. The console should print 4, 8, 12.',
+        starter:
+          "const nums = [1, 2, 3, 4, 5, 6];\n\n// keep only the even numbers with filter,\n// then double them with map\nconst result = nums;\n\nconsole.log(result.join(', '));",
+        expected: ['4, 8, 12'],
+        checks: [/\.filter\(/, /\.map\(/],
+        hint: 'const result = nums.filter((n) => n % 2 === 0).map((n) => n * 2);',
+      },
+      {
+        type: 'quickCheck',
+        question: 'Does map() change the original array?',
+        options: ['Yes, it edits it in place', 'No, it returns a new array', 'Only if the array is empty', 'Only with const'],
+        correct: 1,
+        hint: 'Compare nums and doubled in the lesson code.',
+        explanation: 'map() leaves the original array alone and returns a new one.',
+      },
+    ],
+    references: [
+      w3('JavaScript array iteration', 'js_array_iteration.asp'),
+      mdn('Array.prototype.map()', 'Reference/Global_Objects/Array/map'),
+      videoRef,
+    ],
+  },
+
+  'js-8': {
+    video: video('Strings / Template literals'),
+    activities: [
+      {
+        type: 'jsRunner',
+        title: 'Build a sentence',
+        task: 'Use toUpperCase() and a template literal so the console prints ANA CRUZ is 21 years old.',
+        starter:
+          "const name = 'ana cruz';\nconst age = 21;\n\n// print: ANA CRUZ is 21 years old\n// use toUpperCase() and a template literal\nconsole.log(name);",
+        expected: ['ANA CRUZ is 21 years old'],
+        checks: [/toUpperCase\(\)/, /`[^`]*\$\{/],
+        hint: 'console.log(`${name.toUpperCase()} is ${age} years old`);',
+      },
+      {
+        type: 'quickCheck',
+        question: "What does 'Ana'.length return?",
+        options: ['3', '2', 'Ana', 'undefined'],
+        correct: 0,
+        hint: 'Count the characters.',
+        explanation: 'length is the number of characters, so the answer is 3.',
+      },
+    ],
+    references: [
+      w3('JavaScript string methods', 'js_string_methods.asp'),
+      mdn('Template literals', 'Reference/Template_literals'),
+      videoRef,
+    ],
+  },
+
+  'js-9': {
+    video: video('DOM / Events'),
+    activities: [
+      {
+        type: 'jsRunner',
+        title: 'Respond to a click',
+        task: "Add a click listener so pressing the button sets the message to Saved!. The code presses the button for you at the end.",
+        starter:
+          "const button = document.createElement('button');\nconst message = document.createElement('p');\nmessage.textContent = 'Not saved';\n\n// add a click listener that sets message.textContent to 'Saved!'\n\nbutton.click();\nconsole.log(message.textContent);",
+        expected: ['Saved!'],
+        checks: [/addEventListener\(\s*['"]click['"]/],
+        hint: "button.addEventListener('click', () => { message.textContent = 'Saved!'; });",
+      },
+      {
+        type: 'quickCheck',
+        question: 'Which method runs a function when a user clicks a button?',
+        options: ['addEventListener', 'appendChild', 'querySelector', 'textContent'],
+        correct: 0,
+        hint: 'It listens for events such as click.',
+        explanation: 'addEventListener attaches a function that runs when the event happens.',
+      },
+    ],
+    references: [
+      w3('JavaScript HTML DOM', 'js_htmldom.asp'),
+      mdnWeb(
+        'EventTarget: addEventListener() method',
+        'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener',
+      ),
+      videoRef,
+    ],
+  },
+
+  'js-10': {
+    video: video('Promises / async / await'),
+    activities: [
+      {
+        type: 'jsRunner',
+        title: 'Wait, then continue',
+        task: 'Inside run, wait 200 ms with await, then print Done waiting.',
+        starter:
+          "const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));\n\nasync function run() {\n  console.log('Start');\n  // wait 200 ms, then print 'Done waiting'\n}\n\nrun();",
+        expected: ['Start', 'Done waiting'],
+        wait: 600,
+        checks: [/await/],
+        hint: "await wait(200); console.log('Done waiting');",
+      },
+      {
+        type: 'quickCheck',
+        question: 'What does a promise stand for?',
+        options: ['A result that will arrive later', 'A saved file', 'A CSS rule', 'A loop'],
+        correct: 0,
+        hint: 'Think of ordering food and getting it later.',
+        explanation: 'A promise represents a value that is not ready yet but will be later, or will fail.',
+      },
+    ],
+    references: [
+      w3('JavaScript async', 'js_async.asp'),
+      mdn('Promise', 'Reference/Global_Objects/Promise'),
       videoRef,
     ],
   },
