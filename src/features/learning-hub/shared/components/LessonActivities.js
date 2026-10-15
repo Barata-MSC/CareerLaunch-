@@ -5,8 +5,15 @@ import { View, Text, StyleSheet } from 'react-native';
 import MiniSheet from './MiniSheet';
 import QuickCheck from './QuickCheck';
 import CodePlayground from './CodePlayground';
+import JsPlayground from './JsPlayground';
 
-const MAP = { miniSheet: MiniSheet, quickCheck: QuickCheck, playground: CodePlayground };
+const MAP = {
+  miniSheet: MiniSheet,
+  quickCheck: QuickCheck,
+  playground: CodePlayground,
+  jsRunner: JsPlayground,
+};
+
 export default function LessonActivities({ activities }) {
   if (!activities?.length) return null;
 
