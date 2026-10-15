@@ -99,18 +99,18 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: tap the cells',
-        columns: [ 'A', 'B', 'C' ],
-        rows: [ [ 'Name', 'Sales', 'Region' ], [ 'Ana', 1200, 'North' ], [ 'Ben', 950, 'South' ] ],
-        challenge: { text: "Challenge: tap the cell with Ben's sales.", target: 'B3' }
+        columns: ['A', 'B', 'C'],
+        rows: [['Name', 'Sales', 'Region'], ['Ana', 1200, 'North'], ['Ben', 950, 'South']],
+        challenge: { text: "Challenge: tap the cell with Ben's sales.", target: 'B3' },
       },
       {
         type: 'quickCheck',
         question: 'Which cell holds the word "North"?',
-        options: [ 'A2', 'C2', 'B3', 'C3' ],
+        options: ['A2', 'C2', 'B3', 'C3'],
         correct: 1,
         hint: 'Say the column letter first, then the row number.',
-        explanation: 'North is in column C, row 2, so its address is C2.'
-      }
+        explanation: 'North is in column C, row 2, so its address is C2.',
+      },
     ],
     references: [w3('Excel get started', 'excel_get_started.php'), w3('Excel ranges', 'excel_ranges.php'), msExcel],
   },
@@ -120,10 +120,10 @@ const BASE = {
       {
         type: 'quickCheck',
         question: 'You type 1 in A1 and 2 in A2, select both, and drag the fill handle down to A5. What does A5 contain?',
-        options: [ '5', '2', '1', '3' ],
+        options: ['5', '2', '1', '3'],
         correct: 0,
         hint: 'Excel continues the pattern 1, 2, 3...',
-        explanation: 'The series continues one step per cell: A3=3, A4=4, A5=5.'
+        explanation: 'The series continues one step per cell: A3=3, A4=4, A5=5.',
       },
       {
         type: 'quickCheck',
@@ -132,12 +132,12 @@ const BASE = {
           'The cell is removed and others shift',
           'Only its contents are cleared',
           'The whole row is deleted',
-          'Nothing happens'
+          'Nothing happens',
         ],
         correct: 1,
         hint: 'Think about the difference from right-click > Delete.',
-        explanation: 'The Delete key only clears the contents. Right-click > Delete removes the cell and shifts others.'
-      }
+        explanation: 'The Delete key only clears the contents. Right-click > Delete removes the cell and shifts others.',
+      },
     ],
     references: [w3('Excel fill', 'excel_filling.php'), w3('Excel move cells', 'excel_move_cells.php'), msExcel],
   },
@@ -147,25 +147,25 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: formulas in cells',
-        columns: [ 'A', 'B', 'C' ],
+        columns: ['A', 'B', 'C'],
         rows: [
-          [ 'Price', 'Qty', 'Total' ],
-          [ 50, 3, { f: '=A2*B2', v: 150 } ],
-          [ 20, 5, { f: '=A3*B3', v: 100 } ]
+          ['Price', 'Qty', 'Total'],
+          [50, 3, { f: '=A2*B2', v: 150 }],
+          [20, 5, { f: '=A3*B3', v: 100 }],
         ],
         challenge: {
           text: 'Challenge: tap the cell that calculates the total for the second item.',
-          target: 'C3'
-        }
+          target: 'C3',
+        },
       },
       {
         type: 'quickCheck',
         question: 'What is the result of =10-2*3?',
-        options: [ '24', '4', '16', '1' ],
+        options: ['24', '4', '16', '1'],
         correct: 1,
         hint: 'Multiplication happens before subtraction.',
-        explanation: '2*3 = 6 first, then 10-6 = 4.'
-      }
+        explanation: '2*3 = 6 first, then 10-6 = 4.',
+      },
     ],
     references: [w3('Excel formulas', 'excel_formulas.php'), w3('Excel parentheses', 'excel_parantheses.php'), msExcel],
   },
@@ -175,22 +175,22 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: the locked tax rate',
-        columns: [ 'A', 'B', 'C' ],
+        columns: ['A', 'B', 'C'],
         rows: [
-          [ 'Price', 'Tax rate', 'Total' ],
-          [ 100, 0.12, { f: '=A2*(1+$B$2)', v: 112 } ],
-          [ 200, '', { f: '=A3*(1+$B$2)', v: 224 } ]
+          ['Price', 'Tax rate', 'Total'],
+          [100, 0.12, { f: '=A2*(1+$B$2)', v: 112 }],
+          [200, '', { f: '=A3*(1+$B$2)', v: 224 }],
         ],
-        challenge: { text: 'Challenge: tap the cell that every formula locks with $B$2.', target: 'B2' }
+        challenge: { text: 'Challenge: tap the cell that every formula locks with $B$2.', target: 'B2' },
       },
       {
         type: 'quickCheck',
         question: 'D2 contains =C2*$F$1 and is copied down to D5. What does D5 contain?',
-        options: [ '=C5*$F$1', '=C2*$F$1', '=C5*$F$4', '=$C$5*F1' ],
+        options: ['=C5*$F$1', '=C2*$F$1', '=C5*$F$4', '=$C$5*F1'],
         correct: 0,
         hint: 'The C part is relative, the $F$1 part is locked.',
-        explanation: 'C2 moves down to C5 (relative), while $F$1 stays locked.'
-      }
+        explanation: 'C2 moves down to C5 (relative), while $F$1 stays locked.',
+      },
     ],
     references: [w3('Excel relative reference', 'excel_rel_ref.php'), w3('Excel absolute reference', 'excel_abs_ref.php'), msExcel],
   },
@@ -200,24 +200,24 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: SUM in a cell',
-        columns: [ 'A', 'B' ],
+        columns: ['A', 'B'],
         rows: [
-          [ 'Item', 'Sales' ],
-          [ 'Pen', 20 ],
-          [ 'Book', 35 ],
-          [ 'Bag', 50 ],
-          [ 'Total', { f: '=SUM(B2:B4)', v: 105 } ]
+          ['Item', 'Sales'],
+          ['Pen', 20],
+          ['Book', 35],
+          ['Bag', 50],
+          ['Total', { f: '=SUM(B2:B4)', v: 105 }],
         ],
-        challenge: { text: 'Challenge: tap the cell that adds up the sales.', target: 'B5' }
+        challenge: { text: 'Challenge: tap the cell that adds up the sales.', target: 'B5' },
       },
       {
         type: 'quickCheck',
         question: 'A1:A4 contain Item, Pen, Book, Bag and A5 is empty. What does =COUNTA(A1:A5) return?',
-        options: [ '5', '4', '1', '0' ],
+        options: ['5', '4', '1', '0'],
         correct: 1,
         hint: 'COUNTA skips empty cells.',
-        explanation: 'Four cells are not empty, so COUNTA returns 4.'
-      }
+        explanation: 'Four cells are not empty, so COUNTA returns 4.',
+      },
     ],
     references: [w3('Excel functions', 'excel_functions.php'), w3('Excel SUM function', 'excel_sum.php'), msExcel],
   },
@@ -227,22 +227,22 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: IF results',
-        columns: [ 'A', 'B', 'C' ],
+        columns: ['A', 'B', 'C'],
         rows: [
-          [ 'Name', 'Score', 'Result' ],
-          [ 'Ana', 82, { f: '=IF(B2>=75,"Pass","Fail")', v: 'Pass' } ],
-          [ 'Ben', 70, { f: '=IF(B3>=75,"Pass","Fail")', v: 'Fail' } ]
+          ['Name', 'Score', 'Result'],
+          ['Ana', 82, { f: '=IF(B2>=75,"Pass","Fail")', v: 'Pass' }],
+          ['Ben', 70, { f: '=IF(B3>=75,"Pass","Fail")', v: 'Fail' }],
         ],
-        challenge: { text: 'Challenge: tap the cell whose formula returns Fail.', target: 'C3' }
+        challenge: { text: 'Challenge: tap the cell whose formula returns Fail.', target: 'C3' },
       },
       {
         type: 'quickCheck',
         question: 'B2 is 80 and C2 is 60. What does =AND(B2>=75,C2>=75) return?',
-        options: [ 'TRUE', 'FALSE', '80', '60' ],
+        options: ['TRUE', 'FALSE', '80', '60'],
         correct: 1,
         hint: 'AND needs every condition to be true.',
-        explanation: 'C2 is below 75, so not all conditions are true and AND returns FALSE.'
-      }
+        explanation: 'C2 is below 75, so not all conditions are true and AND returns FALSE.',
+      },
     ],
     references: [w3('Excel IF function', 'excel_if.php'), w3('Excel COUNTIF function', 'excel_countif.php'), msExcel],
   },
@@ -252,10 +252,10 @@ const BASE = {
       {
         type: 'quickCheck',
         question: 'Which shortcut opens the Format Cells dialog?',
-        options: [ 'Ctrl+H', 'Ctrl+T', 'Ctrl+1', 'Ctrl+Z' ],
+        options: ['Ctrl+H', 'Ctrl+T', 'Ctrl+1', 'Ctrl+Z'],
         correct: 2,
         hint: 'It is a number, not a letter.',
-        explanation: 'Ctrl+1 opens Format Cells with every formatting option.'
+        explanation: 'Ctrl+1 opens Format Cells with every formatting option.',
       },
       {
         type: 'quickCheck',
@@ -264,12 +264,12 @@ const BASE = {
           'Double-click the border between two column letters',
           'Press Ctrl+W',
           'Right-click the sheet tab',
-          'Click the Name Box'
+          'Click the Name Box',
         ],
         correct: 0,
         hint: 'Look at the line between the column letters.',
-        explanation: 'Double-clicking the column border fits the width to the longest content.'
-      }
+        explanation: 'Double-clicking the column border fits the width to the longest content.',
+      },
     ],
     references: [w3('Excel formatting', 'excel_formatting.php'), w3('Excel format painter', 'excel_format_painter.php'), msExcel],
   },
@@ -279,22 +279,22 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: cleaning text',
-        columns: [ 'A', 'B' ],
+        columns: ['A', 'B'],
         rows: [
-          [ 'Raw', 'Clean' ],
-          [ '  ana cruz ', { f: '=PROPER(TRIM(A2))', v: 'Ana Cruz' } ],
-          [ 'BEN reyes', { f: '=PROPER(TRIM(A3))', v: 'Ben Reyes' } ]
+          ['Raw', 'Clean'],
+          ['  ana cruz ', { f: '=PROPER(TRIM(A2))', v: 'Ana Cruz' }],
+          ['BEN reyes', { f: '=PROPER(TRIM(A3))', v: 'Ben Reyes' }],
         ],
-        challenge: { text: 'Challenge: tap the cell that cleans the text in row 3.', target: 'B3' }
+        challenge: { text: 'Challenge: tap the cell that cleans the text in row 3.', target: 'B3' },
       },
       {
         type: 'quickCheck',
         question: 'Which Data tab tool deletes repeated rows?',
-        options: [ 'Find and Replace', 'Remove Duplicates', 'Text to Columns', 'Format Painter' ],
+        options: ['Find and Replace', 'Remove Duplicates', 'Text to Columns', 'Format Painter'],
         correct: 1,
         hint: 'The name says what it does.',
-        explanation: 'Remove Duplicates keeps one copy of each row based on the columns you choose.'
-      }
+        explanation: 'Remove Duplicates keeps one copy of each row based on the columns you choose.',
+      },
     ],
     references: [w3('Excel TRIM function', 'excel_trim.php'), w3('Excel remove duplicates', 'excel_howto_remove_duplicates.php'), msExcel],
   },
@@ -304,10 +304,10 @@ const BASE = {
       {
         type: 'quickCheck',
         question: 'You want to sort by Region first, then by Sales from largest to smallest. Which feature do you use?',
-        options: [ 'Quick Filter', 'Custom Sort', 'Remove Duplicates', 'Format Painter' ],
+        options: ['Quick Filter', 'Custom Sort', 'Remove Duplicates', 'Format Painter'],
         correct: 1,
         hint: 'You need more than one sort level.',
-        explanation: 'Custom Sort lets you add several sort levels, one per column.'
+        explanation: 'Custom Sort lets you add several sort levels, one per column.',
       },
       {
         type: 'quickCheck',
@@ -316,12 +316,12 @@ const BASE = {
           'Nothing, the table stays the same',
           'The table expands to include it',
           'Excel deletes the row',
-          'The table is sorted'
+          'The table is sorted',
         ],
         correct: 1,
         hint: 'Think about why tables are useful.',
-        explanation: 'Tables grow automatically when you add data right below them.'
-      }
+        explanation: 'Tables grow automatically when you add data right below them.',
+      },
     ],
     references: [w3('Excel sort', 'excel_sort.php'), w3('Excel filter', 'excel_filter.php'), w3('Excel tables', 'excel_tables.php'), msExcel],
   },
@@ -331,19 +331,19 @@ const BASE = {
       {
         type: 'quickCheck',
         question: 'You want to show the share of 4 categories in a whole. Which chart fits best?',
-        options: [ 'Pie chart', 'Line chart', 'Scatter chart', 'Histogram' ],
+        options: ['Pie chart', 'Line chart', 'Scatter chart', 'Histogram'],
         correct: 0,
         hint: 'Parts of a whole, with only a few categories.',
-        explanation: 'Pie charts show parts of a whole and work best with a few categories.'
+        explanation: 'Pie charts show parts of a whole and work best with a few categories.',
       },
       {
         type: 'quickCheck',
         question: 'Which rule highlights every value above a number you choose?',
-        options: [ 'Data Bars', 'Color Scales', 'Highlight Cells Rules > Greater Than', 'Icon Sets' ],
+        options: ['Data Bars', 'Color Scales', 'Highlight Cells Rules > Greater Than', 'Icon Sets'],
         correct: 2,
         hint: 'Look for the rule that compares with a number.',
-        explanation: 'Greater Than under Highlight Cells Rules marks cells above your number.'
-      }
+        explanation: 'Greater Than under Highlight Cells Rules marks cells above your number.',
+      },
     ],
     references: [w3('Excel conditional format', 'excel_conditional_formatting.php'), w3('Excel charts', 'excel_charts.php'), msExcel],
   },
@@ -353,90 +353,47 @@ const BASE = {
       {
         type: 'miniSheet',
         title: 'Try it: a pivot table result',
-        columns: [ 'A', 'B' ],
+        columns: ['A', 'B'],
         rows: [
-          [ 'Region', 'Sum of Sales' ],
-          [ 'North', 2400 ],
-          [ 'South', 1800 ],
-          [ 'Grand Total', 4200 ]
+          ['Region', 'Sum of Sales'],
+          ['North', 2400],
+          ['South', 1800],
+          ['Grand Total', 4200],
         ],
-        challenge: { text: 'Challenge: tap the cell showing total sales for South.', target: 'B3' }
+        challenge: { text: 'Challenge: tap the cell showing total sales for South.', target: 'B3' },
       },
       {
         type: 'quickCheck',
         question: 'You want each region listed as its own row in a pivot table. Where do you drag the Region field?',
-        options: [ 'Rows', 'Values', 'Filters', 'Nowhere' ],
+        options: ['Rows', 'Values', 'Filters', 'Nowhere'],
         correct: 0,
         hint: 'Rows group, Values calculate.',
-        explanation: 'Fields in Rows become the row labels of the pivot table.'
-      }
+        explanation: 'Fields in Rows become the row labels of the pivot table.',
+      },
     ],
     references: [w3('Excel PivotTable intro', 'excel_table_pivot_intro.php'), msExcel],
   },
 };
 
+const video = (chapter, start = 0, key = 'course') => ({
+  id: VIDEOS[key].id,
+  start,
+  chapter,
+  title: VIDEOS[key].title,
+  channel: VIDEOS[key].channel,
+});
 
-// Attach each lesson's video and its reference.
 export const EXTRAS = Object.fromEntries(
   Object.entries(BASE).map(([lessonId, extra]) => {
     const [key, start = 0, chapter] = VIDEO_FOR[lessonId] || ['course'];
     const v = VIDEOS[key];
     return [
-      'excel-1': {
-    video: video('Getting Started'),
-    activities: [],
-    references: [w3('Excel introduction', 'index.php'), videoRef],
-  },
-  'excel-2': {
-    video: video('Fill and Edit'),
-    activities: [],
-    references: [w3('Excel fill data', 'index.php'), mdn('How to use Microsoft Excel', 'Web/Glossary/Excel')],
-  },
-  'excel-3': {
-    video: video('Formulas'),
-    activities: [],
-    references: [w3('Excel formulas', 'excel_formulas.asp'), videoRef],
-  },
-  'excel-4': {
-    video: video('Cell References'),
-    activities: [],
-    references: [w3('Excel cell references', 'excel_references.asp'), videoRef],
-  },
-  'excel-5': {
-    video: video('Functions'),
-    activities: [],
-    references: [w3('Excel functions', 'excel_functions.asp'), videoRef],
-  },
-  'excel-6': {
-    video: video('Formatting'),
-    activities: [],
-    references: [w3('Excel formatting', 'index.php'), videoRef],
-  },
-  'excel-7': {
-    video: video('Working with Data'),
-    activities: [],
-    references: [w3('Excel sorting and filtering', 'excel_sort.asp'), videoRef],
-  },
-  'excel-8': {
-    video: video('Data Validation'),
-    activities: [],
-    references: [w3('Excel data validation', 'excel_data_validation.asp'), videoRef],
-  },
-  'excel-9': {
-    video: video('Charts'),
-    activities: [],
-    references: [w3('Excel charts', 'excel_charts.asp'), videoRef],
-  },
-  'excel-10': {
-    video: video('Conditional Formatting'),
-    activities: [],
-    references: [w3('Excel conditional formatting', 'excel_conditional_formatting.asp'), videoRef],
-  },
-  'excel-11': {
-    video: video('Pivot Tables'),
-    activities: [],
-    references: [w3('Excel pivot tables', 'excel_pivot_tables.asp'), videoRef],
-  },
+      lessonId,
+      {
+        ...extra,
+        video: video(chapter ?? 'Course', start, key),
+        references: [...(extra.references ?? []), videoRef(v)],
+      },
     ];
   }),
 );
