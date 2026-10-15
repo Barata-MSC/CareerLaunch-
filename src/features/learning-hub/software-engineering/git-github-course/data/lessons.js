@@ -1,7 +1,7 @@
-// Git and GitHub lessons. Each lesson's status (completed / in-progress / not-started)
-// is derived from saved progress, so it is NOT written here.
-// `id` must match the `lessonId` used in questions.js.
-export const LESSONS = [
+import { EXTRAS } from './lessonExtras';
+
+
+const BASE_LESSONS = [
   {
     id: 'git-1',
     title: 'What is Git?',
@@ -120,3 +120,8 @@ git push -u origin my-feature
 # then open a pull request on GitHub`,
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => ({
+  ...lesson,
+  ...EXTRAS[lesson.id],
+}));
