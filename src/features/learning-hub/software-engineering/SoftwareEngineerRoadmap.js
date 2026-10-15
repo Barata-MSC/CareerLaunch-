@@ -54,7 +54,7 @@ const COURSES = [
 
 
 
-const TRACKS = {
+export const TRACKS = {
   'Software Engineer': {
     estimatedTime: '5 Months',
     steps: [

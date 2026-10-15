@@ -8,6 +8,8 @@
 //    Each video's APA reference is added to that lesson automatically.
 // Use only trusted channels (for example freeCodeCamp.org, Microsoft 365, GCFLearnFree).
 
+const VIDEO_ID = 'mDqQ1Q7qXQY';
+
 const VIDEOS = {
   course: {
     id: 'Vl0H-qTclOg',
@@ -83,6 +85,13 @@ const videoRef = (v) => ({
   text: `${v.channel}. (${v.date}). ${v.title} [Video]. YouTube.`,
   url: `https://youtu.be/${v.id}`,
 });
+
+const mdn = (title, path) => ({
+  text: `MDN Web Docs. (n.d.). ${title}.`,
+  url: `https://developer.mozilla.org/en-US/docs/${path}`,
+});
+
+
 
 const BASE = {
   'excel-1': {
@@ -366,24 +375,68 @@ const BASE = {
   },
 };
 
+
 // Attach each lesson's video and its reference.
 export const EXTRAS = Object.fromEntries(
   Object.entries(BASE).map(([lessonId, extra]) => {
     const [key, start = 0, chapter] = VIDEO_FOR[lessonId] || ['course'];
     const v = VIDEOS[key];
     return [
-      lessonId,
-      {
-        ...extra,
-        video: {
-          id: v.id,
-          start,
-          chapter,
-          title: v.title,
-          channel: v.author ? `${v.channel} (${v.author})` : v.channel,
-        },
-        references: [...extra.references, videoRef(v)],
-      },
+      'excel-1': {
+    video: video('Getting Started'),
+    activities: [],
+    references: [w3('Excel introduction', 'index.php'), videoRef],
+  },
+  'excel-2': {
+    video: video('Fill and Edit'),
+    activities: [],
+    references: [w3('Excel fill data', 'index.php'), mdn('How to use Microsoft Excel', 'Web/Glossary/Excel')],
+  },
+  'excel-3': {
+    video: video('Formulas'),
+    activities: [],
+    references: [w3('Excel formulas', 'excel_formulas.asp'), videoRef],
+  },
+  'excel-4': {
+    video: video('Cell References'),
+    activities: [],
+    references: [w3('Excel cell references', 'excel_references.asp'), videoRef],
+  },
+  'excel-5': {
+    video: video('Functions'),
+    activities: [],
+    references: [w3('Excel functions', 'excel_functions.asp'), videoRef],
+  },
+  'excel-6': {
+    video: video('Formatting'),
+    activities: [],
+    references: [w3('Excel formatting', 'index.php'), videoRef],
+  },
+  'excel-7': {
+    video: video('Working with Data'),
+    activities: [],
+    references: [w3('Excel sorting and filtering', 'excel_sort.asp'), videoRef],
+  },
+  'excel-8': {
+    video: video('Data Validation'),
+    activities: [],
+    references: [w3('Excel data validation', 'excel_data_validation.asp'), videoRef],
+  },
+  'excel-9': {
+    video: video('Charts'),
+    activities: [],
+    references: [w3('Excel charts', 'excel_charts.asp'), videoRef],
+  },
+  'excel-10': {
+    video: video('Conditional Formatting'),
+    activities: [],
+    references: [w3('Excel conditional formatting', 'excel_conditional_formatting.asp'), videoRef],
+  },
+  'excel-11': {
+    video: video('Pivot Tables'),
+    activities: [],
+    references: [w3('Excel pivot tables', 'excel_pivot_tables.asp'), videoRef],
+  },
     ];
   }),
 );

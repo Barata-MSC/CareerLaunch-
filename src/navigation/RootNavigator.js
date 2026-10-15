@@ -10,7 +10,10 @@ export default function RootNavigator({
   authInitialRoute = 'Welcome',
   onRecoveryDone,
 }) {
-  const effectiveInitialRoute = authInitialRoute || 'Welcome';
+  const validAuthRoutes = ['Welcome', 'Login', 'Register', 'ForgotPassword'];
+  const effectiveInitialRoute = validAuthRoutes.includes(authInitialRoute)
+    ? authInitialRoute
+    : 'Welcome';
 
   // While a password-reset link is being handled, always show the auth stack
   // (even if someone happens to be logged in) so the Reset screen can appear.

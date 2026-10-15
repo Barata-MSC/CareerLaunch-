@@ -17,7 +17,7 @@ const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '💼', color: '#6C4CE0' },
   { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
   { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
-  { id: '4', label: 'Career Roadmap', icon: '🗺️', color: '#F0637D' },
+  { id: '4', label: 'Learning Hub', icon: '📖', color: '#F0637D' },
 ];
 
 const PROFILE_FIELDS = [
@@ -51,11 +51,8 @@ export default function DashboardScreen({ navigation }) {
     : 0;
 
   const handleQuickAction = (action) => {
-    if (action.label === 'Career Roadmap') {
-      navigation.navigate('CareerRoadmap', {
-        goal: 'Software Engineer',
-        estimatedTime: '5 Months',
-      });
+    if (action.label === 'Learning Hub' || action.label === 'Career Roadmap') {
+      navigation.navigate('LearningHub');
     } else if (action.label === 'Job Finder') {
       navigation.navigate('JobFinder');
     } else if (action.label === 'AI Coach') {
