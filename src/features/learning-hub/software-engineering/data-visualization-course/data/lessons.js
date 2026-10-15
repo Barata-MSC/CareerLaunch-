@@ -1,7 +1,9 @@
+import { EXTRAS } from './lessonExtras';
+
 // Lesson content only. Progress ("completed", "in progress") is NOT stored here:
 // it comes from the lessons the user has completed in Supabase.
 // ids are saved as lesson_id in Supabase, so don't rename them later.
-export const LESSONS = [
+const BASE_LESSONS = [
   {
     id: 'dv-1',
     title: 'Why visuals matter',
@@ -303,3 +305,8 @@ plt.ylabel('Revenue')`,
     ],
   },
 ];
+
+export const LESSONS = BASE_LESSONS.map((lesson) => ({
+  ...lesson,
+  ...EXTRAS[lesson.id],
+}));
