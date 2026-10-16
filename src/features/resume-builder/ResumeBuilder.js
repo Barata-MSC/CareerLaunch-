@@ -10,6 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
 import { isPersonalInfoComplete } from './validators';
+import { useProfile } from '../../context/ProfileContext';
+import GuestNotice from '../../components/GuestNotice';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -29,7 +31,7 @@ function isSectionDone(section, resumeData) {
   return (resumeData[section.key] || []).length > 0;
 }
 
-export default function ResumeBuilderScreen({ navigation }) {
+function ResumeBuilderContent({ navigation }) {
   const { resumeData } = useResume();
 
   const progress = useMemo(() => {
@@ -250,3 +252,11 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
 });
+
+export default function ResumeBuilderScreen(props) {
+  const { isGuest } = useProfile();
+  if (isGuest) {
+    return <GuestNotice navigation={props.navigation} title="Resume Editor" />;
+  }
+  return <ResumeBuilderContent {...props} />;
+}

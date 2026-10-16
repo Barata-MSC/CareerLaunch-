@@ -22,6 +22,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
+import { useProfile } from '../../context/ProfileContext';
+import GuestNotice from '../../components/GuestNotice';
 // ^ adjust this relative path if your context file lives somewhere else
 
 const PURPLE = '#5B21D6';
@@ -157,7 +159,7 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
   );
 }
 
-export default function JobFinderScreen({ navigation }) {
+function JobFinderContent({ navigation }) {
   // view: 'list' | 'detail'  (tracker is now its own screen)
   const [view, setView] = useState('list');
   const [query, setQuery] = useState('');
@@ -474,3 +476,11 @@ const styles = StyleSheet.create({
   detailDesc: { marginTop: 6, fontSize: 14, color: '#4B5563', lineHeight: 20 },
   link: { marginTop: 12, color: PURPLE, fontSize: 13, textDecorationLine: 'underline' },
 });
+
+export default function JobFinderScreen(props) {
+  const { isGuest } = useProfile();
+  if (isGuest) {
+    return <GuestNotice navigation={props.navigation} title="Job Finder" />;
+  }
+  return <JobFinderContent {...props} />;
+}

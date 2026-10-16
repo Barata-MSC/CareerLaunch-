@@ -23,6 +23,8 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useProfile } from '../../context/ProfileContext';
+import GuestNotice from '../../components/GuestNotice';
 
 const MIC_ICON = require('@assets/mic-icon.png');
 
@@ -149,7 +151,7 @@ function StarRow({ count, size = 20 }) {
   );
 }
 
-export default function AIInterviewCoachScreen({ navigation }) {
+function AIInterviewCoachContent({ navigation }) {
   const [view, setView] = useState('intro');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
@@ -523,3 +525,11 @@ const styles = StyleSheet.create({
   secondaryButton: { alignItems: 'center', paddingVertical: 14 },
   secondaryButtonText: { color: PURPLE, fontSize: 14, fontWeight: '600' },
 });
+
+export default function AIInterviewCoachScreen(props) {
+  const { isGuest } = useProfile();
+  if (isGuest) {
+    return <GuestNotice navigation={props.navigation} title="AI Coach" />;
+  }
+  return <AIInterviewCoachContent {...props} />;
+}
