@@ -52,3 +52,23 @@ export function isPhoneValid(phone) {
 export function isPersonalInfoComplete(info = {}) {
   return !!(info.fullName?.trim() && info.email?.trim() && isPhoneValid(info.phone));
 }
+
+export const REQUIRED_RESUME_SECTION_KEYS = ['personalInfo', 'education', 'skills'];
+
+export function isResumeSectionComplete(sectionKey, resumeData = {}) {
+  if (sectionKey === 'personalInfo') {
+    return isPersonalInfoComplete(resumeData.personalInfo);
+  }
+
+  if (['education', 'skills', 'experience', 'certificates', 'projects'].includes(sectionKey)) {
+    return Array.isArray(resumeData[sectionKey]) && resumeData[sectionKey].length > 0;
+  }
+
+  return false;
+}
+
+export function areRequiredResumeSectionsComplete(resumeData = {}) {
+  return REQUIRED_RESUME_SECTION_KEYS.every((sectionKey) =>
+    isResumeSectionComplete(sectionKey, resumeData),
+  );
+}

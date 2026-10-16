@@ -34,7 +34,11 @@ export default function MainTabs() {
         ),
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{ tabBarStyle: { display: 'none' } }}
+      />
       <Tab.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Tab.Screen name="JobFinder" component={JobFinderScreen} />
       <Tab.Screen name="LearningHub" component={LearningHubScreen} />

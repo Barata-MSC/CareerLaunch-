@@ -9,7 +9,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
-import { isPersonalInfoComplete } from './validators';
+import {
+  areRequiredResumeSectionsComplete,
+  isResumeSectionComplete,
+} from './validators';
 import { useProfile } from '../../context/ProfileContext';
 import GuestNotice from '../../components/GuestNotice';
 
@@ -18,17 +21,16 @@ const PURPLE_DARK = '#3D14C4';
 
 
 const SECTIONS = [
-  { key: 'personalInfo', label: 'Personal Information', type: 'object', required: true },
-  { key: 'education', label: 'Education', type: 'array', required: true },
-  { key: 'skills', label: 'Skills', type: 'array', required: true },
-  { key: 'experience', label: 'Experience', type: 'array', required: false },
-  { key: 'certificates', label: 'Certificates', type: 'array', required: false },
-  { key: 'projects', label: 'Projects', type: 'array', required: false },
+  { key: 'personalInfo', label: 'Personal Information', required: true },
+  { key: 'education', label: 'Education', required: true },
+  { key: 'skills', label: 'Skills', required: true },
+  { key: 'experience', label: 'Experience', required: false },
+  { key: 'certificates', label: 'Certificates', required: false },
+  { key: 'projects', label: 'Projects', required: false },
 ];
 
 function isSectionDone(section, resumeData) {
-  if (section.type === 'object') return isPersonalInfoComplete(resumeData.personalInfo);
-  return (resumeData[section.key] || []).length > 0;
+  return isResumeSectionComplete(section.key, resumeData);
 }
 
 function ResumeBuilderContent({ navigation }) {
@@ -41,7 +43,7 @@ function ResumeBuilderContent({ navigation }) {
 
   // Generating unlocks once every required section is filled in
   const missingRequired = SECTIONS.filter((s) => s.required && !isSectionDone(s, resumeData));
-  const canGenerate = missingRequired.length === 0;
+  const canGenerate = areRequiredResumeSectionsComplete(resumeData);
 
   const sectionStatus = (section) => (isSectionDone(section, resumeData) ? 'done' : 'empty');
 

@@ -25,6 +25,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../context/ProfileContext';
 import GuestNotice from '../../components/GuestNotice';
+import { usePractice } from '../../context/PracticeContext';
 
 const MIC_ICON = require('@assets/mic-icon.png');
 
@@ -152,6 +153,7 @@ function StarRow({ count, size = 20 }) {
 }
 
 function AIInterviewCoachContent({ navigation }) {
+  const { markPracticed } = usePractice();
   const [view, setView] = useState('intro');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
@@ -163,7 +165,7 @@ function AIInterviewCoachContent({ navigation }) {
 
   const currentQuestion = QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === QUESTIONS.length - 1;
-  const canSubmit = hasRecording || answerText.trim().length > 0;
+  const canSubmit = !isRecording && (useTextInput ? answerText.trim().length > 0 : hasRecording);
 
   const resetAnswerInputs = () => {
     setIsRecording(false);
@@ -209,6 +211,7 @@ function AIInterviewCoachContent({ navigation }) {
         { date: new Date().toLocaleDateString(), score: scorePercent },
         ...prev,
       ]);
+      markPracticed();
       setView('results');
       return;
     }
@@ -284,7 +287,14 @@ function AIInterviewCoachContent({ navigation }) {
               : 'Tap to speak'}
           </Text>
 
-          <TouchableOpacity onPress={() => setUseTextInput(true)}>
+          <TouchableOpacity
+            onPress={() => {
+              setIsRecording(false);
+              setHasRecording(false);
+              setAnswerText('');
+              setUseTextInput(true);
+            }}
+          >
             <Text style={styles.switchInputText}>Type my answer instead</Text>
           </TouchableOpacity>
         </>
@@ -298,7 +308,14 @@ function AIInterviewCoachContent({ navigation }) {
             value={answerText}
             onChangeText={setAnswerText}
           />
-          <TouchableOpacity onPress={() => { setUseTextInput(false); setAnswerText(''); }}>
+          <TouchableOpacity
+            onPress={() => {
+              setUseTextInput(false);
+              setAnswerText('');
+              setHasRecording(false);
+              setIsRecording(false);
+            }}
+          >
             <Text style={styles.switchInputText}>Use voice instead</Text>
           </TouchableOpacity>
         </>
