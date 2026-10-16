@@ -1,17 +1,22 @@
-// Everything that makes this course "the Design Fundamentals course". The shared screens read
-// all course text and numbers from here, so a new course = new data + new config.
 import { LESSONS } from './data/lessons';
 import { QUESTIONS } from './data/questions';
+import { EXTRAS } from './data/lessonExtras';
+
+// Merge interactive extras into lessons array
+const lessonsWithExtras = LESSONS.map((lesson) => ({
+  ...lesson,
+  ...(EXTRAS[lesson.id] || {}),
+}));
 
 const designFundamentalsCourse = {
-  id: 'design-fundamentals', // saved as course_id in Supabase, so don't rename it later
+  id: 'design-fundamentals',
   title: 'Design Fundamentals',
-  shortCode: 'UX', // course icon and topic label
+  shortCode: 'UX',
   subtitle: 'Learn the core principles behind good UI and UX design.',
   passingPercent: 70,
   estimatedMinutes: 10,
-  lessons: LESSONS,
-  questions: QUESTIONS, // 10 questions, one per lesson; no quizSize means all are used
+  lessons: lessonsWithExtras,
+  questions: QUESTIONS,
 };
 
 export default designFundamentalsCourse;

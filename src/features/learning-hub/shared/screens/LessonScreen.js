@@ -15,12 +15,15 @@ export default function LessonScreen({
   onNext,
   onToggleComplete,
 }) {
-  const lesson = lessons[lessonIndex];
+  const rawLesson = lessons[lessonIndex];
+
+  // If EXTRAS was merged into lesson data beforehand, use it; otherwise fallback cleanly
+  const lesson = rawLesson;
+
   const lessonNumber = lessonIndex + 1;
   const isDone = lesson.status === 'completed';
   const isFirst = lessonIndex === 0;
   const isLast = lessonIndex === lessons.length - 1;
-
   return (
     <>
       <CourseHeader title={`Lesson ${lessonNumber} of ${lessons.length}`} onBack={onBack} />
@@ -77,6 +80,7 @@ export default function LessonScreen({
           </View>
         )}
 
+        {/* Interactive Extras Rendered Here */}
         <LessonVideo video={lesson.video} />
         <LessonActivities key={lesson.id} activities={lesson.activities} />
         <LessonReferences references={lesson.references} />
