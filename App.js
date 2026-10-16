@@ -13,6 +13,7 @@ import * as Linking from 'expo-linking';
 import { supabase } from './src/config/supabase';
 import { ProfileProvider } from './src/context/ProfileContext';
 import { ApplicationsProvider } from './src/context/ApplicationsContext';
+import { PracticeProvider } from './src/context/PracticeContext';
 import { ResumeProvider } from '@features/resume-builder';
 
 import { SplashScreen, parseRecoveryUrl } from '@features/auth';
@@ -137,18 +138,20 @@ function AppContent() {
   return (
     <ProfileProvider session={session}>
       <ApplicationsProvider>
-        <ResumeProvider>
-          <View style={styles.backdrop}>
-            <View style={styles.phone}>
-              <RootNavigator
-                session={session}
-                recovery={recovery}
-                authInitialRoute={authInitialRoute}
-                onRecoveryDone={handleRecoveryDone}
-              />
+        <PracticeProvider>
+          <ResumeProvider>
+            <View style={styles.backdrop}>
+              <View style={styles.phone}>
+                <RootNavigator
+                  session={session}
+                  recovery={recovery}
+                  authInitialRoute={authInitialRoute}
+                  onRecoveryDone={handleRecoveryDone}
+                />
+              </View>
             </View>
-          </View>
-        </ResumeProvider>
+          </ResumeProvider>
+        </PracticeProvider>
       </ApplicationsProvider>
     </ProfileProvider>
   );
