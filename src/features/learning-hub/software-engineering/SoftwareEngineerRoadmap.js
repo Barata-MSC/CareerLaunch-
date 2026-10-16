@@ -307,11 +307,12 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   ).current;
 
   const handleStepPress = (step) => {
-    // Steps that have a course open it; the others show the detail panel.
     if (step.route) {
+      playSound('tap');
       navigation.navigate(step.route);
       return;
     }
+    playSound('tap');
     setSelectedStep(step);
   };
 
