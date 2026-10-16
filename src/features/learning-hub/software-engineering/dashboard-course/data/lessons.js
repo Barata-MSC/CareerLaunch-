@@ -1,9 +1,11 @@
+import { EXTRAS } from './lessonExtras';
+
 // Lesson content only. Progress ("completed", "in progress") is NOT stored here:
 // it comes from the lessons the user has completed in Supabase.
 // ids are saved as lesson_id in Supabase, so don't rename them later.
 // Lessons 1-5 cover Power BI and lessons 6-10 cover Tableau.
 // Topics follow the Tutorialspoint Power BI and Tableau tutorials.
-export const LESSONS = [
+const BASE_LESSONS = [
   {
     id: 'dashboard-1',
     title: 'Power BI introduction',
@@ -217,3 +219,6 @@ Dashboard
     ],
   },
 ];
+
+// Videos, activities and references live in lessonExtras.js (matched by lesson id)
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));

@@ -9,6 +9,8 @@ import JsPlayground from './JsPlayground';
 import ReactPlayground from './ReactPlayground';
 import StepOrder from './StepOrder';
 import PyPlayground from './PyPlayground';
+import VisualBuilder from './VisualBuilder';
+import MatchPairs from './MatchPairs';
 
 const MAP = {
   miniSheet: MiniSheet,
@@ -18,6 +20,8 @@ const MAP = {
   reactRunner: ReactPlayground,
   order: StepOrder,
   pyRunner: PyPlayground,
+  visualBuilder: VisualBuilder,
+  matchPairs: MatchPairs,
 };
 
 export default function LessonActivities({ activities }) {
