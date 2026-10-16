@@ -8,6 +8,7 @@ import CodePlayground from './CodePlayground';
 import JsPlayground from './JsPlayground';
 import ReactPlayground from './ReactPlayground';
 import StepOrder from './StepOrder';
+import PyPlayground from './PyPlayground';
 
 const MAP = {
   miniSheet: MiniSheet,
@@ -16,6 +17,7 @@ const MAP = {
   jsRunner: JsPlayground,
   reactRunner: ReactPlayground,
   order: StepOrder,
+  pyRunner: PyPlayground,
 };
 
 export default function LessonActivities({ activities }) {

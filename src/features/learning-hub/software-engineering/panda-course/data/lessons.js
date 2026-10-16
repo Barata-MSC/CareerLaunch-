@@ -1,5 +1,7 @@
 // src/features/learning-hub/software-engineering/pandas-course/data/lessons.js
-export const LESSONS = [
+import { EXTRAS } from './lessonExtras';
+
+const BASE_LESSONS = [
   {
     id: 'pandas-intro',
     title: 'Introduction to Pandas',
@@ -50,13 +52,13 @@ print(myvar)`,
       {
         heading: 'Labels and Indexing',
         text: 'If nothing else is specified, the values are labeled with their index number (0, 1, 2, etc.). You can refer to a specific value by using its label name.',
-        code: 'print(myvar[1]) // returns 7',
+        code: 'print(myvar[1])  # returns 7',
       },
       {
         heading: 'Custom Index Labels',
         text: 'With the index argument, you can name your own labels. This makes it act like a dictionary key.',
         code: `myvar = pd.Series(a, index = ["x", "y", "z"])
-print(myvar["y"]) // returns 7`,
+print(myvar["y"])  # returns 7`,
       },
     ],
     keyPoints: [
@@ -85,10 +87,10 @@ print(df)`,
       {
         heading: 'Locate Row (loc)',
         text: 'Pandas uses the loc attribute to return one or more specified rows from a DataFrame.',
-        code: `// refer to the row index
+        code: `# refer to the row index
 print(df.loc[0])
 
-// use a list of indexes to get multiple rows
+# use a list of indexes to get multiple rows
 print(df.loc[[0, 1]])`,
       },
       {
@@ -168,7 +170,7 @@ df = pd.read_csv('data.csv')
 
 print(df.head(10)) # Top 10 rows
 print(df.tail())   # Bottom 5 rows
-print(df.info())   # Summary of metadata`,
+df.info()          # Summary of metadata (prints by itself)`,
     sections: [
       {
         heading: 'The head() Method',
@@ -206,7 +208,7 @@ df.dropna(inplace = True) # Overwrites original`,
       {
         heading: 'Replacing Specific Columns',
         text: 'To avoid filling all columns with the same number, specify the exact column label name.',
-        code: "df['Calories'].fillna(130, inplace = True)",
+        code: "df['Calories'] = df['Calories'].fillna(130)",
       },
     ],
     keyPoints: [
@@ -303,3 +305,6 @@ plt.show()`,
     ],
   },
 ];
+
+// Videos, activities and references live in lessonExtras.js and are merged in here.
+export const LESSONS = BASE_LESSONS.map((lesson) => ({ ...lesson, ...EXTRAS[lesson.id] }));
