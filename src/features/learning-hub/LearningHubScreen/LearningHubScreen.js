@@ -22,6 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE } from '../shared/styles';
+import { playSound } from '../../../utils/sounds';
 
 const TRACK_NAMES = Object.keys(TRACKS);
 
@@ -155,6 +156,7 @@ export default function LearningHubScreen({ navigation }) {
 
   const openCourse = (step) => {
     if (!step?.route) return;
+    playSound('tap');
     navigation.navigate(step.route);
   };
 

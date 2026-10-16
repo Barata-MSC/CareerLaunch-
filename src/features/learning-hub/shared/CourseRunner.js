@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useCourseProgress from './progress/useCourseProgress';
 import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
+import { playSound } from '../../../utils/sounds';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -79,6 +80,12 @@ export default function CourseRunner({ course, navigation }) {
     if (selectedLesson > 0) setSelectedLesson(selectedLesson - 1);
   };
 
+  const handleToggleLesson = (lessonId) => {
+    const wasDone = progress.completedLessonIds.includes(lessonId);
+    playSound(wasDone ? 'tap' : 'success');
+    progress.toggleLesson(lessonId);
+  };
+
   // ---------- Quiz ----------
   const startQuiz = () => {
     setQuestions(pickQuizQuestions(course.questions, course.quizSize));
@@ -120,6 +127,9 @@ export default function CourseRunner({ course, navigation }) {
         (answer, i) => answer === questions[i].correct,
       ).length;
       const percent = Math.round((finalScore / questions.length) * 100);
+      const passed = percent >= course.passingPercent;
+
+      playSound(passed ? 'success' : 'error');
 
       setScore(finalScore);
       setSelectedAnswer(null);
@@ -132,7 +142,7 @@ export default function CourseRunner({ course, navigation }) {
           score: finalScore,
           total: questions.length,
           percent,
-          passed: percent >= course.passingPercent,
+          passed,
         })
         .then(({ error }) => {
           if (error) setSaveError(true);
