@@ -21,13 +21,16 @@ export default function LessonVideo({ video }) {
   const WebViewComponent = getWebView();
   const start = video.start || 0;
   const embedUrl = `https://www.youtube.com/embed/${video.id}?start=${start}&rel=0&playsinline=1`;
+  // Mobile: privacy-enhanced domain (fixes error 152-4). Origin must match the WebView baseUrl.
+  const NATIVE_ORIGIN = 'https://www.youtube-nocookie.com';
+  const nativeEmbedUrl = `${NATIVE_ORIGIN}/embed/${video.id}?start=${start}&rel=0&playsinline=1&origin=${encodeURIComponent(NATIVE_ORIGIN)}`;
 
   const nativeHtml = `<!DOCTYPE html><html><head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>html,body{margin:0;height:100%;background:#000}
 iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}</style>
 </head><body>
-<iframe src="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+<iframe src="${nativeEmbedUrl}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
 </body></html>`;
 
   return (
@@ -45,7 +48,7 @@ iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}</style>
           />
         ) : WebViewComponent ? (
           <WebViewComponent
-            source={{ html: nativeHtml, baseUrl: 'https://www.youtube.com' }}
+            source={{ html: nativeHtml, baseUrl: NATIVE_ORIGIN }}
             originWhitelist={['*']}
             javaScriptEnabled
             allowsInlineMediaPlayback
