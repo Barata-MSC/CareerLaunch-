@@ -10,7 +10,6 @@ const htmlCourse = {
   subtitle: 'Learn how to structure webpages with HTML.',
   passingPercent: 70,
   quizSize: 10, // each attempt shows 10 questions, one per lesson, from the 100 in the bank
-  estimatedMinutes: 8,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

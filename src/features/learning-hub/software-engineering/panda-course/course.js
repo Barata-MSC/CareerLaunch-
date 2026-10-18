@@ -8,7 +8,6 @@ const pandasCourse = {
   shortCode: 'PAN', // Badge key displayed on course index cards
   subtitle: 'Clean data, filter datasets, and visualize statistics using Python.',
   passingPercent: 70,
-  estimatedMinutes: 15,
   quizSize: 10, // Selects exactly one question per lesson topic dynamically
   lessons: LESSONS,
   questions: QUESTIONS,

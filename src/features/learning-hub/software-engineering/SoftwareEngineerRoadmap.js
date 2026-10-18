@@ -58,7 +58,6 @@ const COURSES = [
 
 export const TRACKS = {
   'Software Engineer': {
-    estimatedTime: '5 Months',
     steps: [
       {
         id: '1',
@@ -112,7 +111,6 @@ export const TRACKS = {
     ],
   },
   'Data Analyst': {
-    estimatedTime: '4 Months',
     steps: [
       {
         id: '1',
@@ -159,7 +157,6 @@ export const TRACKS = {
     ],
   },
   'UI/UX Designer': {
-    estimatedTime: '3 Months',
     steps: [
       {
         id: '1',

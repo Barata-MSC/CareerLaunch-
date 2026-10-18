@@ -11,7 +11,6 @@ const sqlCourse = {
   subtitle: 'Learn how to query and manage databases with SQL.',
   passingPercent: 70,
   quizSize: 10, // each attempt shows 10 questions, one per lesson, from the 100 in the bank
-  estimatedMinutes: 10,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

@@ -7,7 +7,6 @@ const javascriptCourse = {
   shortCode: 'JS',
   subtitle: 'Learn the language that makes webpages interactive.',
   passingPercent: 70,
-  estimatedMinutes: 57,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

@@ -9,7 +9,6 @@ const reactCourse = {
   shortCode: 'REACT', // course icon and topic label
   subtitle: 'Learn how to build interactive user interfaces.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

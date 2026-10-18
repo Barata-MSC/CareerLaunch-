@@ -7,7 +7,6 @@ const databaseCourse = {
   shortCode: 'DB',
   subtitle: 'Learn how data is stored, queried, and connected.',
   passingPercent: 70,
-  estimatedMinutes: 30,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

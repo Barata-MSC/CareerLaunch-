@@ -9,7 +9,6 @@ const gitCourse = {
   shortCode: 'GIT', // course icon and topic label
   subtitle: 'Learn how to track code and collaborate.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

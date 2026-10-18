@@ -110,7 +110,6 @@ export default function LearningHubScreen({ navigation }) {
 
         return {
           name,
-          estimatedTime: track.estimatedTime,
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -188,7 +187,7 @@ export default function LearningHubScreen({ navigation }) {
               <Text style={styles.meta}>
                 {comingSoon
                   ? 'Coming soon'
-                  : `${track.courseCount} courses · ${track.estimatedTime}`}
+                  : `${track.courseCount} courses`}
               </Text>
               {!!meta.blurb && (
                 <Text style={styles.desc} numberOfLines={2}>
@@ -219,7 +218,6 @@ export default function LearningHubScreen({ navigation }) {
 
     const done = item.status === 'completed';
     const lessonCount = item.course.lessons ? item.course.lessons.length : 0;
-    const minutes = item.course.estimatedMinutes;
     const code = (item.course.shortCode || item.title).slice(0, 4).toUpperCase();
 
     return (
@@ -230,9 +228,7 @@ export default function LearningHubScreen({ navigation }) {
 
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.meta}>
-            {lessonCount} lessons{minutes ? ` · ${minutes} min` : ''}
-          </Text>
+          <Text style={styles.meta}>{lessonCount} lessons</Text>
           <Text style={styles.desc} numberOfLines={2}>
             {item.description}
           </Text>

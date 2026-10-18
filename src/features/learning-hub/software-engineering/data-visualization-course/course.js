@@ -8,7 +8,6 @@ const dataVisualizationCourse = {
   subtitle: 'Turn raw numbers into clear stories and smarter decisions.',
   shortCode: 'DV',
   passingPercent: 70,
-  estimatedMinutes: 30,
   quizSize: 10,
   lessons: LESSONS,
   questions: QUESTIONS,

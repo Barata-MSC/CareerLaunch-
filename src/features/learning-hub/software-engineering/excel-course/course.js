@@ -9,7 +9,6 @@ const excelCourse = {
   shortCode: 'XLS', // course icon and topic label
   subtitle: 'Clean data, use formulas, and build pivot tables.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   quizSize: 11, // one random question per lesson each attempt
   lessons: LESSONS,
   questions: QUESTIONS,
