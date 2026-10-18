@@ -14,7 +14,6 @@ const designFundamentalsCourse = {
   shortCode: 'UX',
   subtitle: 'Learn the core principles behind good UI and UX design.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   lessons: lessonsWithExtras,
   questions: QUESTIONS,
 };

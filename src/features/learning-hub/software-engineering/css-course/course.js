@@ -9,7 +9,6 @@ const cssCourse = {
   shortCode: 'CSS', // course icon and topic label
   subtitle: 'Learn how to style and design webpages.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   lessons: LESSONS,
   questions: QUESTIONS,
 };

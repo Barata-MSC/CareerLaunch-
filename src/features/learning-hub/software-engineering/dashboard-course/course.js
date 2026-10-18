@@ -7,7 +7,6 @@ const dashboardCourse = {
   shortCode: 'DS', // course icon and topic label
   subtitle: 'Clean Dashboards',
   passingPercent: 70,
-  estimatedMinutes: 10,
   quizSize: 10, // one random question per lesson each attempt
   lessons: LESSONS,
   questions: QUESTIONS,

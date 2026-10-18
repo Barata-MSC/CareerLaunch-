@@ -9,7 +9,6 @@ const statisticsCourse = {
   shortCode: 'STA', // course icon and topic label
   subtitle: 'Learn the statistics every data analyst needs.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   quizSize: 10, // each attempt picks 10 of the 100 questions, one per lesson
   lessons: LESSONS,
   questions: QUESTIONS,

@@ -14,7 +14,6 @@ export default function QuizIntroScreen({ course, onBack, onStart }) {
   const info = [
     { label: 'Questions', value: `${course.questions.length} questions` },
     { label: 'Format', value: 'Multiple choice' },
-    { label: 'Estimated time', value: `About ${course.estimatedMinutes} min` },
     { label: 'Passing score', value: `${course.passingPercent}% or higher` },
   ];
 

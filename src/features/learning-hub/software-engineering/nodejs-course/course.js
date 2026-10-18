@@ -9,7 +9,6 @@ const nodeCourse = {
   shortCode: 'NODE', // course icon and topic label
   subtitle: 'Learn how to build servers and APIs with JavaScript.',
   passingPercent: 70,
-  estimatedMinutes: 10,
   lessons: LESSONS,
   questions: QUESTIONS,
 };
