@@ -31,6 +31,7 @@ import pandasCourse from './panda-course/course';
 
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { PURPLE, GREEN } from '../shared/styles';
+import { playSound } from '../../../utils/sounds';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -241,6 +242,8 @@ export default function CareerRoadmapScreen({ navigation, route }) {
       : TRACK_NAMES[0];
 
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
+  const selectedTrackRef = useRef(selectedTrack);
+  selectedTrackRef.current = selectedTrack;
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
 
@@ -273,9 +276,8 @@ export default function CareerRoadmapScreen({ navigation, route }) {
     setSelectedTrack(trackName);
   };
 
-  const currentIndex = TRACK_NAMES.indexOf(selectedTrack);
-
   const goToTrack = (direction) => {
+    const currentIndex = TRACK_NAMES.indexOf(selectedTrackRef.current);
     const nextIndex =
       direction === 'next'
         ? (currentIndex + 1) % TRACK_NAMES.length
