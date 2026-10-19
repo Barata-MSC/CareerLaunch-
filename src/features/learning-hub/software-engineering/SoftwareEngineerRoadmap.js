@@ -18,6 +18,8 @@ import javascriptCourse from './javascript-course/course';
 import gitCourse from './git-github-course/course';
 import reactCourse from './react-course/course';
 import designFundamentalsCourse from './design-fundamentals-course/course';
+import userResearchCourse from './user-research-course/course';
+import wireFramingCourse from './wireframing-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
@@ -43,6 +45,9 @@ const COURSES = [
   gitCourse,
   reactCourse,
   designFundamentalsCourse,
+  userResearchCourse,
+  wireFramingCourse,
+  usabilityTestingCourse,
   nodeCourse,
   databaseCourse,
   dataVisualizationCourse,
@@ -168,11 +173,15 @@ export const TRACKS = {
       {
         id: '2',
         title: 'User Research',
+        course: userResearchCourse,
+        route: 'UserResearchCourse',
         description: 'Interview users, run surveys, and turn findings into actionable insights.',
       },
       {
         id: '3',
         title: 'Wireframing',
+        course: wireFramingCourse,
+        route: 'WireframingCourse',
         description: 'Practice low-fidelity wireframes to map out layouts before visual design.',
       },
       {
@@ -183,6 +192,8 @@ export const TRACKS = {
       {
         id: '5',
         title: 'Usability Testing',
+        course: usabilityTestingCourse,
+        route: 'UsabilityTestingCourse',
         description: 'Test your designs with real users and iterate on the feedback.',
       },
       {
