@@ -38,6 +38,9 @@ import {
 } from '@features/resume-builder';
 import MainTabs from '@features/resume-builder/MainTabs';
 import DesignFundamentalsCourseScreen from '../features/learning-hub/software-engineering/design-fundamentals-course/DesignFundamentalsCourse';
+import UserResearchCourseScreen from '../features/learning-hub/software-engineering/user-research-course/UserResearchCourse';
+import WireframingCourseScreen from '../features/learning-hub/software-engineering/wireframing-course/WireframingCourse';
+import usabilityTestingCourseScreen from '../features/learning-hub/software-engineering/usability-testing-course/UsabilityTestingCourse';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +56,9 @@ export default function AppNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="DesignFundamentalsCourse" component={DesignFundamentalsCourseScreen} />
+      <Stack.Screen name="UserResearchCourse" component={UserResearchCourseScreen} />
+      <Stack.Screen name="WireframingCourse" component={WireframingCourseScreen} />
+      <Stack.Screen name="UsabilityTestingCourse" component={usabilityTestingCourseScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
       <Stack.Screen name="CSSCourse" component={CSSCourseScreen} />
       <Stack.Screen name="HTMLCourse" component={HTMLCourseScreen} />
