@@ -20,6 +20,7 @@ import reactCourse from './react-course/course';
 import designFundamentalsCourse from './design-fundamentals-course/course';
 import userResearchCourse from './user-research-course/course';
 import wireFramingCourse from './wireframing-course/course';
+import usabilityTestingCourse from './usability-testing-course/course';
 import nodeCourse from './nodejs-course/course';
 import databaseCourse from './database-course/course';
 import sqlCourse from './sql-course/course';
