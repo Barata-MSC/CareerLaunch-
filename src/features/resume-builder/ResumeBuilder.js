@@ -14,7 +14,7 @@ import {
   isResumeSectionComplete,
 } from './validators';
 import { useProfile } from '../../context/ProfileContext';
-import GuestNotice from '../../components/GuestNotice';
+import AccountGate from '../../components/AccountGate';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -256,9 +256,13 @@ const styles = StyleSheet.create({
 });
 
 export default function ResumeBuilderScreen(props) {
-  const { isGuest } = useProfile();
-  if (isGuest) {
-    return <GuestNotice navigation={props.navigation} title="Resume Editor" />;
-  }
-  return <ResumeBuilderContent {...props} />;
+  return (
+    <AccountGate
+      featureName="Resume Builder"
+      description="Build and preview your resume with confidence. Complete your account to unlock the Resume Builder and keep your work saved."
+      navigation={props.navigation}
+    >
+      <ResumeBuilderContent {...props} />
+    </AccountGate>
+  );
 }

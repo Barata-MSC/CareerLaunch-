@@ -10,7 +10,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 2. Finish the brief's **Before you run** checklist. These are human-only steps Copilot cannot do (adding audio files, getting API keys, running a coverage test, and so on).
 3. In Copilot Agent mode, attach the brief with `#file:docs/tasks/<file>.md` and paste:
 
-   > Follow `<file>` completely in one execution. Inspect the existing code first, implement everything, update the docs, run the validation steps, and give the final report. Do not stop after the first part.
+   > Follow `<file>` completely in one execution. Inspect the existing code first, implement everything, update the docs, run the validation steps, and give the final report. Do not stop after the first part. End the final report with the exact, unedited output of `git status --short` and `git diff --stat`, and say which branch you are on.
 
    For career content, also attach the career's spec: `#file:docs/tasks/specs/<career-id>.md`.
 4. Review the diff yourself, run the app, then open a pull request into `main`.
