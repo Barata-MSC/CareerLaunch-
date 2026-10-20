@@ -59,14 +59,12 @@ export default function CareerDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        {career.status !== 'available' && (
-          <View style={styles.noticeCard}>
-            <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
-            <Text style={styles.noticeText}>
-              This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
-            </Text>
-          </View>
-        )}
+        <View style={styles.noticeCard}>
+          <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
+          <Text style={styles.noticeText}>
+            This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

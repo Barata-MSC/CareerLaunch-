@@ -21,7 +21,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AppPressable from '@components/AppPressable';
 import AnimatedStage from '@components/motion/AnimatedStage';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
-import { ALL_COURSES, TRACKS } from '../careers/registry';
+import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
@@ -29,6 +29,10 @@ import { PURPLE } from '../shared/styles';
 const TRACK_NAMES = Object.keys(TRACKS);
 
 // Every course of every track, so progress loads with one query per table.
+const ALL_COURSES = Object.values(TRACKS)
+  .flatMap((track) => track.steps.map((step) => step.course))
+  .filter(Boolean);
+
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
   'Software Engineer': {
@@ -121,9 +125,7 @@ export default function LearningHubScreen({ navigation }) {
         const done = available.filter((step) => step.status === 'completed').length;
 
         return {
-          id: name,
-          name: track.title || name,
-          subtitle: track.subtitle || '',
+          name,
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -132,7 +134,7 @@ export default function LearningHubScreen({ navigation }) {
     [progressByCourseId],
   );
 
-  const currentTrack = tracks.find((track) => track.id === selectedTrack);
+  const currentTrack = tracks.find((track) => track.name === selectedTrack);
 
   const visibleCourses = useMemo(() => {
     if (!currentTrack) return [];
@@ -152,7 +154,7 @@ export default function LearningHubScreen({ navigation }) {
   // ---------- Actions ----------
   const openTrack = (track) => {
     if (!track.courseCount) return; // "Coming soon" tracks do nothing
-    setSelectedTrack(track.id);
+    setSelectedTrack(track.name);
     setQuery('');
     setFilter('all');
     setView('courses');
@@ -291,7 +293,7 @@ export default function LearningHubScreen({ navigation }) {
   // ---------- Step 1: tracks ----------
   const renderTracks = () => {
     const careerTracks = tracks.filter((track) =>
-      (currentCareer?.trackIds || []).includes(track.id),
+      (currentCareer?.trackIds || []).includes(track.name),
     );
 
     return (
@@ -306,52 +308,22 @@ export default function LearningHubScreen({ navigation }) {
             const comingSoon = !track.courseCount;
 
             return (
-                    <FadeSlideIn
-                    key={track.name}
-                delay={Math.min(index * 65, 380)}
-                >
+              <FadeSlideIn key={track.name} delay={Math.min(index * 65, 380)}>
                 <AppPressable
                   accessibilityRole="button"
-                  accessibilityLabel={`${track.name}, ${
-                    comingSoon ? 'coming soon' : 'available'
-                  }`}
-                  style={[
-                    styles.card,
-                    comingSoon && styles.cardMuted,
-                  ]}
+                  accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
+                  style={[styles.card, comingSoon && styles.cardMuted]}
                   disabled={comingSoon}
                   onPress={() => openTrack(track)}
                 >
-                  <View
-                    style={[
-                      styles.icon,
-                      { backgroundColor: meta.color },
-                    ]}
-                  >
-                    <Text style={styles.iconEmoji}>
-                      {meta.icon}
-                    </Text>
+                  <View style={[styles.icon, { backgroundColor: meta.color }]}>
+                    <Text style={styles.iconEmoji}>{meta.icon}</Text>
                   </View>
 
                   <View style={styles.cardBody}>
-                    <Text style={styles.cardTitle}>
-                      {track.name}
-                    </Text>
-
+                    <Text style={styles.cardTitle}>{track.name}</Text>
                     <Text style={styles.meta}>
-                      {comingSoon
-                        ? 'Coming soon'
-                        : `${track.courseCount} courses`}
-                    </Text>
-
-                    {(meta.blurb || track.subtitle) && (
-                      <Text style={styles.desc} numberOfLines={2}>
-                        {meta.blurb || track.subtitle}
-                      </Text>
-                    )}
-                  </View>
-                </AppPressable>
-              </FadeSlideIn>
+                      {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                     </Text>
                     {!!meta.blurb && (
                       <Text style={styles.desc} numberOfLines={2}>
