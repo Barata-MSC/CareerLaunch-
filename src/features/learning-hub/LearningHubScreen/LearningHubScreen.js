@@ -3,7 +3,7 @@
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -21,13 +21,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AppPressable from '@components/AppPressable';
 import AnimatedStage from '@components/motion/AnimatedStage';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
-import {
-  TRACKS,
-  COURSES,
-  COURSE_ROUTES,
-  REGISTERED_COURSE_ROUTE_NAMES,
-} from '../careers/registry';
-import validateLearningContent from '../shared/validateLearningContent';
+import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
@@ -56,34 +50,8 @@ const TRACK_META = {
     color: '#F0637D',
     blurb: 'Design clear, friendly experiences that people enjoy using.',
   },
-  'Lawyer Path': {
-    icon: '⚖️',
-    color: '#7C3AED',
-    blurb: 'Build analysis, research, writing, and advocacy foundations.',
-  },
-  'Paralegal and Legal Support': {
-    icon: '📁',
-    color: '#0F766E',
-    blurb: 'Explore organized office, document, and research-support work.',
-  },
 };
 const FALLBACK_META = { icon: '📚', color: PURPLE, blurb: '' };
-
-if (__DEV__) {
-  const validation = validateLearningContent({
-    careers: CAREERS,
-    tracks: TRACKS,
-    courses: COURSES,
-    courseRoutes: COURSE_ROUTES,
-    registeredRoutes: REGISTERED_COURSE_ROUTE_NAMES,
-  });
-  if (validation.errors.length) {
-    console.error('Learning content validation errors:', validation.errors);
-  }
-  if (validation.warnings.length) {
-    console.warn('Learning content validation warnings:', validation.warnings);
-  }
-}
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -98,12 +66,10 @@ const BUTTON_LABEL = {
   completed: 'Review',
 };
 
-export default function LearningHubScreen({ navigation, route }) {
-  const [view, setView] = useState(route?.params?.initialView || 'careers'); // 'careers' | 'tracks' | 'courses'
-  const [selectedTrack, setSelectedTrack] = useState(route?.params?.trackName || null);
-  const [selectedCareerId, setSelectedCareerId] = useState(route?.params?.careerId || null);
-  const returnToDetail = useRef(Boolean(route?.params?.returnToDetail));
-  const initialized = useRef(false);
+export default function LearningHubScreen({ navigation }) {
+  const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
+  const [selectedTrack, setSelectedTrack] = useState(null);
+  const [selectedCareerId, setSelectedCareerId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
@@ -114,17 +80,14 @@ export default function LearningHubScreen({ navigation, route }) {
 
   useFocusEffect(
     useCallback(() => {
-      if (!initialized.current) {
-        const initialView = route?.params?.initialView || 'careers';
-        setView(initialView);
-        setSelectedTrack(route?.params?.trackName || null);
-        setSelectedCareerId(route?.params?.careerId || null);
-        returnToDetail.current = Boolean(route?.params?.returnToDetail);
-        initialized.current = true;
-      }
+      setView('careers');
+      setSelectedTrack(null);
+      setSelectedCareerId(null);
+      setQuery('');
+      setFilter('all');
       setProgressLoaded(false);
       refresh().finally(() => setProgressLoaded(true));
-    }, [refresh, route?.params?.careerId, route?.params?.initialView, route?.params?.returnToDetail, route?.params?.trackName]),
+    }, [refresh]),
   );
 
   // Android back button: from the courses list go back to the tracks.
@@ -137,11 +100,6 @@ export default function LearningHubScreen({ navigation, route }) {
           return true;
         }
         if (view === 'tracks') {
-          if (returnToDetail.current) {
-            returnToDetail.current = false;
-            navigation.goBack();
-            return true;
-          }
           setSelectedCareerId(null);
           setView('careers');
           return true;
@@ -149,7 +107,7 @@ export default function LearningHubScreen({ navigation, route }) {
         return false;
       });
       return () => sub.remove();
-    }, [navigation, view]),
+    }, [view]),
   );
 
   // Each track with its steps, their status, and its overall progress.
@@ -219,11 +177,6 @@ export default function LearningHubScreen({ navigation, route }) {
       return;
     }
     if (view === 'tracks') {
-      if (returnToDetail.current) {
-        returnToDetail.current = false;
-        navigation.goBack();
-        return;
-      }
       setSelectedCareerId(null);
       setView('careers');
       return;
@@ -292,7 +245,7 @@ export default function LearningHubScreen({ navigation, route }) {
           filteredCareers.map((career, index) => {
             const isAvailable = career.status === 'available';
             const careerCourseIds = (career.trackIds || [])
-              .map((trackId) => TRACKS[trackId] || Object.values(TRACKS).find((track) => track.id === trackId))
+              .map((trackId) => TRACKS[trackId])
               .filter(Boolean)
               .flatMap((track) => (track.steps || []).filter((step) => step.course).map((step) => step.course));
             const totalCourses = careerCourseIds.length;
@@ -340,9 +293,7 @@ export default function LearningHubScreen({ navigation, route }) {
   // ---------- Step 1: tracks ----------
   const renderTracks = () => {
     const careerTracks = tracks.filter((track) =>
-      (currentCareer?.trackIds || []).some((trackId) =>
-        trackId === track.name || trackId === TRACKS[track.name]?.id,
-      ),
+      (currentCareer?.trackIds || []).includes(track.name),
     );
 
     return (
