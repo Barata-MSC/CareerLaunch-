@@ -22,7 +22,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `00-careers-layer.md` | Careers screen above the tracks | Ready |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
 | `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Ready (needs audio files first) |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` (specs drafted for Cybersecurity, Teacher, Lawyer, Nursing, Doctor, and Marine) | Ready (run Teacher, Lawyer, Nursing, Doctor, and Marine in plan mode first) |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` (specs drafted for Cybersecurity, Teacher, Lawyer, Nursing, Doctor, and Marine) | Lawyer is available |
 | `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Ready |
 | `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked until the coverage test passes |
 | `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Ready |

@@ -1,6 +1,6 @@
 # Career Spec: Lawyer
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: plan`, have a law student or lawyer review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its skills**, not a course in substantive law.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`; the content has been reviewed and the owner approved making it available. Sign-off details remain to be recorded in `src/features/learning-hub/lawyer/REVIEW_NOTES.md`. The content is an **orientation to the profession and its skills**, not a course in substantive law.
 
 ```yaml
 career:
@@ -9,7 +9,7 @@ career:
   learner_level: senior high school and college students considering law, and pre-law students
   philippines_context: true
   review_required: true
-  run_mode: plan
+  run_mode: build
 
 tracks:
   - id: law-lawyer-path
