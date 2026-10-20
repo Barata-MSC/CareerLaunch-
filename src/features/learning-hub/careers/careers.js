@@ -1,4 +1,4 @@
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { TRACKS } from './registry';
 
 export const CAREERS = [
   {
@@ -40,13 +40,13 @@ export const CAREERS = [
   {
     id: 'nursing',
     title: 'Nursing',
-    subtitle: 'Support patient care, health education, and safe clinical practice.',
+    subtitle: 'Explore patient-centered care, communication, and the foundations of nursing.',
     icon: '🩺',
     color: '#10B981',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['nurs-student-path'],
     overview:
-      'Nursing involves caring for patients, working with clinical teams, and helping people through health challenges with empathy and evidence-based practice.',
+      'Nursing brings together communication, ethical responsibility, education, and collaboration in support of people and communities.',
     skillsPreview: ['Care', 'Communication', 'Clinical thinking'],
   },
   {

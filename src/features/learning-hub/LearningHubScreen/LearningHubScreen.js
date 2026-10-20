@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { ALL_COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
@@ -27,10 +27,6 @@ import { PURPLE } from '../shared/styles';
 const TRACK_NAMES = Object.keys(TRACKS);
 
 // Every course of every track, so progress loads with one query per table.
-const ALL_COURSES = Object.values(TRACKS)
-  .flatMap((track) => track.steps.map((step) => step.course))
-  .filter(Boolean);
-
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
   'Software Engineer': {
@@ -123,7 +119,9 @@ export default function LearningHubScreen({ navigation }) {
         const done = available.filter((step) => step.status === 'completed').length;
 
         return {
-          name,
+          id: name,
+          name: track.title || name,
+          subtitle: track.subtitle || '',
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -132,7 +130,7 @@ export default function LearningHubScreen({ navigation }) {
     [progressByCourseId],
   );
 
-  const currentTrack = tracks.find((track) => track.name === selectedTrack);
+  const currentTrack = tracks.find((track) => track.id === selectedTrack);
 
   const visibleCourses = useMemo(() => {
     if (!currentTrack) return [];
@@ -152,7 +150,7 @@ export default function LearningHubScreen({ navigation }) {
   // ---------- Actions ----------
   const openTrack = (track) => {
     if (!track.courseCount) return; // "Coming soon" tracks do nothing
-    setSelectedTrack(track.name);
+    setSelectedTrack(track.id);
     setQuery('');
     setFilter('all');
     setView('courses');
@@ -290,7 +288,7 @@ export default function LearningHubScreen({ navigation }) {
   // ---------- Step 1: tracks ----------
   const renderTracks = () => {
     const careerTracks = tracks.filter((track) =>
-      (currentCareer?.trackIds || []).includes(track.name),
+      (currentCareer?.trackIds || []).includes(track.id),
     );
 
     return (
@@ -322,9 +320,9 @@ export default function LearningHubScreen({ navigation }) {
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
-                  {!!meta.blurb && (
+                    {!!(meta.blurb || track.subtitle) && (
                     <Text style={styles.desc} numberOfLines={2}>
-                      {meta.blurb}
+                      {meta.blurb || track.subtitle}
                     </Text>
                   )}
 
