@@ -1,4 +1,3 @@
-import AppPressable from '@components/AppPressable';
 // Learning Hub entrance. Same look as JobFinderScreen.
 //   view 'tracks'  -> the 3 tracks
 //   view 'courses' -> the courses of the track the user tapped
@@ -286,55 +285,6 @@ export default function LearningHubScreen({ navigation }) {
         )}
       </ScrollView>
     </View>
-  // ---------- Step 1: tracks ----------
-  const renderTracks = () => (
-    <ScrollView contentContainerStyle={styles.listContent}>
-      <Text style={styles.intro}>Pick a track to see its courses.</Text>
-
-      {tracks.map((track) => {
-        const meta = TRACK_META[track.name] || FALLBACK_META;
-        const comingSoon = !track.courseCount;
-
-        return (
-          <AppPressable
-            key={track.name}
-            style={[styles.card, comingSoon && styles.cardMuted]}
-            activeOpacity={0.85}
-            disabled={comingSoon}
-            onPress={() => openTrack(track)}
-          >
-            <View style={[styles.icon, { backgroundColor: meta.color }]}>
-              <Text style={styles.iconEmoji}>{meta.icon}</Text>
-            </View>
-
-            <View style={styles.cardBody}>
-              <Text style={styles.cardTitle}>{track.name}</Text>
-              <Text style={styles.meta}>
-                {comingSoon
-                  ? 'Coming soon'
-                  : `${track.courseCount} courses`}
-              </Text>
-              {!!meta.blurb && (
-                <Text style={styles.desc} numberOfLines={2}>
-                  {meta.blurb}
-                </Text>
-              )}
-
-              {!comingSoon && (
-                <View style={styles.progressRow}>
-                  <View style={styles.progressTrack}>
-                    <View style={[styles.progressFill, { width: `${track.percent}%` }]} />
-                  </View>
-                  <Text style={styles.progressText}>{track.percent}%</Text>
-                </View>
-              )}
-            </View>
-
-            {!comingSoon && <Text style={styles.chevron}>›</Text>}
-          </AppPressable>
-        );
-      })}
-    </ScrollView>
   );
 
   // ---------- Step 1: tracks ----------
