@@ -92,6 +92,10 @@ src/features/learning-hub/
 
 The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
 
+### Motion and shared screen primitives
+
+The Learning Hub and course flow use a small motion system built from shared primitives in `src/components/motion/`: `Float`, `FadeSlideIn`, `AnimatedStage`, `Pop`, and the central `motionTokens.js` values. The app reads the system reduce-motion setting via `useReduceMotion`, and the motion layer avoids heavy layout animation. `Float` is intentionally used sparingly on hero elements only, never inside long lists, and it pauses when a screen is not focused.
+
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
