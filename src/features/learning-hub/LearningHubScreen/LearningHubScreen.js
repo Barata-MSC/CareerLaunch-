@@ -8,7 +8,6 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -19,11 +18,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
+import AppPressable from '@components/AppPressable';
 import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
-import { playSound } from '../../../utils/sounds';
 
 const TRACK_NAMES = Object.keys(TRACKS);
 
@@ -71,6 +70,7 @@ export default function LearningHubScreen({ navigation }) {
   const [selectedCareerId, setSelectedCareerId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
+  const [progressLoaded, setProgressLoaded] = useState(false);
 
   // Saved progress. Reload whenever the screen is focused, so it also updates
   // after the user comes back from a course.
@@ -78,7 +78,13 @@ export default function LearningHubScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
+      setView('careers');
+      setSelectedTrack(null);
+      setSelectedCareerId(null);
+      setQuery('');
+      setFilter('all');
+      setProgressLoaded(false);
+      refresh().finally(() => setProgressLoaded(true));
     }, [refresh]),
   );
 
@@ -178,7 +184,6 @@ export default function LearningHubScreen({ navigation }) {
 
   const openCourse = (step) => {
     if (!step?.route) return;
-    playSound('tap');
     navigation.navigate(step.route);
   };
 
@@ -193,6 +198,24 @@ export default function LearningHubScreen({ navigation }) {
     return CAREERS.filter((career) => !q || career.title.toLowerCase().includes(q));
   }, [query]);
 
+  const renderProgress = (percent) => {
+    if (loading || !progressLoaded) {
+      return <Text style={styles.progressLoading}>Loading progress…</Text>;
+    }
+    if (error) {
+      return <Text style={styles.progressError}>Progress unavailable</Text>;
+    }
+
+    return (
+      <>
+        <View style={styles.progressTrack}>
+          <View style={[styles.progressFill, { width: `${percent}%` }]} />
+        </View>
+        <Text style={styles.progressText}>{percent}%</Text>
+      </>
+    );
+  };
+
   const renderCareers = () => (
     <View style={styles.flex}>
       <View style={styles.searchBox}>
@@ -205,9 +228,9 @@ export default function LearningHubScreen({ navigation }) {
           returnKeyType="search"
         />
         {query.trim() ? (
-          <TouchableOpacity onPress={() => setQuery('')} style={styles.clearButton}>
+          <AppPressable onPress={() => setQuery('')} style={styles.clearButton}>
             <Text style={styles.clearText}>Clear</Text>
-          </TouchableOpacity>
+          </AppPressable>
         ) : null}
       </View>
 
@@ -228,12 +251,11 @@ export default function LearningHubScreen({ navigation }) {
             const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
 
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={career.id}
                 accessibilityRole="button"
                 accessibilityLabel={`${career.title}, ${career.status}`}
                 style={[styles.card, !isAvailable && styles.cardMuted]}
-                activeOpacity={0.85}
                 onPress={() => openCareer(career)}
               >
                 <View style={[styles.icon, { backgroundColor: career.color }]}>
@@ -247,10 +269,7 @@ export default function LearningHubScreen({ navigation }) {
 
                   {isAvailable ? (
                     <View style={styles.progressRow}>
-                      <View style={styles.progressTrack}>
-                        <View style={[styles.progressFill, { width: `${percent}%` }]} />
-                      </View>
-                      <Text style={styles.progressText}>{percent}%</Text>
+                      {renderProgress(percent)}
                     </View>
                   ) : (
                     <View style={styles.comingSoonBadge}>
@@ -260,7 +279,7 @@ export default function LearningHubScreen({ navigation }) {
                 </View>
 
                 {isAvailable && <Text style={styles.chevron}>›</Text>}
-              </TouchableOpacity>
+              </AppPressable>
             );
           })
         )}
@@ -285,45 +304,41 @@ export default function LearningHubScreen({ navigation }) {
             const meta = TRACK_META[track.name] || FALLBACK_META;
             const comingSoon = !track.courseCount;
 
-        return (
-          <TouchableOpacity
-            key={track.name}
-            style={[styles.card, comingSoon && styles.cardMuted]}
-            activeOpacity={0.85}
-            disabled={comingSoon}
-            onPress={() => openTrack(track)}
-          >
-            <View style={[styles.icon, { backgroundColor: meta.color }]}>
-              <Text style={styles.iconEmoji}>{meta.icon}</Text>
-            </View>
-
-            <View style={styles.cardBody}>
-              <Text style={styles.cardTitle}>{track.name}</Text>
-              <Text style={styles.meta}>
-                {comingSoon
-                  ? 'Coming soon'
-                  : `${track.courseCount} courses`}
-              </Text>
-              {!!meta.blurb && (
-                <Text style={styles.desc} numberOfLines={2}>
-                  {meta.blurb}
-                </Text>
-              )}
-
-              {!comingSoon && (
-                <View style={styles.progressRow}>
-                  <View style={styles.progressTrack}>
-                    <View style={[styles.progressFill, { width: `${track.percent}%` }]} />
-                  </View>
-                  <Text style={styles.progressText}>{track.percent}%</Text>
+            return (
+              <AppPressable
+                key={track.name}
+                accessibilityRole="button"
+                accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
+                style={[styles.card, comingSoon && styles.cardMuted]}
+                disabled={comingSoon}
+                onPress={() => openTrack(track)}
+              >
+                <View style={[styles.icon, { backgroundColor: meta.color }]}>
+                  <Text style={styles.iconEmoji}>{meta.icon}</Text>
                 </View>
-              )}
-            </View>
 
-              {!comingSoon && <Text style={styles.chevron}>›</Text>}
-            </TouchableOpacity>
-          );
-        })
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle}>{track.name}</Text>
+                  <Text style={styles.meta}>
+                    {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
+                  </Text>
+                  {!!meta.blurb && (
+                    <Text style={styles.desc} numberOfLines={2}>
+                      {meta.blurb}
+                    </Text>
+                  )}
+
+                  {!comingSoon && (
+                    <View style={styles.progressRow}>
+                      {renderProgress(track.percent)}
+                    </View>
+                  )}
+                </View>
+
+                {!comingSoon && <Text style={styles.chevron}>›</Text>}
+              </AppPressable>
+            );
+          })
         )}
       </ScrollView>
     );
@@ -338,7 +353,7 @@ export default function LearningHubScreen({ navigation }) {
     const code = (item.course.shortCode || item.title).slice(0, 4).toUpperCase();
 
     return (
-      <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
+      <AppPressable style={styles.card} onPress={() => openCourse(item)}>
         <View style={styles.courseIcon}>
           <Text style={styles.courseIconText}>{code}</Text>
         </View>
@@ -356,7 +371,7 @@ export default function LearningHubScreen({ navigation }) {
             {BUTTON_LABEL[item.status] || 'Start'}
           </Text>
         </View>
-      </TouchableOpacity>
+      </AppPressable>
     );
   };
 
@@ -384,13 +399,13 @@ export default function LearningHubScreen({ navigation }) {
             {FILTERS.map((f) => {
               const active = f.key === filter;
               return (
-                <TouchableOpacity
+                <AppPressable
                   key={f.key}
                   style={[styles.chip, active && styles.chipActive]}
                   onPress={() => setFilter(f.key)}
                 >
                   <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
-                </TouchableOpacity>
+                </AppPressable>
               );
             })}
           </ScrollView>
@@ -406,12 +421,12 @@ export default function LearningHubScreen({ navigation }) {
           }
         />
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.primaryBtn}
           onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     );
   };
@@ -421,13 +436,13 @@ export default function LearningHubScreen({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           onPress={handleBack}
           style={styles.backBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backText}>{'<'}</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.backBtn} />
       </View>
@@ -536,6 +551,8 @@ const styles = StyleSheet.create({
   },
   progressFill: { height: '100%', borderRadius: 3, backgroundColor: PURPLE },
   progressText: { fontSize: 11, fontWeight: '600', color: '#6B7280', marginLeft: 8 },
+  progressLoading: { fontSize: 11, color: '#6B7280' },
+  progressError: { fontSize: 11, color: '#DC2626' },
 
   actionBtn: {
     backgroundColor: PURPLE,

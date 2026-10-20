@@ -4,8 +4,6 @@ export { default as RegisterScreen } from './auth/RegisterScreen';
 export { default as WelcomeScreen } from './auth/WelcomeScreen';
 export { default as SplashScreen } from './auth/SplashScreen';
 export { default as JobFinderScreen } from './job-finder/JobFinderScreen';
-export { default as CareersScreen } from './learning-hub/careers/CareersScreen';
-export { default as CareerTracksScreen } from './learning-hub/careers/CareerTracksScreen';
 export { default as CareerDetailScreen } from './learning-hub/careers/CareerDetailScreen';
 export { default as CareerRoadmapScreen } from './learning-hub/software-engineering/SoftwareEngineerRoadmap';
 export { default as CSSCourseScreen } from './learning-hub/software-engineering/css-course/CSSCourse';

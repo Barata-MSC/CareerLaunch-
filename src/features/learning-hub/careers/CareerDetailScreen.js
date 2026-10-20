@@ -1,7 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import AppPressable from '@components/AppPressable';
 import { getCareerById } from './careers';
 
 export default function CareerDetailScreen({ navigation, route }) {
@@ -12,9 +13,9 @@ export default function CareerDetailScreen({ navigation, route }) {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <Text style={styles.title}>Career not found</Text>
-          <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.goBack()}>
+          <AppPressable style={styles.primaryButton} onPress={() => navigation.goBack()}>
             <Text style={styles.primaryButtonText}>Back</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </SafeAreaView>
     );
@@ -23,13 +24,13 @@ export default function CareerDetailScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           onPress={() => navigation.goBack()}
           style={styles.backButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backText}>{'<'}</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Career</Text>
         <View style={styles.spacer} />
       </View>

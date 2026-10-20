@@ -54,11 +54,9 @@ When adding or changing a track, check that step IDs are unique within the track
 src/features/learning-hub/
   README.md                         This reference and course-generation brief
   LearningHubScreen/
-    LearningHubScreen.js            Career-first learning entry and track/course browsing
+    LearningHubScreen.js            Career list, track list, and course browsing entry point
   careers/
     careers.js                      Career data, stable IDs, and data validation helpers
-    CareersScreen.js                 Career list/entry screen for the Learning Hub
-    CareerTracksScreen.js           Career-specific track list screen
     CareerDetailScreen.js           Coming-soon career detail-only screen
   shared/
     CourseRunner.js                 Shared course flow and orchestration
@@ -82,7 +80,7 @@ The course modules are deliberately data-driven. A course wrapper normally impor
 
 ### Shared flow and responsibilities
 
-- `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse career tracks and the courses in a selected track, and refreshes aggregate progress when returning to the screen.
+- `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
 - `software-engineering/SoftwareEngineerRoadmap.js` owns the current track/step definitions and roadmap presentation. It builds its course set from the imported course configurations and uses `useAllCoursesProgress` for roadmap status.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, sounds, and saving quiz attempts.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
