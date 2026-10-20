@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import LessonActivities from '../components/LessonActivities';
 import LessonReferences from '../components/LessonReferences';
@@ -85,29 +86,30 @@ export default function LessonScreen({
         <LessonActivities key={lesson.id} activities={lesson.activities} />
         <LessonReferences references={lesson.references} />
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.completeCard}
           onPress={() => onToggleComplete(lesson.id)}
           activeOpacity={0.8}
+          sound="none"
         >
           <View style={[styles.radioCircle, isDone && styles.radioDone]}>
             {isDone && <Text style={styles.radioCheck}>✓</Text>}
           </View>
           <Text style={styles.completeText}>{isDone ? 'Completed' : 'Mark as completed'}</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
         <View style={common.buttonRow}>
-          <TouchableOpacity
+          <AppPressable
             style={[common.previousButton, isFirst && styles.disabledButton]}
             onPress={onPrevious}
             disabled={isFirst}
           >
             <Text style={common.previousText}>Previous</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
-          <TouchableOpacity style={common.nextButton} onPress={onNext}>
+          <AppPressable style={common.nextButton} onPress={onNext}>
             <Text style={common.nextText}>{isLast ? 'Lessons' : 'Next'}</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </ScrollView>
     </>

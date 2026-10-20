@@ -1,7 +1,8 @@
+import AppPressable from '@components/AppPressable';
 // One-tap question inside a lesson with instant feedback.
 // Wrong answer -> hint and try again. Right answer -> explanation.
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 export default function QuickCheck({ question, options, correct, hint, explanation }) {
@@ -17,7 +18,7 @@ export default function QuickCheck({ question, options, correct, hint, explanati
       {options.map((opt, i) => {
         const isPicked = picked === i;
         return (
-          <TouchableOpacity
+          <AppPressable
             key={opt}
             style={[
               styles.option,
@@ -29,7 +30,7 @@ export default function QuickCheck({ question, options, correct, hint, explanati
             activeOpacity={0.7}
           >
             <Text style={styles.optionText}>{opt}</Text>
-          </TouchableOpacity>
+          </AppPressable>
         );
       })}
 

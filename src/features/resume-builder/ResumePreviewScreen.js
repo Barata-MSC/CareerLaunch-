@@ -1,8 +1,8 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
     View,
     Text,
-    TouchableOpacity,
     ScrollView,
     StyleSheet,
     ActivityIndicator,
@@ -49,12 +49,12 @@ export default function ResumePreviewScreen({ navigation, route }) {
         <SafeAreaView style={styles.safeArea}>
             {/* Navigation Header */}
             <View style={styles.header}>
-                <TouchableOpacity
+                <AppPressable
                     onPress={() => navigation?.goBack()}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                     <Text style={styles.backArrow}>‹</Text>
-                </TouchableOpacity>
+                </AppPressable>
                 <Text style={styles.headerTitle}>
                     {mode === 'test' ? 'Test Resume' : 'Resume Preview'}
                 </Text>
@@ -93,7 +93,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                         {breakdown.map((item) => {
                             const full = item.earned >= item.max;
                             return (
-                                <TouchableOpacity
+                                <AppPressable
                                     key={item.key}
                                     style={styles.breakdownRow}
                                     activeOpacity={0.7}
@@ -116,18 +116,18 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                         />
                                     </View>
                                     {item.tip ? <Text style={styles.breakdownTip}>{item.tip}</Text> : null}
-                                </TouchableOpacity>
+                                </AppPressable>
                             );
                         })}
                     </View>
  
-                    <TouchableOpacity
+                    <AppPressable
                         style={styles.previewButton}
                         activeOpacity={0.85}
                         onPress={() => navigation?.setParams({ mode: 'generate' })}
                     >
                         <Text style={styles.previewButtonText}>View Resume Preview</Text>
-                    </TouchableOpacity>
+                    </AppPressable>
                     </>
                 ) : (
                     <>
@@ -221,7 +221,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                         ) : null}
                     </View>
  
-                    <TouchableOpacity
+                    <AppPressable
                         style={[styles.previewButton, styles.downloadButton, downloading && styles.downloadButtonDisabled]}
                         activeOpacity={0.85}
                         disabled={downloading}
@@ -232,7 +232,7 @@ export default function ResumePreviewScreen({ navigation, route }) {
                         ) : (
                             <Text style={styles.previewButtonText}>Download PDF</Text>
                         )}
-                    </TouchableOpacity>
+                    </AppPressable>
                     </>
                 )}
             </ScrollView>

@@ -1,6 +1,7 @@
+import AppPressable from '@components/AppPressable';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { PURPLE, GREEN, RED } from '../styles';
 
 const getWebView = () => {
@@ -209,12 +210,12 @@ export default function ReactPlayground({ title, task, goal, starter, expectText
       />
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.runButton} onPress={run} activeOpacity={0.8}>
+        <AppPressable style={styles.runButton} onPress={run} activeOpacity={0.8}>
           <Text style={styles.runText}>▶ Run</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
+        </AppPressable>
+        <AppPressable style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
           <Text style={styles.resetText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <Text style={styles.previewLabel}>

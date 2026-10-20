@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   ActivityIndicator,
@@ -137,7 +137,7 @@ export default function ForgotPasswordScreen({ navigation, route }) {
         </View>
       ) : null}
 
-      <TouchableOpacity
+      <AppPressable
         style={[styles.primaryButton, (loading || cooldown > 0) && { opacity: 0.7 }]}
         activeOpacity={0.85}
         onPress={handleSend}
@@ -154,13 +154,13 @@ export default function ForgotPasswordScreen({ navigation, route }) {
                 : 'Send reset link'}
           </Text>
         )}
-      </TouchableOpacity>
+      </AppPressable>
 
       <View style={styles.linkRow}>
         <Text style={styles.linkText}>Remembered your password?</Text>
-        <TouchableOpacity onPress={goToLogin} disabled={loading}>
+        <AppPressable onPress={goToLogin} disabled={loading}>
           <Text style={styles.linkAction}> Back to Login</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </SafeAreaView>
   );

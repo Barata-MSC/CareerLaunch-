@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE } from '../styles';
 
@@ -44,7 +45,7 @@ export default function QuizScreen({
             const selected = selectedAnswer === index;
 
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={answer}
                 style={[styles.answerButton, selected && styles.answerSelected]}
                 onPress={() => onSelectAnswer(index)}
@@ -58,23 +59,23 @@ export default function QuizScreen({
                 <Text style={[styles.answerText, selected && styles.answerTextSelected]}>
                   {answer}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </View>
 
         <View style={[common.buttonRow, styles.buttons]}>
-          <TouchableOpacity style={common.previousButton} onPress={onPrevious}>
+          <AppPressable style={common.previousButton} onPress={onPrevious}>
             <Text style={common.previousText}>Previous</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
-          <TouchableOpacity
+          <AppPressable
             style={[common.nextButton, selectedAnswer === null && styles.disabledNext]}
             onPress={onNext}
             disabled={selectedAnswer === null}
           >
             <Text style={common.nextText}>{isLast ? 'Submit' : 'Next'}</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </ScrollView>
     </>

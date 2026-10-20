@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
@@ -48,12 +48,12 @@ export default function SkillsScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Navigation Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <AppPressable 
           onPress={() => navigation?.goBack()} 
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Skills</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -77,13 +77,13 @@ export default function SkillsScreen({ navigation }) {
               onChangeText={setSkillInput}
               onSubmitEditing={handleAddSkill} // Allows adding via keyboard "Return" button
             />
-            <TouchableOpacity 
+            <AppPressable 
               style={styles.addButton} 
               activeOpacity={0.8} 
               onPress={handleAddSkill}
             >
               <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           <Text style={styles.listLabel}>Your Skills ({currentSkills.length})</Text>
@@ -98,25 +98,25 @@ export default function SkillsScreen({ navigation }) {
               {currentSkills.map((skill, index) => (
                 <View key={`${skill}-${index}`} style={styles.chip}>
                   <Text style={styles.chipText}>{skill}</Text>
-                  <TouchableOpacity 
+                  <AppPressable 
                     onPress={() => handleRemoveSkill(skill)}
                     hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
                   >
                     <Text style={styles.chipDelete}>×</Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 </View>
               ))}
             </View>
           )}
 
           {/* Complete Flow Block Confirmation Action Button */}
-          <TouchableOpacity
+          <AppPressable
             style={styles.saveButton}
             activeOpacity={0.85}
             onPress={() => navigation?.goBack()}
           >
             <Text style={styles.saveButtonText}>Done</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

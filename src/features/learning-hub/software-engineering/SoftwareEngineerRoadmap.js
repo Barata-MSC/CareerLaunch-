@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Modal,
   Dimensions,
@@ -319,11 +319,9 @@ export default function CareerRoadmapScreen({ navigation, route }) {
 
   const handleStepPress = (step) => {
     if (step.route) {
-      playSound('tap');
       navigation.navigate(step.route);
       return;
     }
-    playSound('tap');
     setSelectedStep(step);
   };
 
@@ -332,12 +330,12 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Career Roadmap</Text>
         <View style={{ width: 26 }} />
       </View>
@@ -361,7 +359,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           {TRACK_NAMES.map((trackName) => {
             const active = trackName === selectedTrack;
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={trackName}
                 style={[styles.chip, active && styles.chipActive]}
                 onPress={() => handleTrackPress(trackName)}
@@ -369,7 +367,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 <Text style={[styles.chipText, active && styles.chipTextActive]}>
                   {trackName}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </ScrollView>
@@ -381,7 +379,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         <View style={styles.roadmapList}>
           {roadmapSteps?.map((step, index) => {
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={step.id}
                 style={styles.stepRow}
                 activeOpacity={0.6}
@@ -403,7 +401,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                   </Text>
                 </View>
                 <Text style={styles.chevron}>›</Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </View>
@@ -417,7 +415,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
         animationType="fade"
         onRequestClose={closeModal}
       >
-        <TouchableOpacity
+        <AppPressable
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={closeModal}
@@ -455,13 +453,13 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                   {selectedStep.description}
                 </Text>
 
-                <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
+                <AppPressable style={styles.modalCloseButton} onPress={closeModal}>
                   <Text style={styles.modalCloseButtonText}>Close</Text>
-                </TouchableOpacity>
+                </AppPressable>
               </ScrollView>
             )}
           </View>
-        </TouchableOpacity>
+        </AppPressable>
       </Modal>
     </SafeAreaView>
   );

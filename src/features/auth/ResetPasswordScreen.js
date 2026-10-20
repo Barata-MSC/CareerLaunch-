@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   ActivityIndicator,
@@ -132,9 +132,9 @@ export default function ResetPasswordScreen({ recovery, onDone }) {
           This reset link is invalid or has expired. Go back to Login and tap "Forgot password?" to
           get a new one.
         </Text>
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={onDone}>
+        <AppPressable style={styles.primaryButton} activeOpacity={0.85} onPress={onDone}>
           <Text style={styles.primaryButtonText}>Back to Login</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </SafeAreaView>
     );
   }
@@ -192,7 +192,7 @@ export default function ResetPasswordScreen({ recovery, onDone }) {
           {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
         </View>
 
-        <TouchableOpacity
+        <AppPressable
           style={[styles.primaryButton, loading && { opacity: 0.7 }]}
           activeOpacity={0.85}
           onPress={handleSubmit}
@@ -203,7 +203,7 @@ export default function ResetPasswordScreen({ recovery, onDone }) {
           ) : (
             <Text style={styles.primaryButtonText}>Update password</Text>
           )}
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     </SafeAreaView>
   );

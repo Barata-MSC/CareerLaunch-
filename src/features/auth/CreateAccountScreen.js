@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Lets a guest turn their anonymous account into a full account WITHOUT losing
 // anything: it attaches an email + password to the guest's existing session
 // (supabase.auth.updateUser), so the user id, and every progress row tied to it,
@@ -12,7 +13,6 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
@@ -260,13 +260,13 @@ export default function CreateAccountScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <TouchableOpacity
+          <AppPressable
             style={styles.backButton}
             onPress={() => navigation?.goBack()}
             disabled={loading}
           >
             <Text style={styles.backArrow}>‹</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>
@@ -434,7 +434,7 @@ export default function CreateAccountScreen({ navigation }) {
             </Text>
           )}
 
-          <TouchableOpacity
+          <AppPressable
             style={[styles.primaryButton, loading && { opacity: 0.7 }]}
             onPress={handleCreate}
             activeOpacity={0.85}
@@ -445,7 +445,7 @@ export default function CreateAccountScreen({ navigation }) {
             ) : (
               <Text style={styles.primaryButtonText}>Create account</Text>
             )}
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
@@ -59,12 +59,12 @@ export default function ProjectScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Structural Action Title Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <AppPressable 
           onPress={() => navigation?.goBack()} 
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Projects</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -120,13 +120,13 @@ export default function ProjectScreen({ navigation }) {
               />
             </View>
 
-            <TouchableOpacity 
+            <AppPressable 
               style={styles.addButton} 
               activeOpacity={0.8} 
               onPress={handleAddProject}
             >
               <Text style={styles.addButtonText}>+ Add Project</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           {/* Render List Array Output Cards Section */}
@@ -147,26 +147,26 @@ export default function ProjectScreen({ navigation }) {
                     ) : null}
                     <Text style={styles.cardDesc}>{item.description}</Text>
                   </View>
-                  <TouchableOpacity 
+                  <AppPressable 
                     onPress={() => handleRemoveProject(item.id)}
                     style={styles.deleteButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Text style={styles.deleteButtonText}>✕</Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 </View>
               ))}
             </View>
           )}
 
           {/* Safe Dismiss Save Panel View Button */}
-          <TouchableOpacity
+          <AppPressable
             style={styles.saveButton}
             activeOpacity={0.85}
             onPress={() => navigation?.goBack()}
           >
             <Text style={styles.saveButtonText}>Done</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

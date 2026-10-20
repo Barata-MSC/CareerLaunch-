@@ -18,6 +18,7 @@ import { ResumeProvider } from '@features/resume-builder';
 
 import { SplashScreen, parseRecoveryUrl } from '@features/auth';
 import RootNavigator from './src/navigation/RootNavigator';
+import { initializeSound } from './src/utils/sounds';
 
 function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
@@ -28,6 +29,10 @@ function AppContent() {
   // Set when the app is opened from a password-reset email link.
   const [recovery, setRecovery] = useState(null);
   const [authInitialRoute, setAuthInitialRoute] = useState('Welcome');
+
+  useEffect(() => {
+    initializeSound().catch(() => {});
+  }, []);
 
   useEffect(() => {
     let isMounted = true;

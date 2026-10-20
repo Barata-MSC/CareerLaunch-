@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 import googleIcon from '../../assets/google.png';
 import microsoftIcon from '../../assets/microsoft.png';
 import spotifyIcon from '../../assets/Spotify.png';
@@ -10,7 +11,6 @@ import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   FlatList,
   Modal,
@@ -162,7 +162,7 @@ function JobApplicationTrackerContent({ navigation }) {
       STATUS_STYLES.Applied;
 
     return (
-      <TouchableOpacity
+      <AppPressable
         style={styles.card}
         activeOpacity={0.85}
         onPress={() => setSelected(item)}
@@ -215,7 +215,7 @@ function JobApplicationTrackerContent({ navigation }) {
             {item.status}
           </Text>
         </View>
-      </TouchableOpacity>
+      </AppPressable>
     );
   };
 
@@ -237,7 +237,7 @@ function JobApplicationTrackerContent({ navigation }) {
           <>
             {/* HEADER */}
             <View style={styles.header}>
-              <TouchableOpacity
+              <AppPressable
                 onPress={handleBack}
                 style={styles.backBtn}
                 hitSlop={{
@@ -250,7 +250,7 @@ function JobApplicationTrackerContent({ navigation }) {
                 <Text style={styles.backText}>
                   {'<'}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
 
               <Text style={styles.headerTitle}>
                 Application Tracker
@@ -270,7 +270,7 @@ function JobApplicationTrackerContent({ navigation }) {
                 const active = t === tab;
 
                 return (
-                  <TouchableOpacity
+                  <AppPressable
                     key={t}
                     style={[
                       styles.tab,
@@ -286,7 +286,7 @@ function JobApplicationTrackerContent({ navigation }) {
                     >
                       {t} ({counts[t]})
                     </Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 );
               })}
             </ScrollView>
@@ -364,7 +364,7 @@ function JobApplicationTrackerContent({ navigation }) {
                       STATUS_STYLES.Applied;
 
                     return (
-                      <TouchableOpacity
+                      <AppPressable
                         key={s}
                         style={[
                           styles.statusChip,
@@ -401,14 +401,14 @@ function JobApplicationTrackerContent({ navigation }) {
                         >
                           {s}
                         </Text>
-                      </TouchableOpacity>
+                      </AppPressable>
                     );
                   })}
                 </View>
 
                 {/* Application Link */}
                 {!!selected.job.link && (
-                  <TouchableOpacity
+                  <AppPressable
                     style={styles.linkBtn}
                     onPress={() =>
                       openLink(selected.job.link)
@@ -417,18 +417,18 @@ function JobApplicationTrackerContent({ navigation }) {
                     <Text style={styles.linkBtnText}>
                       Open application link
                     </Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 )}
 
                 {/* Close */}
-                <TouchableOpacity
+                <AppPressable
                   style={styles.closeBtn}
                   onPress={() => setSelected(null)}
                 >
                   <Text style={styles.closeBtnText}>
                     Close
                   </Text>
-                </TouchableOpacity>
+                </AppPressable>
               </>
             )}
           </View>

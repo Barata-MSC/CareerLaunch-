@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE } from '../styles';
 
@@ -52,9 +53,9 @@ export default function QuizIntroScreen({ course, onBack, onStart }) {
           ))}
         </View>
 
-        <TouchableOpacity style={common.quizButton} onPress={onStart}>
+        <AppPressable style={common.quizButton} onPress={onStart}>
           <Text style={common.quizButtonText}>Take the Quiz</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     </>
   );

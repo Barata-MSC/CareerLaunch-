@@ -84,6 +84,7 @@ export default function useCourseProgress(courseId) {
               );
 
         if (dbError) throw dbError;
+        return true;
       } catch (e) {
         setCompletedLessonIds((prev) =>
           wasDone
@@ -93,6 +94,7 @@ export default function useCourseProgress(courseId) {
             : prev.filter((id) => id !== lessonId),
         );
         setError('Could not save your progress. Check your connection.');
+        return false;
       } finally {
         inFlight.current.delete(lessonId);
       }

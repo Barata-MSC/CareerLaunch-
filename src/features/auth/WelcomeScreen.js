@@ -3,12 +3,11 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import AppPressable from '@components/AppPressable';
 
 const ROCKET_ICON = require('@assets/rocket-icon.png');
 const STUDENT_ILLUSTRATION = require('@assets/student-illustration.png');
@@ -52,20 +51,16 @@ export default function WelcomeScreen({ navigation }) {
       </View>
 
       {/* CTA button */}
-      <TouchableOpacity
-        style={styles.primaryButton}
-        activeOpacity={0.85}
-        onPress={handleGetStarted}
-      >
+      <AppPressable style={styles.primaryButton} onPress={handleGetStarted} sound="tap">
         <Text style={styles.primaryButtonText}>Get started</Text>
-      </TouchableOpacity>
+      </AppPressable>
 
       {/* Login link */}
       <View style={styles.loginRow}>
         <Text style={styles.loginText}>Already have an account? </Text>
-        <TouchableOpacity onPress={handleLogin}>
+        <AppPressable onPress={handleLogin} sound="tap">
           <Text style={styles.loginLink}>Login</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </SafeAreaView>
   );

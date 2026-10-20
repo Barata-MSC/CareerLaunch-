@@ -1,8 +1,9 @@
+import AppPressable from '@components/AppPressable';
 // Tap-to-order activity: tap the items in the right order to build the sequence.
 //   activity = { type: 'order', title, task, items: [in the CORRECT order], hint, explanation }
 // Items are shown shuffled. Tap one to add it, "Undo" removes the last, "Reset" starts over.
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 const shuffle = (items) => {
@@ -46,7 +47,7 @@ export default function StepOrder({ title, task, items, hint, explanation }) {
         {pool.map((item) => {
           const used = picked.includes(item);
           return (
-            <TouchableOpacity
+            <AppPressable
               key={item}
               style={[styles.chip, used && styles.chipUsed]}
               disabled={used || full}
@@ -54,18 +55,18 @@ export default function StepOrder({ title, task, items, hint, explanation }) {
               activeOpacity={0.7}
             >
               <Text style={[styles.chipText, used && styles.chipTextUsed]}>{item}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           );
         })}
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.undo} onPress={() => setPicked(picked.slice(0, -1))} disabled={!picked.length}>
+        <AppPressable style={styles.undo} onPress={() => setPicked(picked.slice(0, -1))} disabled={!picked.length}>
           <Text style={styles.undoText}>Undo</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.undo} onPress={() => setPicked([])} disabled={!picked.length}>
+        </AppPressable>
+        <AppPressable style={styles.undo} onPress={() => setPicked([])} disabled={!picked.length}>
           <Text style={styles.undoText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       {correct && <Text style={[styles.feedback, { color: GREEN }]}>Correct! {explanation}</Text>}
