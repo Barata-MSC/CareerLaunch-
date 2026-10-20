@@ -104,7 +104,9 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   primaryButton: {
-    width: '100%',
+    width: '72%',
+    maxWidth: 280,
+    alignSelf: 'center',
     backgroundColor: PURPLE,
     borderRadius: 999,
     paddingVertical: 14,
@@ -118,7 +120,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButton: {
-    width: '100%',
+    width: '72%',
+    maxWidth: 280,
+    alignSelf: 'center',
     borderRadius: 999,
     paddingVertical: 12,
     alignItems: 'center',
