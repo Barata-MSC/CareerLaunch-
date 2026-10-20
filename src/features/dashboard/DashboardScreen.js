@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Animated,
   ScrollView,
   Text,
   View,
@@ -13,6 +14,7 @@ import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
 import AppPressable from '@components/AppPressable';
+import Float from '@components/motion/Float';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -96,25 +98,43 @@ export default function DashboardScreen({ navigation }) {
               {Math.round(profileProgress * 100)}% complete
             </Text>
             <View style={styles.progressTrack}>
-              <View
-                style={[styles.progressFill, { width: `${profileProgress * 100}%` }]}
-              />
+              <AnimatedProgressBar progress={profileProgress * 100} style={styles.progressFill} />
             </View>
           </View>
-          <Image
-            source={
-              profile?.avatar_url
-                ? { uri: profile.avatar_url }
-                : AVATAR_PLACEHOLDER
-            }
-            style={styles.avatar}
-          />
+          <Float amplitude={4} duration={2600} phaseOffset={200}>
+            <Image
+              source={
+                profile?.avatar_url
+                  ? { uri: profile.avatar_url }
+                  : AVATAR_PLACEHOLDER
+              }
+              style={styles.avatar}
+            />
+          </Float>
         </AppPressable>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => {
+          {QUICK_ACTIONS.map((action, index) => {
             const isPressed = pressedId === action.id;
+            const shouldFloat = index < 3;
+            const tile = (
+              <View
+                style={[
+                  styles.quickActionTile,
+                  { backgroundColor: action.color },
+                  isPressed && styles.quickActionTileActive,
+                ]}
+              >
+                <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
+                  <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
+                    <Text style={styles.lockBadgeText}>🔒</Text>
+                  </View>
+                ) : null}
+              </View>
+            );
+
             return (
               <AppPressable
                 key={action.id}
@@ -123,20 +143,13 @@ export default function DashboardScreen({ navigation }) {
                 onPressOut={() => setPressedId(null)}
                 onPress={() => handleQuickAction(action)}
               >
-                <View
-                  style={[
-                    styles.quickActionTile,
-                    { backgroundColor: action.color },
-                    isPressed && styles.quickActionTileActive,
-                  ]}
-                >
-                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                  {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
-                    <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
-                      <Text style={styles.lockBadgeText}>🔒</Text>
-                    </View>
-                  ) : null}
-                </View>
+                {shouldFloat ? (
+                  <Float amplitude={5} duration={3000 + Number(action.id) * 200} phaseOffset={Number(action.id) * 350}>
+                    {tile}
+                  </Float>
+                ) : (
+                  tile
+                )}
                 <Text style={styles.quickActionLabel}>{action.label}</Text>
               </AppPressable>
             );
@@ -187,6 +200,34 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
+function AnimatedProgressBar({ progress, style }) {
+  const animatedWidth = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: Math.min(Math.max(progress, 0), 100),
+      duration: 220,
+      useNativeDriver: false,
+    }).start();
+  }, [animatedWidth, progress]);
+
+  return (
+    <View style={[style, { width: '100%' }]}>
+      <Animated.View
+        style={{
+          height: '100%',
+          width: animatedWidth.interpolate({
+            inputRange: [0, 100],
+            outputRange: ['0%', '100%'],
+          }),
+          backgroundColor: '#6C4CE0',
+          borderRadius: 3,
+        }}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   scrollContent: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 },
@@ -226,18 +267,20 @@ const styles = StyleSheet.create({
   },
   quickActionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 28,
   },
-  quickActionWrap: { alignItems: 'center', width: '23%' },
+  quickActionWrap: { alignItems: 'center', justifyContent: 'center', width: '25%', paddingHorizontal: 2 },
   quickActionTile: {
-    width: '100%',
-    aspectRatio: 1,
+    width: 68,
+    height: 68,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
     position: 'relative',
+    alignSelf: 'center',
   },
   quickActionTileActive: {
     borderWidth: 3,

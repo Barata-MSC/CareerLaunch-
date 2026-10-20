@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import Pop from '@components/motion/Pop';
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
@@ -86,17 +87,19 @@ export default function LessonScreen({
         <LessonActivities key={lesson.id} activities={lesson.activities} />
         <LessonReferences references={lesson.references} />
 
-        <AppPressable
-          style={styles.completeCard}
-          onPress={() => onToggleComplete(lesson.id)}
-          activeOpacity={0.8}
-          sound="none"
-        >
-          <View style={[styles.radioCircle, isDone && styles.radioDone]}>
-            {isDone && <Text style={styles.radioCheck}>✓</Text>}
-          </View>
-          <Text style={styles.completeText}>{isDone ? 'Completed' : 'Mark as completed'}</Text>
-        </AppPressable>
+        <Pop trigger={isDone ? 1 : 0} scaleTo={1.06}>
+          <AppPressable
+            style={styles.completeCard}
+            onPress={() => onToggleComplete(lesson.id)}
+            activeOpacity={0.8}
+            sound="none"
+          >
+            <View style={[styles.radioCircle, isDone && styles.radioDone]}>
+              {isDone && <Text style={styles.radioCheck}>✓</Text>}
+            </View>
+            <Text style={styles.completeText}>{isDone ? 'Completed' : 'Mark as completed'}</Text>
+          </AppPressable>
+        </Pop>
 
         <View style={common.buttonRow}>
           <AppPressable
