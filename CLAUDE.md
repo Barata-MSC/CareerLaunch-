@@ -31,20 +31,20 @@ The approved prototype scope connects the Learning Hub, course lessons, quizzes,
 | Application Tracker | Tracks jobs selected from Job Finder and supports Applied, Interview, Hired, and Rejected statuses. Guest access is gated; a full account is required. | State is held in React context, not stored in Supabase or durable local storage; it is lost when the app state resets. |
 | Interview Coach | Common interview questions, typed responses, feedback, suggestions, and a session summary. Guest access is gated; a full account is required. | Text feedback uses local heuristic checks. Voice feedback is simulated; there is no speech transcription, speech analysis, or AI service integration. Practice history is in memory only. |
 | Resume Builder | Personal information, education, skills, experience, certificates, projects, validation, a completeness score/suggestions, and a preview flow. Guest access to the builder, sections, and preview is gated; a full account is required. | Resume state is in React context, not persisted to Supabase or durable local storage. The score is rule-based, not an AI evaluation. |
-| Learning Hub | Software Engineer, Data Analyst, and UI/UX Designer tracks. Available lessons and quizzes are organized by course; lesson completion and quiz attempts are saved through Supabase. | Some roadmap steps have no course yet (notably most UI/UX steps); those are intentionally displayed as coming soon/detail-only items. |
+| Learning Hub | Career-first browsing: a careers list leads to tracks, then the existing course flow. Software Engineering is available with real tracks; other careers are listed as coming soon, each leading to a detail-only view. Career progress is derived from course statuses, not stored separately. | Some roadmap steps have no course yet (notably most UI/UX steps); those are intentionally displayed as coming soon/detail-only items. |
 | Profile and avatar | Profile data is read and updated in the Supabase `profiles` table; avatar upload uses Supabase Storage and can stage a pending upload locally. | The actual remote schema, bucket configuration, and RLS policies must be verified in the Supabase project; do not infer them from the client alone. |
 
 The interview screen's “AI” name reflects the approved product concept, not its current implementation: do not claim that it calls an LLM or provides model-generated feedback. Similarly, do not claim that a job was submitted to an employer; the app opens external links and tracks the user's intent to apply.
 
 ## Learning tracks and progress
 
-The current roadmap defines three tracks:
+The current roadmap defines three tracks under the Software Engineering career:
 
 - **Software Engineer** (estimated five months): HTML, CSS, JavaScript, React, Node.js, Database, and Git/GitHub.
 - **Data Analyst** (estimated four months): Excel, SQL, Python/Pandas, Data Visualization, Statistics, and Dashboards (Power BI/Tableau).
 - **UI/UX Designer** (estimated three months): Design Fundamentals has course content; User Research, Wireframing, Figma/Prototyping, Usability Testing, and Design Systems are roadmap steps without course data yet.
 
-Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
+Tracks now sit under a career picker. Only the Software Engineering career is wired to real course tracks right now; other careers are listed as coming soon and intentionally do not expose courses. Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
 
 ## Supabase data and persistence
 
@@ -80,7 +80,7 @@ These are recent code changes, not a claim that the overall product or every roa
 - `src/navigation/RootNavigator.js` separates authenticated app navigation from auth and password-recovery navigation.
 - `src/navigation/AppNavigator.js` registers app screens and course routes.
 - `src/features/` contains feature screens and logic; shared UI, context, configuration, navigation, and assets live in their corresponding `src/` directories.
-- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; course data and wrappers are under `src/features/learning-hub/software-engineering/`.
+- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data and screens live under `src/features/learning-hub/careers/`, while course data and wrappers remain under `src/features/learning-hub/software-engineering/`.
 - Keep navigation route names consistent with `navigation.navigate(...)`, and preserve stable course/lesson IDs.
 
 ## Technology and working commands
