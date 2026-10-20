@@ -1,6 +1,7 @@
+import AppPressable from '@components/AppPressable';
 // Sources used for a lesson (APA 7th). Tapping a reference opens its link.
 import React from 'react';
-import { View, Text, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { View, Text, Linking, StyleSheet } from 'react-native';
 import { PURPLE } from '../styles';
 
 export default function LessonReferences({ references }) {
@@ -10,7 +11,7 @@ export default function LessonReferences({ references }) {
     <View style={styles.card}>
       <Text style={styles.title}>References</Text>
       {references.map((ref) => (
-        <TouchableOpacity
+        <AppPressable
           key={ref.url}
           onPress={() => Linking.openURL(ref.url).catch(() => {})}
           style={styles.item}
@@ -18,7 +19,7 @@ export default function LessonReferences({ references }) {
           <Text style={styles.text}>
             {ref.text} <Text style={styles.link}>{ref.url}</Text>
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       ))}
     </View>
   );

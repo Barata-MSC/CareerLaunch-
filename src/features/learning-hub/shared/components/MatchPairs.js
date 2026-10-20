@@ -1,8 +1,9 @@
+import AppPressable from '@components/AppPressable';
 // Tap-to-match activity: tap an item on the left, then its match on the right.
 //   activity = { type: 'match', title, task, pairs: [{ left, right }], hint, explanation }
 // Right-hand items are shown shuffled. A correct pair turns green and locks.
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 const shuffle = (items) => {
@@ -60,7 +61,7 @@ export default function MatchPairs({ title, task, pairs, hint, explanation }) {
       <View style={styles.cols}>
         <View style={styles.col}>
           {pairs.map((p) => (
-            <TouchableOpacity
+            <AppPressable
               key={p.left}
               style={[styles.item, selected === p.left && styles.itemSel, done[p.left] && styles.itemDone]}
               onPress={() => pickLeft(p.left)}
@@ -68,12 +69,12 @@ export default function MatchPairs({ title, task, pairs, hint, explanation }) {
               activeOpacity={0.7}
             >
               <Text style={[styles.itemText, styles.leftText]}>{p.left}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           ))}
         </View>
         <View style={styles.col}>
           {rights.map((r) => (
-            <TouchableOpacity
+            <AppPressable
               key={r}
               style={[styles.item, matchedRights.includes(r) && styles.itemDone]}
               onPress={() => pickRight(r)}
@@ -81,7 +82,7 @@ export default function MatchPairs({ title, task, pairs, hint, explanation }) {
               activeOpacity={0.7}
             >
               <Text style={styles.itemText}>{r}</Text>
-            </TouchableOpacity>
+            </AppPressable>
           ))}
         </View>
       </View>
@@ -90,9 +91,9 @@ export default function MatchPairs({ title, task, pairs, hint, explanation }) {
         <Text style={styles.progress}>
           {matched.length} of {pairs.length} matched
         </Text>
-        <TouchableOpacity onPress={reset} disabled={!matched.length && !selected}>
+        <AppPressable onPress={reset} disabled={!matched.length && !selected}>
           <Text style={styles.resetText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       {miss && <Text style={[styles.feedback, { color: RED }]}>Not quite. {hint || 'Try another match.'}</Text>}

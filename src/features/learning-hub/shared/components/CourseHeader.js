@@ -1,12 +1,13 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function CourseHeader({ title, onBack }) {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={onBack} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+      <AppPressable onPress={onBack} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
         <Text style={styles.backArrow}>‹</Text>
-      </TouchableOpacity>
+      </AppPressable>
 
       <Text style={styles.headerTitle}>{title}</Text>
 

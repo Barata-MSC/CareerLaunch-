@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Tap-to-build chart, like dragging fields in Power BI or Tableau.
 // Pick a field for the axis and a field for the values, choose how to total it, and the chart
 // updates live. Optional sorting and a "Top 3" filter are switched on with `controls`.
@@ -7,7 +8,7 @@
 //   controls = extra controls to show: 'chart', 'sort', 'limit'
 // The sample data is invented for practice (Region, Category, Month, Sales, Profit).
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 const ROWS = [
@@ -69,14 +70,14 @@ function Chips({ label, options, selected, onPick }) {
       <Text style={styles.groupLabel}>{label}</Text>
       <View style={styles.chips}>
         {options.map((opt) => (
-          <TouchableOpacity
+          <AppPressable
             key={opt}
             style={[styles.chip, selected === opt && styles.chipOn]}
             onPress={() => onPick(opt)}
             activeOpacity={0.7}
           >
             <Text style={[styles.chipText, selected === opt && styles.chipTextOn]}>{opt}</Text>
-          </TouchableOpacity>
+          </AppPressable>
         ))}
       </View>
     </View>
@@ -167,9 +168,9 @@ export default function VisualBuilder({ title, task, goal, target, controls = []
         )}
       </View>
 
-      <TouchableOpacity onPress={() => setSel(START)} style={styles.reset}>
+      <AppPressable onPress={() => setSel(START)} style={styles.reset}>
         <Text style={styles.resetText}>Reset</Text>
-      </TouchableOpacity>
+      </AppPressable>
 
       {ok && <Text style={[styles.feedback, { color: GREEN }]}>Correct! {explanation}</Text>}
       {ready && !ok && (

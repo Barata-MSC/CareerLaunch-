@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { ActivityIndicator, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAccountTier } from '../features/auth/accountTier';
 
@@ -36,7 +37,7 @@ export default function AccountGate({ featureName, description, children, naviga
         <Text style={styles.title}>Complete your account to use {featureName}</Text>
         <Text style={styles.body}>{bodyText}</Text>
 
-        <TouchableOpacity
+        <AppPressable
           accessibilityRole="button"
           accessibilityLabel={`Complete account to use ${featureName}`}
           style={styles.primaryButton}
@@ -44,9 +45,9 @@ export default function AccountGate({ featureName, description, children, naviga
           onPress={() => nav.navigate('CreateAccount')}
         >
           <Text style={styles.primaryButtonText}>Complete account</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
-        <TouchableOpacity
+        <AppPressable
           accessibilityRole="button"
           accessibilityLabel="Go back"
           style={styles.secondaryButton}
@@ -54,7 +55,7 @@ export default function AccountGate({ featureName, description, children, naviga
           onPress={() => nav.goBack?.()}
         >
           <Text style={styles.secondaryButtonText}>Not now</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     </View>
   );

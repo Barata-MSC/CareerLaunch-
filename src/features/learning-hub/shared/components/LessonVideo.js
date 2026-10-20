@@ -1,9 +1,10 @@
+import AppPressable from '@components/AppPressable';
 // Embedded YouTube video for a lesson. Lessons without `video` show nothing.
 //   video = { id, start (seconds), chapter, title, channel }
 // Web uses an iframe; the mobile app uses a WebView with an HTML wrapper and a real
 // base URL (a bare embed uri can render black). "Open in YouTube" is the fallback.
 import React from 'react';
-import { View, Text, TouchableOpacity, Linking, StyleSheet, Platform } from 'react-native';
+import { View, Text, Linking, StyleSheet, Platform } from 'react-native';
 import { PURPLE } from '../styles';
 
 const getWebView = () => {
@@ -69,9 +70,9 @@ iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}</style>
         {!!video.chapter && `\nChapter: ${video.chapter}`}
       </Text>
 
-      <TouchableOpacity onPress={() => Linking.openURL(`https://youtu.be/${video.id}?t=${start}`).catch(() => {})}>
+      <AppPressable onPress={() => Linking.openURL(`https://youtu.be/${video.id}?t=${start}`).catch(() => {})}>
         <Text style={styles.link}>Open in YouTube</Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   );
 }

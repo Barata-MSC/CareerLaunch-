@@ -5,21 +5,22 @@ import {
   Text,
   TextInput,
   Image,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ActivityIndicator, // Added for loading states
+  ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import * as ImagePicker from 'expo-image-picker';
 
-// 1. Import Supabase and the Profile Context
+import AppPressable from '@components/AppPressable';
 import { supabase } from '@config/supabase';
 import { useProfile } from '../../context/ProfileContext';
+import { getSoundEnabled, setSoundEnabled } from '../../utils/sounds';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -65,6 +66,7 @@ export default function ProfileScreen({ navigation }) {
   const [contactNumber, setContactNumber] = useState('');
   const [birthday, setBirthday] = useState('');
   const [loading, setLoading] = useState(false);
+  const [soundEnabled, setSoundPreference] = useState(true);
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
 
@@ -80,6 +82,18 @@ export default function ProfileScreen({ navigation }) {
       setBirthday(profile.birthday || '');
     }
   }, [profile]);
+
+  useEffect(() => {
+    const loadPreference = async () => {
+      setSoundPreference(getSoundEnabled());
+    };
+    loadPreference();
+  }, []);
+
+  const handleSoundToggle = async (nextValue) => {
+    setSoundPreference(nextValue);
+    await setSoundEnabled(nextValue);
+  };
 
   // --------------------------------------------------
   // CHANGE PROFILE PHOTO
@@ -280,9 +294,9 @@ export default function ProfileScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation?.goBack()}>
+            <AppPressable style={styles.backButton} onPress={() => navigation?.goBack()} sound="tap">
               <Text style={styles.backArrow}>‹</Text>
-            </TouchableOpacity>
+            </AppPressable>
 
             <Text style={styles.headerTitle}>Profile</Text>
             <View style={styles.backButton} />
@@ -298,22 +312,18 @@ export default function ProfileScreen({ navigation }) {
                 : 'Your learning progress is saved to this guest account. Create an account to keep it if you log out or switch devices.'}
             </Text>
 
-            <TouchableOpacity
+            <AppPressable
               style={[styles.primaryButton, styles.guestCreateButton]}
-              activeOpacity={0.85}
               onPress={() => navigation?.navigate('CreateAccount')}
+              sound="tap"
             >
               <Text style={styles.primaryButtonText}>Create account</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
-          <TouchableOpacity
-            style={styles.logoutButton}
-            activeOpacity={0.85}
-            onPress={handleLogout}
-          >
+          <AppPressable style={styles.logoutButton} onPress={handleLogout} sound="tap">
             <Text style={styles.logoutButtonText}>Log Out</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </SafeAreaView>
     );
@@ -336,13 +346,14 @@ export default function ProfileScreen({ navigation }) {
         >
           {/* HEADER */}
           <View style={styles.headerRow}>
-            <TouchableOpacity
+            <AppPressable
               style={styles.backButton}
               onPress={() => navigation?.goBack()}
               disabled={loading}
+              sound="tap"
             >
               <Text style={styles.backArrow}>‹</Text>
-            </TouchableOpacity>
+            </AppPressable>
 
             <Text style={styles.headerTitle}>Profile</Text>
             <View style={styles.backButton} />
@@ -350,16 +361,16 @@ export default function ProfileScreen({ navigation }) {
 
           {/* PROFILE PICTURE */}
           <View style={styles.avatarWrap}>
-            <TouchableOpacity onPress={handleChangePhoto} activeOpacity={0.85} disabled={loading}>
+            <AppPressable onPress={handleChangePhoto} disabled={loading} sound="tap">
               <Image
                 source={avatarUri ? { uri: avatarUri } : AVATAR_PLACEHOLDER}
                 style={styles.avatar}
               />
-            </TouchableOpacity>
+            </AppPressable>
 
-            <TouchableOpacity onPress={handleChangePhoto} disabled={loading}>
+            <AppPressable onPress={handleChangePhoto} disabled={loading} sound="tap">
               <Text style={styles.changePhotoText}>Change profile picture</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           {/* FIRST NAME */}
@@ -500,9 +511,8 @@ export default function ProfileScreen({ navigation }) {
           </View>
 
           {/* SAVE BUTTON */}
-          <TouchableOpacity
+          <AppPressable
             style={[styles.primaryButton, loading && { opacity: 0.7 }]}
-            activeOpacity={0.85}
             onPress={handleSave}
             disabled={loading}
           >
@@ -511,17 +521,30 @@ export default function ProfileScreen({ navigation }) {
             ) : (
               <Text style={styles.primaryButtonText}>Save Changes</Text>
             )}
-          </TouchableOpacity>
+          </AppPressable>
+
+          <View style={styles.settingsCard}>
+            <View>
+              <Text style={styles.settingsTitle}>Sound effects</Text>
+              <Text style={styles.settingsHint}>Tap, lesson, and quiz feedback</Text>
+            </View>
+            <Switch
+              value={soundEnabled}
+              onValueChange={handleSoundToggle}
+              trackColor={{ false: '#D6D6D6', true: PURPLE }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
 
           {/* LOGOUT BUTTON */}
-          <TouchableOpacity
+          <AppPressable
             style={styles.logoutButton}
-            activeOpacity={0.85}
             onPress={handleLogout}
             disabled={loading}
+            sound="tap"
           >
             <Text style={styles.logoutButtonText}>Log Out</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -594,6 +617,19 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
 
   // Added Logout Button Styles
+  settingsCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginTop: 16,
+  },
+  settingsTitle: { fontSize: 15, fontWeight: '700', color: '#111111' },
+  settingsHint: { fontSize: 12, color: '#666666', marginTop: 2 },
   logoutButton: {
     backgroundColor: '#FFF',
     borderWidth: 1,

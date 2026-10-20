@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 import googleIcon from '../../assets/google.png';
 import microsoftIcon from '../../assets/microsoft.png';
 import spotifyIcon from '../../assets/Spotify.png';
@@ -10,7 +11,6 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   FlatList,
   ScrollView,
   Alert,
@@ -237,7 +237,7 @@ function JobFinderContent({ navigation }) {
   const renderJobCard = ({ item }) => {
     const applied = appliedIds.includes(item.id);
     return (
-      <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
+      <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
         <CompanyLogo company={item.company} color={item.color} logo={item.logo} />
         <View style={styles.cardBody}>
           <Text style={styles.jobTitle}>{item.title}</Text>
@@ -249,15 +249,15 @@ function JobFinderContent({ navigation }) {
             {item.description}
           </Text>
         </View>
-        <TouchableOpacity
+        <AppPressable
           style={[styles.applyBtn, applied && styles.applyBtnDone]}
           onPress={() => handleApply(item)}
         >
           <Text style={[styles.applyText, applied && styles.applyTextDone]}>
             {applied ? 'Applied' : 'Apply'}
           </Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </AppPressable>
+      </AppPressable>
     );
   };
 
@@ -280,13 +280,13 @@ function JobFinderContent({ navigation }) {
           {CATEGORIES.map((c) => {
             const active = c === category;
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={c}
                 style={[styles.chip, active && styles.chipActive]}
                 onPress={() => setCategory(c)}
               >
                 <Text style={[styles.chipText, active && styles.chipTextActive]}>{c}</Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </ScrollView>
@@ -302,12 +302,12 @@ function JobFinderContent({ navigation }) {
         }
       />
 
-      <TouchableOpacity
+      <AppPressable
         style={styles.primaryBtn}
         onPress={() => navigation && navigation.navigate('JobApplicationTracker')}
       >
         <Text style={styles.primaryBtnText}>Applied Jobs ({applications.length})</Text>
-      </TouchableOpacity>
+      </AppPressable>
     </View>
   );
 
@@ -339,19 +339,19 @@ function JobFinderContent({ navigation }) {
         <Text style={styles.detailSectionTitle}>Description</Text>
         <Text style={styles.detailDesc}>{job.description}</Text>
 
-        <TouchableOpacity onPress={() => openLink(job.link)}>
+        <AppPressable onPress={() => openLink(job.link)}>
           <Text style={styles.link}>{job.link}</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
-        <TouchableOpacity
+        <AppPressable
           style={[styles.primaryBtn, applied && styles.primaryBtnDone]}
           onPress={() => handleApply(job)}
         >
           <Text style={styles.primaryBtnText}>{applied ? 'Applied' : 'Apply'}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryBtn} onPress={() => setView('list')}>
+        </AppPressable>
+        <AppPressable style={styles.secondaryBtn} onPress={() => setView('list')}>
           <Text style={styles.secondaryBtnText}>Back to job list</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     );
   };
@@ -360,9 +360,9 @@ function JobFinderContent({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <AppPressable onPress={handleBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Text style={styles.backText}>{'<'}</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>{titles[view]}</Text>
         <View style={styles.backBtn} />
       </View>

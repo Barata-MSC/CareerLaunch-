@@ -117,6 +117,12 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - `App.js` owns the root providers and session bootstrap. Preserve the current provider composition and the separation between authenticated app navigation, auth navigation, and password-recovery navigation when changing startup or auth behavior.
 - The app supports web, but the current web presentation intentionally uses a phone-sized frame. Check both the target platform and `app.config.js` before changing responsive behavior or platform configuration.
 
+### Sound
+
+- `src/utils/sounds.js` owns the sound registry and playback; `src/components/AppPressable.js` provides default tap feedback for interactive controls. Use `sound="none"` when a control plays a more specific cue.
+- The global preference is stored in AsyncStorage under `careerlaunch:sound-enabled` and is controlled from Profile settings.
+- Sound assets live in `src/assets/sounds/`; source and license notes belong in `src/assets/sounds/CREDITS.md`.
+
 ## Expo, web, and project commands
 
 - Before changing Expo APIs, configuration, or native modules, read the exact Expo SDK 57 documentation linked by `AGENTS.md`. Do not apply instructions from a different SDK version without checking compatibility.

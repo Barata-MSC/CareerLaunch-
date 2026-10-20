@@ -1,21 +1,22 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text } from 'react-native';
+import AppPressable from './AppPressable';
 
 const GOOGLE_ICON = require('@assets/google-icon.png');
 
 export default function GoogleButton({ disabled = false, onPress }) {
   return (
-    <TouchableOpacity
+    <AppPressable
       style={styles.button}
-      activeOpacity={0.85}
       disabled={disabled}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel="Continue with Google"
+      sound="tap"
     >
       <Image source={GOOGLE_ICON} style={styles.icon} resizeMode="contain" />
       <Text style={styles.label}>Continue with Google</Text>
-    </TouchableOpacity>
+    </AppPressable>
   );
 }
 

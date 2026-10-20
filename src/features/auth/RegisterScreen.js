@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Modal,
   ScrollView,
@@ -273,18 +273,18 @@ export default function RegisterScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <TouchableOpacity
+          <AppPressable
             style={styles.backButton}
             onPress={() => navigation?.goBack()}
             disabled={loading}
           >
             <Text style={styles.backArrow}>‹</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>Tell us a bit about yourself</Text>
 
-          <TouchableOpacity style={styles.avatarWrap} onPress={pickProfileImage} disabled={loading}>
+          <AppPressable style={styles.avatarWrap} onPress={pickProfileImage} disabled={loading}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.avatarImage} />
             ) : (
@@ -295,7 +295,7 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.avatarLabel}>
               {profileImage ? 'Change photo' : 'Add profile photo'}
             </Text>
-          </TouchableOpacity>
+          </AppPressable>
 
           <Text style={styles.label}>First name</Text>
           <TextInput
@@ -415,7 +415,7 @@ export default function RegisterScreen({ navigation }) {
                 boxSizing: 'border-box',
               },
             }) : (
-              <TouchableOpacity
+              <AppPressable
                 style={styles.birthdayPickerButton}
                 onPress={openBirthdayPicker}
                 disabled={loading}
@@ -425,7 +425,7 @@ export default function RegisterScreen({ navigation }) {
                 <Text style={[styles.birthdayText, !birthday && styles.birthdayPlaceholder]}>
                   {birthday || 'Select your birthday'}
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             )}
           </View>
           {birthdayError ? (
@@ -441,10 +441,10 @@ export default function RegisterScreen({ navigation }) {
               <View style={styles.datePickerBackdrop}>
                 <View style={styles.datePickerModal}>
                   <View style={styles.datePickerActions}>
-                    <TouchableOpacity onPress={() => setShowBirthdayPicker(false)}>
+                    <AppPressable onPress={() => setShowBirthdayPicker(false)}>
                       <Text style={styles.datePickerAction}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    </AppPressable>
+                    <AppPressable
                       onPress={() => {
                         setBirthday(formatBirthday(pendingBirthday));
                         setBirthdayError('');
@@ -452,7 +452,7 @@ export default function RegisterScreen({ navigation }) {
                       }}
                     >
                       <Text style={styles.datePickerAction}>Done</Text>
-                    </TouchableOpacity>
+                    </AppPressable>
                   </View>
                   <DateTimePicker
                     value={pendingBirthday}
@@ -520,7 +520,7 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.matchText}>✓ Passwords match</Text>
           ) : null}
 
-          <TouchableOpacity
+          <AppPressable
             style={[styles.registerButton, loading && { opacity: 0.7 }]}
             onPress={handleRegister}
             activeOpacity={0.85}
@@ -531,13 +531,13 @@ export default function RegisterScreen({ navigation }) {
             ) : (
               <Text style={styles.registerButtonText}>Sign up</Text>
             )}
-          </TouchableOpacity>
+          </AppPressable>
 
           <View style={styles.footerRow}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation?.navigate('Login')} disabled={loading}>
+            <AppPressable onPress={() => navigation?.navigate('Login')} disabled={loading}>
               <Text style={styles.footerLink}>Log in</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
