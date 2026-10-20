@@ -13,6 +13,7 @@ import { usePractice } from '../../context/PracticeContext';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
+import AppPressable from '@components/AppPressable';
 import { playSound } from '../../utils/sounds';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
@@ -87,11 +88,9 @@ export default function DashboardScreen({ navigation }) {
       >
         <Text style={styles.greeting}>Hello, {displayName}!👋</Text>
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.profileCard}
-          activeOpacity={0.8}
           onPress={() => {
-            playSound('tap');
             navigation.navigate('Profile');
           }}
         >
@@ -114,17 +113,16 @@ export default function DashboardScreen({ navigation }) {
             }
             style={styles.avatar}
           />
-        </TouchableOpacity>
+        </AppPressable>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickActionsRow}>
           {QUICK_ACTIONS.map((action) => {
             const isPressed = pressedId === action.id;
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={action.id}
                 style={styles.quickActionWrap}
-                activeOpacity={0.8}
                 onPressIn={() => setPressedId(action.id)}
                 onPressOut={() => setPressedId(null)}
                 onPress={() => handleQuickAction(action)}
@@ -139,7 +137,7 @@ export default function DashboardScreen({ navigation }) {
                   <Text style={styles.quickActionIcon}>{action.icon}</Text>
                 </View>
                 <Text style={styles.quickActionLabel}>{action.label}</Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </View>
@@ -157,10 +155,9 @@ export default function DashboardScreen({ navigation }) {
           {CAREER_CHECKLIST.map((item, index) => {
             const isComplete = isChecklistItemComplete(item);
             return (
-              <TouchableOpacity
+              <AppPressable
                 key={item.label}
                 style={styles.checklistItem}
-                activeOpacity={0.75}
                 onPress={() => handleChecklistPress(item)}
               >
                 <View
@@ -180,7 +177,7 @@ export default function DashboardScreen({ navigation }) {
                 </View>
                 <Text style={styles.checklistItemText}>{item.label}</Text>
                 <Text style={styles.checklistChevron}>›</Text>
-              </TouchableOpacity>
+              </AppPressable>
             );
           })}
         </View>

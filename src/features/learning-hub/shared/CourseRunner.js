@@ -2,7 +2,7 @@
 //   lessons -> lesson -> lessonList -> quizIntro -> quiz -> result
 // Every course renders this with its own `course` config, so all courses share
 // one design and one flow. Progress is saved to Supabase by useCourseProgress.
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, BackHandler, View, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -39,6 +39,7 @@ export default function CourseRunner({ course, navigation }) {
   const [answers, setAnswers] = useState([]);
   const [score, setScore] = useState(0);
   const [saveError, setSaveError] = useState(false);
+  const lastQuizPassAttemptRef = useRef('');
 
   // ---------- Navigation ----------
   const goToLessons = () => setScreen('lessons');
@@ -82,7 +83,9 @@ export default function CourseRunner({ course, navigation }) {
 
   const handleToggleLesson = (lessonId) => {
     const wasDone = progress.completedLessonIds.includes(lessonId);
-    playSound(wasDone ? 'tap' : 'success');
+    if (!wasDone) {
+      playSound('lessonComplete');
+    }
     progress.toggleLesson(lessonId);
   };
 
@@ -94,6 +97,7 @@ export default function CourseRunner({ course, navigation }) {
     setAnswers([]);
     setScore(0);
     setSaveError(false);
+    lastQuizPassAttemptRef.current = '';
     setScreen('quiz');
   };
 
@@ -128,8 +132,12 @@ export default function CourseRunner({ course, navigation }) {
       ).length;
       const percent = Math.round((finalScore / questions.length) * 100);
       const passed = percent >= course.passingPercent;
+      const attemptKey = `${course.id}:${questions.length}:${finalScore}:${percent}`;
 
-      playSound(passed ? 'success' : 'error');
+      if (passed && lastQuizPassAttemptRef.current !== attemptKey) {
+        playSound('quizPass');
+        lastQuizPassAttemptRef.current = attemptKey;
+      }
 
       setScore(finalScore);
       setSelectedAnswer(null);

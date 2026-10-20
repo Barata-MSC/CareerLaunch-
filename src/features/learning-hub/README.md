@@ -30,6 +30,8 @@ The current roadmap is defined in `software-engineering/SoftwareEngineerRoadmap.
 
 The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track.
 
+Sound cues in the Learning Hub use the project-local clips in `src/assets/sounds/` and are gated by the global app toggle in the profile screen. The app uses a shared `AppPressable` wrapper so tap, lesson-complete, and quiz-pass feedback stay consistent without requiring extra native dependencies.
+
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
 ## Source architecture

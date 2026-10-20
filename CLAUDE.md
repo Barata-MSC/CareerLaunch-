@@ -101,6 +101,8 @@ There is no test script in `package.json` at present. Do not claim automated tes
 
 CareerLaunch is a JavaScript application built with React Native and Expo. It provides career-development features including authentication, a dashboard, job discovery and tracking, interview preparation, a learning hub, profile management, and resume building. The project is in development; verify the implementation before describing a feature as complete.
 
+Sound effects are intentionally lightweight and local to the project: the app uses `expo-audio` with a shared `AppPressable` wrapper and a global sound toggle in profile settings. The current clips live under `src/assets/sounds/` and are documented in `src/assets/sounds/CREDITS.md`.
+
 The installed stack and commands in the root `package.json` are authoritative. The project currently uses Expo SDK 57, React Native, React Navigation, Supabase, and npm.
 
 Use `README.md` for project overview, setup, and team onboarding. This file adds repository-specific guidance for coding tasks; if the README and actual source/configuration disagree, verify the repository and update the relevant documentation rather than assuming either is current.
