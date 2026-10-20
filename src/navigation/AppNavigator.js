@@ -36,6 +36,7 @@ import {
   ResumePreviewScreen,
   SkillsScreen,
 } from '@features/resume-builder';
+import AccountGate from '../components/AccountGate';
 import MainTabs from '@features/resume-builder/MainTabs';
 import DesignFundamentalsCourseScreen from '../features/learning-hub/software-engineering/design-fundamentals-course/DesignFundamentalsCourse';
 import UserResearchCourseScreen from '../features/learning-hub/software-engineering/user-research-course/UserResearchCourse';
@@ -43,6 +44,30 @@ import WireframingCourseScreen from '../features/learning-hub/software-engineeri
 import usabilityTestingCourseScreen from '../features/learning-hub/software-engineering/usability-testing-course/UsabilityTestingCourse';
 
 const Stack = createNativeStackNavigator();
+
+function withResumeAccountGate(Screen) {
+  function GatedResumeScreen(props) {
+    return (
+      <AccountGate
+        featureName="Resume Builder"
+        description="Build and preview your resume with confidence. Complete your account to unlock the Resume Builder and keep your work saved."
+        navigation={props.navigation}
+      >
+        <Screen {...props} />
+      </AccountGate>
+    );
+  }
+
+  return GatedResumeScreen;
+}
+
+const GatedPersonalInfoScreen = withResumeAccountGate(PersonalInfoScreen);
+const GatedEducationScreen = withResumeAccountGate(EducationScreen);
+const GatedSkillsScreen = withResumeAccountGate(SkillsScreen);
+const GatedExperienceScreen = withResumeAccountGate(ExperienceScreen);
+const GatedCertificatesScreen = withResumeAccountGate(CertificatesScreen);
+const GatedProjectsScreen = withResumeAccountGate(ProjectsScreen);
+const GatedResumePreviewScreen = withResumeAccountGate(ResumePreviewScreen);
 
 export default function AppNavigator() {
   return (
@@ -75,13 +100,13 @@ export default function AppNavigator() {
       <Stack.Screen name="StatisticsCourse" component={StatisticsCourseScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
-      <Stack.Screen name="personalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="education" component={EducationScreen} />
-      <Stack.Screen name="skills" component={SkillsScreen} />
-      <Stack.Screen name="experience" component={ExperienceScreen} />
-      <Stack.Screen name="certificates" component={CertificatesScreen} />
-      <Stack.Screen name="projects" component={ProjectsScreen} />
-      <Stack.Screen name="ResumePreview" component={ResumePreviewScreen} />
+      <Stack.Screen name="personalInfo" component={GatedPersonalInfoScreen} />
+      <Stack.Screen name="education" component={GatedEducationScreen} />
+      <Stack.Screen name="skills" component={GatedSkillsScreen} />
+      <Stack.Screen name="experience" component={GatedExperienceScreen} />
+      <Stack.Screen name="certificates" component={GatedCertificatesScreen} />
+      <Stack.Screen name="projects" component={GatedProjectsScreen} />
+      <Stack.Screen name="ResumePreview" component={GatedResumePreviewScreen} />
       <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
       <Stack.Screen name="LearningHub" component={LearningHubScreen} />
     </Stack.Navigator>

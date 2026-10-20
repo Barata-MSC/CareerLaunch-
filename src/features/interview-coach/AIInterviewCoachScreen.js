@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../context/ProfileContext';
-import GuestNotice from '../../components/GuestNotice';
+import AccountGate from '../../components/AccountGate';
 import { usePractice } from '../../context/PracticeContext';
 
 const MIC_ICON = require('@assets/mic-icon.png');
@@ -544,9 +544,13 @@ const styles = StyleSheet.create({
 });
 
 export default function AIInterviewCoachScreen(props) {
-  const { isGuest } = useProfile();
-  if (isGuest) {
-    return <GuestNotice navigation={props.navigation} title="AI Coach" />;
-  }
-  return <AIInterviewCoachContent {...props} />;
+  return (
+    <AccountGate
+      featureName="AI Interview Coach"
+      description="Build confidence with practice responses and feedback. Complete your account to unlock this feature and keep your progress saved."
+      navigation={props.navigation}
+    >
+      <AIInterviewCoachContent {...props} />
+    </AccountGate>
+  );
 }

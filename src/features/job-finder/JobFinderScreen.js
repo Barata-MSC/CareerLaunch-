@@ -23,8 +23,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useProfile } from '../../context/ProfileContext';
-import GuestNotice from '../../components/GuestNotice';
-// ^ adjust this relative path if your context file lives somewhere else
+import AccountGate from '../../components/AccountGate';
 
 const PURPLE = '#5B21D6';
 const CATEGORIES = ['All', 'IT', 'Design', 'Finance', 'Marketing'];
@@ -478,9 +477,13 @@ const styles = StyleSheet.create({
 });
 
 export default function JobFinderScreen(props) {
-  const { isGuest } = useProfile();
-  if (isGuest) {
-    return <GuestNotice navigation={props.navigation} title="Job Finder" />;
-  }
-  return <JobFinderContent {...props} />;
+  return (
+    <AccountGate
+      featureName="Job Finder"
+      description="Explore openings and track your applications. Complete your account to unlock Job Finder and keep your saved progress."
+      navigation={props.navigation}
+    >
+      <JobFinderContent {...props} />
+    </AccountGate>
+  );
 }
