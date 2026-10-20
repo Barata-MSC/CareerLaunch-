@@ -8,27 +8,43 @@ CareerLaunch is a mobile-first career guidance and employment-preparation protot
 
 The intended learner journey is:
 
-1. Choose or arrive with a career goal.
-2. Review the career roadmap and select a course.
-3. Learn from ordered lessons, examples, and optional activities.
-4. Mark lessons complete as they are studied.
-5. Take a course quiz, review answers and explanations, and revisit weak topics.
-6. See course and career-roadmap progress update from saved lesson and quiz records.
-7. Continue to the next course in the pathway.
+1. Choose a career.
+2. Choose a track within that career.
+3. Review the career roadmap and select a course.
+4. Learn from ordered lessons, examples, and optional activities.
+5. Mark lessons complete as they are studied.
+6. Take a course quiz, review answers and explanations, and revisit weak topics.
+7. See course and career-roadmap progress update from saved lesson and quiz records.
+8. Continue to the next course in the pathway.
 
 Course durations in the product are estimates, not promises. Learning content should be practical, accurate, accessible to beginners, and honest about prerequisites and what a learner will be able to do afterward.
 
 ## Current careers and roadmap
 
-The current roadmap is defined in `software-engineering/SoftwareEngineerRoadmap.js` as `TRACKS`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+The current Learning Hub begins with a career picker and then moves into a career's track list. The actual career data lives in `careers/careers.js`, while the roadmap definitions for the available career remain in `software-engineering/SoftwareEngineerRoadmap.js` as `TRACKS`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+
+### Careers
+
+| Career | Status | Tracks mapping |
+|---|---|---|
+| Software Engineering | Available | Software Engineer, UI/UX Designer, Data Analyst |
+| Cybersecurity | Coming soon | None |
+| Teacher | Coming soon | None |
+| Nursing | Coming soon | None |
+| Doctor | Coming soon | None |
+| Lawyer | Coming soon | None |
+| Marine (Seafarer / Marine Engineering) | Coming soon | None |
+| Accountancy | Coming soon | None |
+| Civil Engineering | Coming soon | None |
+| Hospitality & Tourism | Coming soon | None |
+
+The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Only Software Engineering is wired to real track/course data at this stage.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
 | Software Engineer | HTML, CSS, JavaScript, React, Node.js, Database, Git & GitHub | All seven steps have courses. |
 | Data Analyst | Excel & Spreadsheets, SQL, Python (Pandas), Data Visualization, Statistics, Dashboards (Power BI / Tableau) | All six steps have courses. |
 | UI/UX Designer | Design Fundamentals, User Research, Wireframing, Figma / Prototyping, Usability Testing, Design Systems | Design Fundamentals has a course. The other five steps have descriptions but no course route/data yet. |
-
-The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track.
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -38,7 +54,12 @@ When adding or changing a track, check that step IDs are unique within the track
 src/features/learning-hub/
   README.md                         This reference and course-generation brief
   LearningHubScreen/
-    LearningHubScreen.js            Career/track and course browsing entry point
+    LearningHubScreen.js            Career-first learning entry and track/course browsing
+  careers/
+    careers.js                      Career data, stable IDs, and data validation helpers
+    CareersScreen.js                 Career list/entry screen for the Learning Hub
+    CareerTracksScreen.js           Career-specific track list screen
+    CareerDetailScreen.js           Coming-soon career detail-only screen
   shared/
     CourseRunner.js                 Shared course flow and orchestration
     courseUtils.js                  Derived lesson status and quiz question selection
@@ -72,6 +93,26 @@ The course modules are deliberately data-driven. A course wrapper normally impor
 - `shared/styles.js` centralizes the current course palette and common spacing, typography, and button styles.
 
 Individual course folders keep the course configuration, wrapper, lesson data, optional lesson extras, and question bank together. For example, the JavaScript course has `javascript-course/course.js`, `JavaScriptCourse.js`, and `data/lessons.js`, `data/lessonExtras.js`, and `data/questions.js`.
+
+## Careers data contract
+
+Career data is authored separately from the UI in `careers/careers.js` and follows this shape:
+
+```js
+{
+  id: 'software-engineering',
+  title: 'Software Engineering',
+  subtitle: 'Build websites, apps, and software systems.',
+  icon: '💻',
+  color: '#6C4CE0',
+  status: 'available',
+  trackIds: ['Software Engineer', 'UI/UX Designer', 'Data Analyst'],
+  overview: 'Two or three sentences describing the field.',
+  skillsPreview: ['Problem solving', 'Programming', 'Teamwork'],
+}
+```
+
+`id` is stable and should not be derived from the display title. `trackIds` must reference real track IDs in the available career's `TRACKS`, and a coming-soon career must keep `trackIds` empty and no course data attached. All career IDs should be unique; if a career is available it must have at least one resolvable track.
 
 ## Course data contract
 
@@ -183,7 +224,9 @@ Suggested output order for a single comprehensive build prompt: (a) define the c
 Before considering a new or expanded career pathway complete, verify:
 
 - The career track, ordered steps, course references, and routes agree.
+- Every `trackIds` entry resolves to a real track; coming-soon careers retain no attached course content.
 - Every course has stable unique IDs, a usable outline, substantial lesson content, and a valid question bank.
+- Career IDs are unique and available careers have at least one resolvable track.
 - All question-to-lesson mappings and answer indexes are valid.
 - Shared screens render optional lesson content safely and work with every course.
 - Quiz selection, scoring, pass threshold, review, retake, and save-failure behavior are coherent.
@@ -191,3 +234,9 @@ Before considering a new or expanded career pathway complete, verify:
 - Database schema, ownership policies, and client operations match; no privileged key is shipped to the client.
 - Empty, loading, error, retry, completion, and small-screen states are handled.
 - Documentation distinguishes implemented behavior from roadmap plans and external integrations that are not present.
+
+### How to add a new career
+
+1. Add a new entry to `careers.js` with a stable `id` and a clear overview.
+2. For an available career, add its tracks and courses following the existing course data contract first, then list the `trackIds` that correspond to real entries in `TRACKS`.
+3. Keep the career as `coming-soon` until the route, course data, and lessons are implemented and reviewed.

@@ -21,6 +21,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
+import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
 import { playSound } from '../../../utils/sounds';
 
@@ -65,14 +66,15 @@ const BUTTON_LABEL = {
 };
 
 export default function LearningHubScreen({ navigation }) {
-  const [view, setView] = useState('tracks'); // 'tracks' | 'courses'
+  const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
   const [selectedTrack, setSelectedTrack] = useState(null);
+  const [selectedCareerId, setSelectedCareerId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
 
   // Saved progress. Reload whenever the screen is focused, so it also updates
   // after the user comes back from a course.
-  const { progressByCourseId, refresh } = useAllCoursesProgress(ALL_COURSES);
+  const { progressByCourseId, refresh, loading, error } = useAllCoursesProgress(ALL_COURSES);
 
   useFocusEffect(
     useCallback(() => {
@@ -85,7 +87,13 @@ export default function LearningHubScreen({ navigation }) {
     useCallback(() => {
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
         if (view === 'courses') {
+          setSelectedTrack(null);
           setView('tracks');
+          return true;
+        }
+        if (view === 'tracks') {
+          setSelectedCareerId(null);
+          setView('careers');
           return true;
         }
         return false;
@@ -144,10 +152,25 @@ export default function LearningHubScreen({ navigation }) {
     setView('courses');
   };
 
+  const openCareer = (career) => {
+    if (career.status === 'available') {
+      setSelectedCareerId(career.id);
+      setQuery('');
+      setView('tracks');
+      return;
+    }
+    navigation.navigate('CareerDetail', { careerId: career.id });
+  };
+
   const handleBack = () => {
     if (view === 'courses') {
       setSelectedTrack(null);
       setView('tracks');
+      return;
+    }
+    if (view === 'tracks') {
+      setSelectedCareerId(null);
+      setView('careers');
       return;
     }
     navigation.navigate('Dashboard');
@@ -159,16 +182,108 @@ export default function LearningHubScreen({ navigation }) {
     navigation.navigate(step.route);
   };
 
-  const title = view === 'courses' && currentTrack ? currentTrack.name : 'Learning Hub';
+  const currentCareer = getCareerById(selectedCareerId) || getCareerById('software-engineering');
+  // Career progress is derived from the underlying course statuses, not saved as a
+  // separate career record. The percentage is completed courses divided by total
+  // courses in that career, using the same per-course status rule as the roadmap.
+  const title = view === 'courses' && currentTrack ? currentTrack.name : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
+
+  const filteredCareers = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return CAREERS.filter((career) => !q || career.title.toLowerCase().includes(q));
+  }, [query]);
+
+  const renderCareers = () => (
+    <View style={styles.flex}>
+      <View style={styles.searchBox}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search careers..."
+          placeholderTextColor="#9CA3AF"
+          value={query}
+          onChangeText={setQuery}
+          returnKeyType="search"
+        />
+        {query.trim() ? (
+          <TouchableOpacity onPress={() => setQuery('')} style={styles.clearButton}>
+            <Text style={styles.clearText}>Clear</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+
+      <ScrollView contentContainerStyle={styles.listContent}>
+        <Text style={styles.intro}>Pick a career to explore.</Text>
+
+        {filteredCareers.length === 0 ? (
+          <Text style={styles.empty}>No careers match your search</Text>
+        ) : (
+          filteredCareers.map((career) => {
+            const isAvailable = career.status === 'available';
+            const careerCourseIds = (career.trackIds || [])
+              .map((trackId) => TRACKS[trackId])
+              .filter(Boolean)
+              .flatMap((track) => (track.steps || []).filter((step) => step.course).map((step) => step.course));
+            const totalCourses = careerCourseIds.length;
+            const completedCourses = careerCourseIds.filter((course) => getCourseStatus(course, progressByCourseId[course.id]) === 'completed').length;
+            const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
+
+            return (
+              <TouchableOpacity
+                key={career.id}
+                accessibilityRole="button"
+                accessibilityLabel={`${career.title}, ${career.status}`}
+                style={[styles.card, !isAvailable && styles.cardMuted]}
+                activeOpacity={0.85}
+                onPress={() => openCareer(career)}
+              >
+                <View style={[styles.icon, { backgroundColor: career.color }]}>
+                  <Text style={styles.iconEmoji}>{career.icon}</Text>
+                </View>
+
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle}>{career.title}</Text>
+                  <Text style={styles.meta}>{isAvailable ? `${career.trackIds.length} tracks` : 'Coming soon'}</Text>
+                  <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
+
+                  {isAvailable ? (
+                    <View style={styles.progressRow}>
+                      <View style={styles.progressTrack}>
+                        <View style={[styles.progressFill, { width: `${percent}%` }]} />
+                      </View>
+                      <Text style={styles.progressText}>{percent}%</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.comingSoonBadge}>
+                      <Text style={styles.comingSoonLabel}>Coming soon</Text>
+                    </View>
+                  )}
+                </View>
+
+                {isAvailable && <Text style={styles.chevron}>›</Text>}
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
+  );
 
   // ---------- Step 1: tracks ----------
-  const renderTracks = () => (
-    <ScrollView contentContainerStyle={styles.listContent}>
-      <Text style={styles.intro}>Pick a track to see its courses.</Text>
+  const renderTracks = () => {
+    const careerTracks = tracks.filter((track) =>
+      (currentCareer?.trackIds || []).includes(track.name),
+    );
 
-      {tracks.map((track) => {
-        const meta = TRACK_META[track.name] || FALLBACK_META;
-        const comingSoon = !track.courseCount;
+    return (
+      <ScrollView contentContainerStyle={styles.listContent}>
+        <Text style={styles.intro}>Pick a track to see its courses.</Text>
+
+        {careerTracks.length === 0 ? (
+          <Text style={styles.empty}>No tracks match this career yet.</Text>
+        ) : (
+          careerTracks.map((track) => {
+            const meta = TRACK_META[track.name] || FALLBACK_META;
+            const comingSoon = !track.courseCount;
 
         return (
           <TouchableOpacity
@@ -205,12 +320,14 @@ export default function LearningHubScreen({ navigation }) {
               )}
             </View>
 
-            {!comingSoon && <Text style={styles.chevron}>›</Text>}
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
-  );
+              {!comingSoon && <Text style={styles.chevron}>›</Text>}
+            </TouchableOpacity>
+          );
+        })
+        )}
+      </ScrollView>
+    );
+  };
 
   // ---------- Step 2: courses of the chosen track ----------
   const renderCourseCard = ({ item }) => {
@@ -315,7 +432,9 @@ export default function LearningHubScreen({ navigation }) {
         <View style={styles.backBtn} />
       </View>
 
-      {view === 'tracks' ? renderTracks() : renderCourses()}
+      {view === 'careers' && renderCareers()}
+      {view === 'tracks' && renderTracks()}
+      {view === 'courses' && renderCourses()}
     </SafeAreaView>
   );
 }
@@ -346,8 +465,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
     borderRadius: 10,
     paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  searchInput: { height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
+  searchInput: { flex: 1, height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
+  clearButton: { paddingVertical: 6, paddingHorizontal: 8 },
+  clearText: { color: PURPLE, fontWeight: '700', fontSize: 12 },
 
   sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },
