@@ -361,7 +361,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-4',
-    question: 'Which statement is written correctly?',
+    question: 'Which clause correctly sorts Customers by City?',
     answers: [
       'SELECT * FROM Customers ORDER BY City;',
       'SELECT * ORDER BY City FROM Customers;',
@@ -687,7 +687,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-7',
-    question: 'Which statement is written correctly?',
+    question: 'Which statement correctly updates one customer record?',
     answers: [
       "UPDATE Customers SET City = 'Paris' WHERE CustomerID = 2;",
       "UPDATE SET City = 'Paris' FROM Customers WHERE CustomerID = 2;",
@@ -751,7 +751,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-8',
-    question: 'Which statement is written correctly?',
+    question: 'Which statement correctly deletes matching customer records?',
     answers: [
       "DELETE Customers WHERE CustomerName = 'Alfreds' FROM;",
       "REMOVE FROM Customers WHERE CustomerName = 'Alfreds';",

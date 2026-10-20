@@ -1,4 +1,4 @@
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { TRACKS } from './registry';
 
 export const CAREERS = [
   {
@@ -67,8 +67,8 @@ export const CAREERS = [
     subtitle: 'Advise, advocate, and help people navigate legal issues.',
     icon: '⚖️',
     color: '#7C3AED',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['law-lawyer-path', 'law-paralegal'],
     overview:
       'Lawyers work with legal principles, research, and clear reasoning to advise clients, prepare arguments, and support fair outcomes.',
     skillsPreview: ['Research', 'Reading', 'Judgment'],
@@ -128,7 +128,10 @@ export const getCareerById = (id) => CAREERS.find((career) => career.id === id) 
 export function validateCareerData(careers = CAREERS) {
   const issues = [];
   const seenIds = new Set();
-  const validTrackIds = new Set(Object.keys(TRACKS));
+  const validTrackIds = new Set([
+    ...Object.keys(TRACKS),
+    ...Object.values(TRACKS).map((track) => track.id).filter(Boolean),
+  ]);
 
   careers.forEach((career) => {
     if (!career || typeof career.id !== 'string') {
