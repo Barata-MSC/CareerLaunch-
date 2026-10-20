@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // src/screens/AIInterviewCoachScreen/AIInterviewCoachScreen.js
 // Uses only core React Native, so no extra packages are needed.
 // Simulated interview practice: pick a question, "answer" it by voice
@@ -16,7 +17,6 @@ import {
   Text,
   TextInput,
   Image,
-  TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
   StatusBar,
@@ -242,9 +242,9 @@ function AIInterviewCoachContent({ navigation }) {
         scored on confidence and clarity; typed answers are scored on grammar and punctuation.
       </Text>
 
-      <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleStart}>
+      <AppPressable style={styles.primaryButton} activeOpacity={0.85} onPress={handleStart}>
         <Text style={styles.primaryButtonText}>Start Practice</Text>
-      </TouchableOpacity>
+      </AppPressable>
 
       {pastResults.length > 0 && (
         <View style={styles.progressSection}>
@@ -272,13 +272,13 @@ function AIInterviewCoachContent({ navigation }) {
 
       {!useTextInput ? (
         <>
-          <TouchableOpacity
+          <AppPressable
             style={[styles.micButton, isRecording && styles.micButtonActive]}
             activeOpacity={0.85}
             onPress={handleMicPress}
           >
             <Image source={MIC_ICON} style={styles.micIcon} resizeMode="contain" />
-          </TouchableOpacity>
+          </AppPressable>
           <Text style={styles.micHint}>
             {isRecording
               ? 'Recording… tap again to stop'
@@ -287,7 +287,7 @@ function AIInterviewCoachContent({ navigation }) {
               : 'Tap to speak'}
           </Text>
 
-          <TouchableOpacity
+          <AppPressable
             onPress={() => {
               setIsRecording(false);
               setHasRecording(false);
@@ -296,7 +296,7 @@ function AIInterviewCoachContent({ navigation }) {
             }}
           >
             <Text style={styles.switchInputText}>Type my answer instead</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </>
       ) : (
         <>
@@ -308,7 +308,7 @@ function AIInterviewCoachContent({ navigation }) {
             value={answerText}
             onChangeText={setAnswerText}
           />
-          <TouchableOpacity
+          <AppPressable
             onPress={() => {
               setUseTextInput(false);
               setAnswerText('');
@@ -317,18 +317,18 @@ function AIInterviewCoachContent({ navigation }) {
             }}
           >
             <Text style={styles.switchInputText}>Use voice instead</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </>
       )}
 
-      <TouchableOpacity
+      <AppPressable
         style={[styles.primaryButton, !canSubmit && styles.primaryButtonDisabled]}
         activeOpacity={0.85}
         disabled={!canSubmit}
         onPress={handleSubmitAnswer}
       >
         <Text style={styles.primaryButtonText}>Submit Answer</Text>
-      </TouchableOpacity>
+      </AppPressable>
     </ScrollView>
   );
 
@@ -369,11 +369,11 @@ function AIInterviewCoachContent({ navigation }) {
           <Text style={styles.suggestionText}>{latest.suggestion}</Text>
         </View>
 
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleNextQuestion}>
+        <AppPressable style={styles.primaryButton} activeOpacity={0.85} onPress={handleNextQuestion}>
           <Text style={styles.primaryButtonText}>
             {isLastQuestion ? 'See My Results' : 'Next Question'}
           </Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     );
   };
@@ -412,12 +412,12 @@ function AIInterviewCoachContent({ navigation }) {
           <Text key={i} style={styles.resultBullet}>• {s}</Text>
         ))}
 
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.85} onPress={handleStart}>
+        <AppPressable style={styles.primaryButton} activeOpacity={0.85} onPress={handleStart}>
           <Text style={styles.primaryButtonText}>Practice Again</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation?.goBack()}>
+        </AppPressable>
+        <AppPressable style={styles.secondaryButton} onPress={() => navigation?.goBack()}>
           <Text style={styles.secondaryButtonText}>Back to Dashboard</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     );
   };
@@ -426,13 +426,13 @@ function AIInterviewCoachContent({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           onPress={handleExit}
           style={styles.backButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>AI Interview Coach</Text>
         <View style={styles.backButton} />
       </View>

@@ -101,8 +101,6 @@ There is no test script in `package.json` at present. Do not claim automated tes
 
 CareerLaunch is a JavaScript application built with React Native and Expo. It provides career-development features including authentication, a dashboard, job discovery and tracking, interview preparation, a learning hub, profile management, and resume building. The project is in development; verify the implementation before describing a feature as complete.
 
-Sound effects are intentionally lightweight and local to the project: the app uses `expo-audio` with a shared `AppPressable` wrapper and a global sound toggle in profile settings. The current clips live under `src/assets/sounds/` and are documented in `src/assets/sounds/CREDITS.md`.
-
 The installed stack and commands in the root `package.json` are authoritative. The project currently uses Expo SDK 57, React Native, React Navigation, Supabase, and npm.
 
 Use `README.md` for project overview, setup, and team onboarding. This file adds repository-specific guidance for coding tasks; if the README and actual source/configuration disagree, verify the repository and update the relevant documentation rather than assuming either is current.
@@ -118,6 +116,12 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - Reuse existing shared components and hooks before adding new ones.
 - `App.js` owns the root providers and session bootstrap. Preserve the current provider composition and the separation between authenticated app navigation, auth navigation, and password-recovery navigation when changing startup or auth behavior.
 - The app supports web, but the current web presentation intentionally uses a phone-sized frame. Check both the target platform and `app.config.js` before changing responsive behavior or platform configuration.
+
+### Sound
+
+- `src/utils/sounds.js` owns the sound registry and playback; `src/components/AppPressable.js` provides default tap feedback for interactive controls. Use `sound="none"` when a control plays a more specific cue.
+- The global preference is stored in AsyncStorage under `careerlaunch:sound-enabled` and is controlled from Profile settings.
+- Sound assets live in `src/assets/sounds/`; source and license notes belong in `src/assets/sounds/CREDITS.md`.
 
 ## Expo, web, and project commands
 

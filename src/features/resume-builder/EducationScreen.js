@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
@@ -59,12 +59,12 @@ export default function EducationScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Navigation Title Header Bar */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <AppPressable 
           onPress={() => navigation?.goBack()} 
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Education</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -115,13 +115,13 @@ export default function EducationScreen({ navigation }) {
               />
             </View>
 
-            <TouchableOpacity 
+            <AppPressable 
               style={styles.addButton} 
               activeOpacity={0.8} 
               onPress={handleAddEducation}
             >
               <Text style={styles.addButtonText}>+ Add Academic History</Text>
-            </TouchableOpacity>
+            </AppPressable>
           </View>
 
           {/* Render List Array Output Cards Section */}
@@ -140,26 +140,26 @@ export default function EducationScreen({ navigation }) {
                     <Text style={styles.cardDegree}>{item.degree}</Text>
                     <Text style={styles.cardYear}>{item.year}</Text>
                   </View>
-                  <TouchableOpacity 
+                  <AppPressable 
                     onPress={() => handleRemoveEducation(item.id)}
                     style={styles.deleteButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Text style={styles.deleteButtonText}>✕</Text>
-                  </TouchableOpacity>
+                  </AppPressable>
                 </View>
               ))}
             </View>
           )}
 
           {/* Close Section Global Button */}
-          <TouchableOpacity
+          <AppPressable
             style={styles.saveButton}
             activeOpacity={0.85}
             onPress={() => navigation?.goBack()}
           >
             <Text style={styles.saveButtonText}>Done</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

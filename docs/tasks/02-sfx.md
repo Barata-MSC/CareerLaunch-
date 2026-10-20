@@ -15,8 +15,6 @@
 
 ### 1. Goal
 
-Make sound feedback consistent across CareerLaunch:
-
 - A **tap** sound whenever the user taps a button or tappable control.
 - A **lesson-complete** sound when the user marks a lesson as done.
 - A **quiz-pass** sound when the user passes a course quiz.

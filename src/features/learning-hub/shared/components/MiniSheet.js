@@ -1,9 +1,10 @@
+import AppPressable from '@components/AppPressable';
 // Tappable mini spreadsheet. Tap a cell to see its address (Name Box) and its
 // contents (Formula Bar), like real Excel. Optional `challenge` asks the learner
 // to find a cell and gives instant feedback.
 //   cell = value, or { f: '=SUM(B2:B4)', v: 105 } to show a formula
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 const shown = (c) => (c && typeof c === 'object' ? c.v : c ?? '');
@@ -45,7 +46,7 @@ export default function MiniSheet({ title, columns, rows, challenge }) {
                 <Text style={styles.headText}>{r + 1}</Text>
               </View>
               {columns.map((col, c) => (
-                <TouchableOpacity
+                <AppPressable
                   key={col}
                   style={[styles.cell, sel?.r === r && sel?.c === c && styles.cellOn]}
                   onPress={() => setSel({ r, c })}
@@ -54,7 +55,7 @@ export default function MiniSheet({ title, columns, rows, challenge }) {
                   <Text style={styles.cellText} numberOfLines={1}>
                     {String(shown(row[c]))}
                   </Text>
-                </TouchableOpacity>
+                </AppPressable>
               ))}
             </View>
           ))}

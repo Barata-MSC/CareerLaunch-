@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   ActivityIndicator,
@@ -149,7 +149,6 @@ export default function LoginScreen({ navigation }) {
 
   const switchGuestMode = (mode) => {
     if (busy || mode === guestMode) return;
-    playSound('tap');
     setGuestMode(mode);
     clearGuestErrors();
     setGuestPassword('');
@@ -373,19 +372,18 @@ export default function LoginScreen({ navigation }) {
         </View>
 
         {/* Forgot Password */}
-        <TouchableOpacity
+        <AppPressable
           style={styles.forgotWrapper}
           disabled={busy}
           onPress={() => {
-            playSound('tap');
             navigation?.navigate('ForgotPassword', { email: email.trim() });
           }}
         >
           <Text style={styles.forgotText}>Forgot password?</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
         {/* Login Button */}
-        <TouchableOpacity
+        <AppPressable
           style={[styles.primaryButton, loading && { opacity: 0.7 }]}
           activeOpacity={0.85}
           onPress={handleLogin}
@@ -396,7 +394,7 @@ export default function LoginScreen({ navigation }) {
           ) : (
             <Text style={styles.primaryButtonText}>Login</Text>
           )}
-        </TouchableOpacity>
+        </AppPressable>
 
         {/* Divider */}
         <View style={styles.dividerRow}>
@@ -409,23 +407,22 @@ export default function LoginScreen({ navigation }) {
         <GoogleButton disabled={busy} />
 
         {/* Continue as guest */}
-        <TouchableOpacity
+        <AppPressable
           style={styles.guestButton}
           activeOpacity={0.85}
           onPress={() => {
-            playSound('tap');
             setShowGuest(!showGuest);
           }}
           disabled={busy}
         >
           <Text style={styles.guestButtonText}>👤 Continue as guest</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
         {showGuest && (
           <View style={styles.guestPanel}>
             {/* Create a guest profile / log back in to one */}
             <View style={styles.segmentRow}>
-              <TouchableOpacity
+              <AppPressable
                 style={[styles.segment, isCreate && styles.segmentActive]}
                 activeOpacity={0.85}
                 onPress={() => switchGuestMode('create')}
@@ -434,8 +431,8 @@ export default function LoginScreen({ navigation }) {
                 <Text style={[styles.segmentText, isCreate && styles.segmentTextActive]}>
                   Create guest profile
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </AppPressable>
+              <AppPressable
                 style={[styles.segment, !isCreate && styles.segmentActive]}
                 activeOpacity={0.85}
                 onPress={() => switchGuestMode('login')}
@@ -444,7 +441,7 @@ export default function LoginScreen({ navigation }) {
                 <Text style={[styles.segmentText, !isCreate && styles.segmentTextActive]}>
                   I already have one
                 </Text>
-              </TouchableOpacity>
+              </AppPressable>
             </View>
 
             <Text style={styles.label}>{isCreate ? 'Choose a username' : 'Username'}</Text>
@@ -524,7 +521,7 @@ export default function LoginScreen({ navigation }) {
                 : 'Guest passwords cannot be reset because guests have no email.'}
             </Text>
 
-            <TouchableOpacity
+            <AppPressable
               style={[styles.primaryButton, styles.fullWidth, guestLoading && { opacity: 0.7 }]}
               activeOpacity={0.85}
               onPress={isCreate ? handleGuestCreate : handleGuestLogin}
@@ -537,23 +534,22 @@ export default function LoginScreen({ navigation }) {
                   {isCreate ? 'Start as guest' : 'Log in as guest'}
                 </Text>
               )}
-            </TouchableOpacity>
+            </AppPressable>
           </View>
         )}
 
         {/* Sign Up */}
         <View style={styles.signUpRow}>
           <Text style={styles.signUpText}>Don't have an account yet?</Text>
-          <TouchableOpacity
+          <AppPressable
             activeOpacity={0.8}
             onPress={() => {
-              playSound('tap');
               navigation?.navigate('Register');
             }}
             disabled={busy}
           >
             <Text style={styles.signUpLink}>Sign Up</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </ScrollView>
     </SafeAreaView>

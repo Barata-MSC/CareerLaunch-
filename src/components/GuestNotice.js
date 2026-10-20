@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // src/components/GuestNotice.js
 // Full-screen "you're using a guest account" notice, styled like the guest
 // card on ProfileScreen. Shown instead of a feature when the user is a guest.
@@ -5,7 +6,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   Alert,
@@ -63,9 +63,9 @@ export default function GuestNotice({ navigation, title }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation?.goBack()}>
+        <AppPressable style={styles.backButton} onPress={() => navigation?.goBack()}>
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.backButton} />
       </View>
@@ -81,13 +81,13 @@ export default function GuestNotice({ navigation, title }) {
               : `Create an account to use ${title} and to keep your progress if you log out or switch devices.`}
           </Text>
 
-          <TouchableOpacity
+          <AppPressable
             style={styles.primaryButton}
             activeOpacity={0.85}
             onPress={() => navigation?.navigate('CreateAccount')}
           >
             <Text style={styles.primaryButtonText}>Create account</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </View>
     </SafeAreaView>

@@ -1,13 +1,13 @@
 # Sound credits
 
-These local prototype sound effects are included in the repository for the app’s feedback cues and are intended for the project’s educational use only.
+The repository history records when the original files entered the project, but does not identify their original source, author, or license. Verify those details before distributing the app or treating the clips as cleared for reuse.
 
 | File | Source | Author | License |
 |---|---|---|---|
-| `tap.mp3` | Local prototype tap tone generated for the project UI | CareerLaunch team | Internal educational project use |
-| `error.mp3` | Local prototype warning tone generated for the project UI | CareerLaunch team | Internal educational project use |
-| `success.mp3` | Local prototype success tone generated for the project UI | CareerLaunch team | Internal educational project use |
-| `lesson-complete.mp3` | Duplicate of the project’s local success-style lesson cue | CareerLaunch team | Internal educational project use |
-| `quiz-pass.mp3` | Duplicate of the project’s local success-style quiz cue | CareerLaunch team | Internal educational project use |
+| `tap.mp3` | Added in commit `1c3df0b`; updated in `29750dd` | Not recorded in repository history | Not recorded in repository history |
+| `error.mp3` | Added in commit `1c3df0b`; updated in `29750dd` | Not recorded in repository history | Not recorded in repository history |
+| `success.mp3` | Added in commit `1c3df0b` | Not recorded in repository history | Not recorded in repository history |
+| `lesson-complete.mp3` | Exact copy of the existing `tap.mp3` | Copied for this project; original author not recorded | Not recorded in repository history |
+| `quiz-pass.mp3` | Exact copy of the existing `success.mp3` | Copied for this project; original author not recorded | Not recorded in repository history |
 
-Do not ship these files as third-party licensed media without confirming the original rights and attribution details.
+The two named completion cues were copied into new files; no audio was generated during that step. Do not treat the copies as establishing usage rights.

@@ -30,8 +30,6 @@ The current roadmap is defined in `software-engineering/SoftwareEngineerRoadmap.
 
 The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track.
 
-Sound cues in the Learning Hub use the project-local clips in `src/assets/sounds/` and are gated by the global app toggle in the profile screen. The app uses a shared `AppPressable` wrapper so tap, lesson-complete, and quiz-pass feedback stay consistent without requiring extra native dependencies.
-
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
 ## Source architecture
@@ -65,7 +63,7 @@ The course modules are deliberately data-driven. A course wrapper normally impor
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse career tracks and the courses in a selected track, and refreshes aggregate progress when returning to the screen.
 - `software-engineering/SoftwareEngineerRoadmap.js` owns the current track/step definitions and roadmap presentation. It builds its course set from the imported course configurations and uses `useAllCoursesProgress` for roadmap status.
-- `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, sounds, and saving quiz attempts.
+- `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.
 - `shared/progress/useAllCoursesProgress.js` loads progress for a set of courses for roadmap/list displays and provides the common course-status rule.

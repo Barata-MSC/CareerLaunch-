@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Try-it editor for HTML and CSS lessons: type code, press Run, see the result instantly.
 // HTML/CSS are rendered (not compiled), so a WebView is the "compiler". Local HTML only, JS off.
 //   CSS mode (default): { type: 'playground', title, task, html, baseCss, starter, checks, hint }
@@ -6,7 +7,7 @@
 //     the learner edits the HTML itself (`html` is not used).
 //   checks: regex, string, or function(text). The text is lowercase, comments removed, spaces collapsed.
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { PURPLE, LIGHT_PURPLE, GREEN, RED } from '../styles';
 
 const getWebView = () => {
@@ -121,12 +122,12 @@ export default function CodePlayground({ title, task, html, baseCss, starter, ch
       />
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.runButton} onPress={run} activeOpacity={0.8}>
+        <AppPressable style={styles.runButton} onPress={run} activeOpacity={0.8}>
           <Text style={styles.runText}>▶ Run</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
+        </AppPressable>
+        <AppPressable style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
           <Text style={styles.resetText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <Text style={styles.previewLabel}>Preview</Text>

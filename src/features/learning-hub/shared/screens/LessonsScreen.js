@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
 import { getStatusLabel } from '../courseUtils';
@@ -42,7 +43,7 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
 
         <View style={styles.lessonList}>
           {lessons.map((lesson, index) => (
-            <TouchableOpacity
+            <AppPressable
               key={lesson.id}
               style={styles.lessonCard}
               onPress={() => onOpenLesson(index)}
@@ -82,13 +83,13 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
               </View>
 
               <Text style={common.chevron}>›</Text>
-            </TouchableOpacity>
+            </AppPressable>
           ))}
         </View>
 
-        <TouchableOpacity style={common.quizButton} onPress={onStartQuiz}>
+        <AppPressable style={common.quizButton} onPress={onStartQuiz}>
           <Text style={common.quizButtonText}>Take the Quiz</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     </>
   );

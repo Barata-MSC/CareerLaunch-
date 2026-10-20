@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Run-JavaScript editor for JS lessons: type code, press Run, read the console output.
 // Code runs in a sandboxed iframe (web) or hidden WebView (app), never in the app itself,
 // so a mistake like an infinite loop cannot freeze the app (it is stopped after 3 seconds).
@@ -15,7 +16,7 @@
 //            requests: [{ method: 'GET', path: '/' }, { method: 'POST', path: '/users', body: {} }],
 //            wait: 400 }  // wait = ms to let async code finish
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { PURPLE, GREEN, RED } from '../styles';
 
 const getWebView = () => {
@@ -323,12 +324,12 @@ export default function JsPlayground({ title, task, starter, expected, checks, h
       />
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.runButton} onPress={run} activeOpacity={0.8}>
+        <AppPressable style={styles.runButton} onPress={run} activeOpacity={0.8}>
           <Text style={styles.runText}>▶ Run</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
+        </AppPressable>
+        <AppPressable style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
           <Text style={styles.resetText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <Text style={styles.consoleLabel}>Console</Text>

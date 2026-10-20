@@ -81,12 +81,12 @@ export default function CourseRunner({ course, navigation }) {
     if (selectedLesson > 0) setSelectedLesson(selectedLesson - 1);
   };
 
-  const handleToggleLesson = (lessonId) => {
+  const handleToggleLesson = async (lessonId) => {
     const wasDone = progress.completedLessonIds.includes(lessonId);
-    if (!wasDone) {
+    const saved = await progress.toggleLesson(lessonId);
+    if (!wasDone && saved) {
       playSound('lessonComplete');
     }
-    progress.toggleLesson(lessonId);
   };
 
   // ---------- Quiz ----------
@@ -193,7 +193,7 @@ export default function CourseRunner({ course, navigation }) {
           onBack={handleBack}
           onPrevious={previousLesson}
           onNext={nextLesson}
-          onToggleComplete={progress.toggleLesson}
+          onToggleComplete={handleToggleLesson}
         />
       )}
 

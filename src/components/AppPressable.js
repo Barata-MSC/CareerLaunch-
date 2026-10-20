@@ -9,9 +9,19 @@ export default function AppPressable({
   onPress,
   onPressIn,
   onPressOut,
+  activeOpacity,
+  style,
   sound = 'tap',
   ...props
 }) {
+  const pressableStyle =
+    activeOpacity === undefined
+      ? style
+      : (state) => [
+          typeof style === 'function' ? style(state) : style,
+          state.pressed && { opacity: activeOpacity },
+        ];
+
   const handlePressIn = useCallback(
     (event) => {
       if (!disabled && sound !== 'none') {
@@ -26,6 +36,7 @@ export default function AppPressable({
     <Pressable
       {...props}
       disabled={disabled}
+      style={pressableStyle}
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={onPressOut}

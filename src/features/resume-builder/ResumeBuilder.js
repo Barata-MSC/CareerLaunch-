@@ -1,8 +1,8 @@
+import AppPressable from '@components/AppPressable';
 import React, { useMemo } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   Image,
   StyleSheet,
@@ -50,9 +50,9 @@ function ResumeBuilderContent({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation?.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <AppPressable onPress={() => navigation?.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Resume Builder</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -66,7 +66,7 @@ function ResumeBuilderContent({ navigation }) {
 
         <View style={styles.sectionList}>
           {SECTIONS.map((section) => (
-            <TouchableOpacity
+            <AppPressable
               key={section.key}
               style={styles.sectionRow}
               activeOpacity={0.7}
@@ -92,18 +92,18 @@ function ResumeBuilderContent({ navigation }) {
                 </Text>
                 <Text style={styles.chevron}>›</Text>
               </View>
-            </TouchableOpacity>
+            </AppPressable>
           ))}
         </View>
 
-        <TouchableOpacity
+        <AppPressable
           style={[styles.generateButton, !canGenerate && styles.generateButtonDisabled]}
           activeOpacity={0.85}
           disabled={!canGenerate}
           onPress={() => navigation?.navigate('ResumePreview', { mode: 'generate' })}
         >
           <Text style={styles.generateButtonText}>Generate Resume</Text>
-        </TouchableOpacity>
+        </AppPressable>
 
         {!canGenerate && (
           <Text style={styles.hintText}>
@@ -111,9 +111,9 @@ function ResumeBuilderContent({ navigation }) {
           </Text>
         )}
 
-        <TouchableOpacity onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
+        <AppPressable onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
           <Text style={styles.testLink}>Test Resume here</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </ScrollView>
     </SafeAreaView>
   );

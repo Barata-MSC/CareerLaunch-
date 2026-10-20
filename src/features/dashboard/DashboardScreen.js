@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
   Image,
   StyleSheet,
@@ -14,7 +13,6 @@ import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
 import AppPressable from '@components/AppPressable';
-import { playSound } from '../../utils/sounds';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -55,7 +53,6 @@ export default function DashboardScreen({ navigation }) {
   const hasAppliedToJob = applications.length > 0;
 
   const handleQuickAction = (action) => {
-    playSound('tap');
     if (action.label === 'Learning Hub') {
       navigation.navigate('LearningHub');
     } else if (action.label === 'Job Finder') {
@@ -68,7 +65,6 @@ export default function DashboardScreen({ navigation }) {
   };
 
   const handleChecklistPress = (item) => {
-    playSound('tap');
     navigation.navigate(item.route);
   };
 

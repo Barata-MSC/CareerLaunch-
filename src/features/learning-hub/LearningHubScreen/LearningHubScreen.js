@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Learning Hub entrance. Same look as JobFinderScreen.
 //   view 'tracks'  -> the 3 tracks
 //   view 'courses' -> the courses of the track the user tapped
@@ -8,7 +9,6 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -155,7 +155,6 @@ export default function LearningHubScreen({ navigation }) {
 
   const openCourse = (step) => {
     if (!step?.route) return;
-    playSound('tap');
     navigation.navigate(step.route);
   };
 
@@ -171,7 +170,7 @@ export default function LearningHubScreen({ navigation }) {
         const comingSoon = !track.courseCount;
 
         return (
-          <TouchableOpacity
+          <AppPressable
             key={track.name}
             style={[styles.card, comingSoon && styles.cardMuted]}
             activeOpacity={0.85}
@@ -206,7 +205,7 @@ export default function LearningHubScreen({ navigation }) {
             </View>
 
             {!comingSoon && <Text style={styles.chevron}>›</Text>}
-          </TouchableOpacity>
+          </AppPressable>
         );
       })}
     </ScrollView>
@@ -221,7 +220,7 @@ export default function LearningHubScreen({ navigation }) {
     const code = (item.course.shortCode || item.title).slice(0, 4).toUpperCase();
 
     return (
-      <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
+      <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
         <View style={styles.courseIcon}>
           <Text style={styles.courseIconText}>{code}</Text>
         </View>
@@ -239,7 +238,7 @@ export default function LearningHubScreen({ navigation }) {
             {BUTTON_LABEL[item.status] || 'Start'}
           </Text>
         </View>
-      </TouchableOpacity>
+      </AppPressable>
     );
   };
 
@@ -267,13 +266,13 @@ export default function LearningHubScreen({ navigation }) {
             {FILTERS.map((f) => {
               const active = f.key === filter;
               return (
-                <TouchableOpacity
+                <AppPressable
                   key={f.key}
                   style={[styles.chip, active && styles.chipActive]}
                   onPress={() => setFilter(f.key)}
                 >
                   <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
-                </TouchableOpacity>
+                </AppPressable>
               );
             })}
           </ScrollView>
@@ -289,12 +288,12 @@ export default function LearningHubScreen({ navigation }) {
           }
         />
 
-        <TouchableOpacity
+        <AppPressable
           style={styles.primaryBtn}
           onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
     );
   };
@@ -304,13 +303,13 @@ export default function LearningHubScreen({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
       <View style={styles.header}>
-        <TouchableOpacity
+        <AppPressable
           onPress={handleBack}
           style={styles.backBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backText}>{'<'}</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.backBtn} />
       </View>

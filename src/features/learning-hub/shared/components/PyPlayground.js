@@ -1,3 +1,4 @@
+import AppPressable from '@components/AppPressable';
 // Run-Python editor for Python / Pandas lessons: type code, press Run, read the printed output.
 // Python runs with Pyodide (Python compiled to WebAssembly) inside a hidden, sandboxed
 // WebView (app) or iframe (web), never in the app itself. It needs an internet connection:
@@ -8,7 +9,7 @@
 // files = { 'data.csv': 'text' } are written to the runner's disk before each Run, so
 // pd.read_csv('data.csv') works like in the lesson. Every Run starts with a clean namespace.
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { PURPLE, GREEN, RED } from '../styles';
 
 const getWebView = () => {
@@ -273,17 +274,17 @@ export default function PyPlayground({ title, task, starter, expected, checks, h
       />
 
       <View style={styles.row}>
-        <TouchableOpacity
+        <AppPressable
           style={[styles.runButton, busy && styles.runDisabled]}
           onPress={run}
           disabled={busy}
           activeOpacity={0.8}
         >
           <Text style={styles.runText}>{busy ? 'Running…' : '▶ Run'}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
+        </AppPressable>
+        <AppPressable style={styles.resetButton} onPress={reset} activeOpacity={0.8}>
           <Text style={styles.resetText}>Reset</Text>
-        </TouchableOpacity>
+        </AppPressable>
       </View>
 
       <Text style={styles.consoleLabel}>Output</Text>

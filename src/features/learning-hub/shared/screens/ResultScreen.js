@@ -1,5 +1,6 @@
+import AppPressable from '@components/AppPressable';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { GREEN, RED } from '../styles';
 
@@ -100,7 +101,7 @@ export default function ResultScreen({
           <View style={styles.section}>
             <Text style={common.sectionTitle}>Topics to review</Text>
             {topics.map((t) => (
-              <TouchableOpacity
+              <AppPressable
                 key={t.lesson.id}
                 style={styles.topicRow}
                 onPress={() => onOpenLesson(t.lessonIndex)}
@@ -114,7 +115,7 @@ export default function ResultScreen({
                   </Text>
                 </View>
                 <Text style={common.chevron}>›</Text>
-              </TouchableOpacity>
+              </AppPressable>
             ))}
           </View>
         )}
@@ -154,13 +155,13 @@ export default function ResultScreen({
         </View>
 
         <View style={[common.buttonRow, styles.resultButtons]}>
-          <TouchableOpacity style={common.previousButton} onPress={onReviewLessons}>
+          <AppPressable style={common.previousButton} onPress={onReviewLessons}>
             <Text style={common.previousText}>Review lessons</Text>
-          </TouchableOpacity>
+          </AppPressable>
 
-          <TouchableOpacity style={common.nextButton} onPress={onRetake}>
+          <AppPressable style={common.nextButton} onPress={onRetake}>
             <Text style={common.nextText}>Retake quiz</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </View>
       </ScrollView>
     </>

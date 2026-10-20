@@ -1,9 +1,9 @@
+import AppPressable from '@components/AppPressable';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
@@ -92,12 +92,12 @@ export default function PersonalInfoScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Navigation Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <AppPressable 
           onPress={() => navigation?.goBack()} 
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
+        </AppPressable>
         <Text style={styles.headerTitle}>Personal Information</Text>
         <View style={{ width: 24 }} />
       </View>
@@ -119,7 +119,7 @@ export default function PersonalInfoScreen({ navigation }) {
  
           {/* Profile Photo (optional) */}
           <View style={styles.photoSection}>
-            <TouchableOpacity activeOpacity={0.8} onPress={handlePickPhoto}>
+            <AppPressable activeOpacity={0.8} onPress={handlePickPhoto}>
               {info.photo ? (
                 <Image source={{ uri: info.photo }} style={styles.photo} />
               ) : (
@@ -127,15 +127,15 @@ export default function PersonalInfoScreen({ navigation }) {
                   <Text style={styles.photoPlus}>+</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </AppPressable>
             <View style={styles.photoActions}>
-              <TouchableOpacity onPress={handlePickPhoto} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <AppPressable onPress={handlePickPhoto} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <Text style={styles.photoActionText}>{info.photo ? 'Change photo' : 'Add photo'}</Text>
-              </TouchableOpacity>
+              </AppPressable>
               {info.photo ? (
-                <TouchableOpacity onPress={handleRemovePhoto} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <AppPressable onPress={handleRemovePhoto} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                   <Text style={styles.photoRemoveText}>Remove</Text>
-                </TouchableOpacity>
+                </AppPressable>
               ) : (
                 <Text style={styles.optionalTag}>(Optional)</Text>
               )}
@@ -217,13 +217,13 @@ export default function PersonalInfoScreen({ navigation }) {
           </View>
  
           {/* Save & Return Button */}
-          <TouchableOpacity
+          <AppPressable
             style={styles.saveButton}
             activeOpacity={0.85}
             onPress={handleSave}
           >
             <Text style={styles.saveButtonText}>Save Details</Text>
-          </TouchableOpacity>
+          </AppPressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
