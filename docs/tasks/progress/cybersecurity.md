@@ -1,8 +1,8 @@
 # Cybersecurity Career Plan Checkpoint
 
-**Mode:** Plan only; derived from `docs/tasks/specs/cybersecurity.md`.
+**Mode:** Build completed from `docs/tasks/specs/cybersecurity.md`.
 **Career:** Cybersecurity (`cybersecurity`)
-**Current implementation status:** `coming-soon`; no tracks or courses are registered yet. Plan mode does not change application code or career availability.
+**Current implementation status:** `available`; both tracks and all 14 courses are registered.
 **Audience:** Complete beginners, including senior high school and college learners and career shifters. Keep examples accessible and suitable for the Philippines without asserting unverified local legal or regulatory facts.
 
 ## Build-wide content constraints
@@ -39,7 +39,7 @@
 9. **Secure Network Habits** — Identify responsible practices for maintaining network equipment, reporting concerns, and avoiding unauthorized probing.
 10. **Networking Review and Ethical Practice** — Summarize how data moves through a network and explain why security learning must stay within explicitly authorized environments.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 2: Operating Systems for Security
 
@@ -58,7 +58,7 @@
 9. **Backups and Recovery Basics** — Explain how managed backups can support recovery and why backup access should be restricted.
 10. **Responsible Operating-System Use** — Apply safe account, permission, and reporting choices to a synthetic scenario and explain why unauthorized changes are harmful.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 3: Security Fundamentals
 
@@ -77,7 +77,7 @@
 9. **Ethics, Authorization, and Harm** — Explain how unauthorized access can harm people and organizations and why cybersecurity work requires explicit permission.
 10. **Fundamentals Review** — Connect the CIA triad, assets, risk, and controls in a defensive scenario and state the ethical boundaries for further learning.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 4: Cryptography Basics
 
@@ -96,7 +96,7 @@
 9. **Key Management Concepts** — Identify lifecycle ideas such as controlled creation, access, rotation, and retirement without providing operational key-handling procedures.
 10. **Choosing and Using Cryptography Responsibly** — Match common protection goals to encryption, hashing, or signatures and explain why only approved systems and methods should be used.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 5: Web and Application Security
 
@@ -115,7 +115,7 @@
 9. **Secure Development and Review** — Describe how design review, code review, and approved testing contribute to safer applications.
 10. **Responsible Disclosure and Authorization** — Choose an ethical reporting response to a hypothetical concern and explain why testing real applications requires explicit permission.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 6: Identity and Access Management
 
@@ -134,7 +134,7 @@
 9. **Access Reviews and Accountability** — Identify the purpose of periodic access review and responsible documentation.
 10. **Ethical Identity Practice** — Respond safely to a synthetic access-control concern and explain why borrowing, guessing, or bypassing another person's access is harmful and unauthorized.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 7: Monitoring and Threat Detection
 
@@ -153,7 +153,7 @@
 9. **Privacy and Monitoring Boundaries** — Explain why monitoring should be purpose-limited, authorized, and respectful of personal information.
 10. **Ethical Monitoring Practice** — Summarize how analysts should handle logs responsibly and why searching data outside their approved role can cause harm.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 8: Incident Response
 
@@ -172,7 +172,7 @@
 9. **Learning from an Incident** — Explain how a retrospective can identify process improvements without blame or unsupported claims.
 10. **Security Response Roles and Continued Learning** — Compare broad incident-response and security-operations roles, make a personal learning plan, and describe industry certifications only as optional general learning pathways.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ## Track 2: Security Governance and Compliance
 
@@ -198,7 +198,7 @@
 9. **Risk Ownership and Communication** — Identify who should review, accept, and communicate organizational risk according to assigned roles.
 10. **Ethical Risk Practice** — Explain why risk reporting must be accurate, authorized, and transparent about uncertainty and possible harm.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 10: Security Policies and Frameworks
 
@@ -217,7 +217,7 @@
 9. **Evidence of Implementation** — Identify examples of non-sensitive evidence that may show a control is documented or followed.
 10. **Ethical Policy Application** — Explain why policies should be applied consistently and why staff should raise unclear or harmful requirements through appropriate channels.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 11: Data Privacy Fundamentals
 
@@ -236,7 +236,7 @@
 9. **Philippine Privacy Context and Official Sources** — Name the Data Privacy Act of 2012 (RA 10173) and the National Privacy Commission, and direct learners to official sources for current requirements; do not interpret provisions or cite article or section numbers.
 10. **Ethical Privacy Practice** — Apply privacy-minded choices to a fictional scenario and explain why unauthorized access or disclosure can harm people and violate applicable rules.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 12: Security Awareness and Social Engineering Defense
 
@@ -255,7 +255,7 @@
 9. **Building a Supportive Awareness Program** — Describe how organizations can reinforce safe habits through practical reminders and feedback.
 10. **Ethical Social-Engineering Defense** — Explain why awareness exercises must be authorized, respectful, and designed to protect rather than embarrass or exploit people.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 13: Business Continuity and Disaster Recovery
 
@@ -274,7 +274,7 @@
 9. **Reviewing Plans and Lessons** — Explain why plans and assumptions should be revisited after exercises or organizational changes.
 10. **Ethical Resilience Practice** — Apply continuity concepts to a fictional scenario while emphasizing authorized actions, clear communication, and care for affected people.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ### Course 14: Audits and Compliance Basics
 
@@ -293,13 +293,13 @@
 9. **Ethical Compliance Practice** — Respond to a fictional request to hide or misrepresent evidence by choosing accurate documentation and an appropriate escalation path.
 10. **Governance Roles and Continued Learning** — Compare broad audit, governance, risk, and compliance roles, create a continued-learning plan, and describe industry certifications only in general terms.
 
-**Course checklist:** `[ ] course.js` · `[ ] lessons` · `[ ] questions` · `[ ] wrapper` · `[ ] registered` · `[ ] validated`
+**Course checklist:** `[x] course.js` · `[x] lessons` · `[x] questions` · `[x] wrapper` · `[x] registered` · `[x] validated`
 
 ## Plan totals and build order
 
 - **Tracks:** 2.
 - **Courses:** 14 total; 8 in Security Analyst and 6 in Security Governance and Compliance.
-- **Planned lessons:** 140 total; 10 per course.
-- **Planned quiz bank:** To be authored during build, with at least one question linked to each lesson and at least 10 questions per course so a 10-question attempt is possible. No question content is part of this plan checkpoint.
-- **Build sequence:** Complete and validate Courses 1–8 in Security Analyst in order; then Courses 9–14 in Security Governance and Compliance in order. Register the career only after the curriculum content and integrity checks are complete.
-- **Availability:** Keep the seeded career `coming-soon` throughout this plan. The spec's `review_required: false` makes `available` a later build decision, not a plan-mode change.
+- **Lessons:** 140 total; 10 per course.
+- **Quiz banks:** 140 questions total; one question per lesson and a 10-question attempt for each course.
+- **Validation:** `npm run validate:content` checks all 10 careers, five tracks, and 31 registered courses.
+- **Availability:** Cybersecurity is `available` as `review_required: false`; no subject-expert review requirement was specified. Content remains conceptual and is not operational security guidance.

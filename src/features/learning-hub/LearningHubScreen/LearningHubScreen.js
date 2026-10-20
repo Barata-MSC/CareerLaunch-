@@ -19,17 +19,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
 
-const TRACK_NAMES = Object.keys(TRACKS);
-
 // Every course of every track, so progress loads with one query per table.
-const ALL_COURSES = Object.values(TRACKS)
-  .flatMap((track) => track.steps.map((step) => step.course))
-  .filter(Boolean);
+const ALL_COURSES = COURSES;
 
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
@@ -111,7 +107,7 @@ export default function LearningHubScreen({ navigation }) {
   // Each track with its steps, their status, and its overall progress.
   const tracks = useMemo(
     () =>
-      TRACK_NAMES.map((name) => {
+      Object.keys(TRACKS).map((name) => {
         const track = TRACKS[name];
         const steps = track.steps.map((step) => ({
           ...step,
@@ -124,6 +120,7 @@ export default function LearningHubScreen({ navigation }) {
 
         return {
           name,
+          title: track.title || name,
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -191,7 +188,7 @@ export default function LearningHubScreen({ navigation }) {
   // Career progress is derived from the underlying course statuses, not saved as a
   // separate career record. The percentage is completed courses divided by total
   // courses in that career, using the same per-course status rule as the roadmap.
-  const title = view === 'courses' && currentTrack ? currentTrack.name : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
+  const title = view === 'courses' && currentTrack ? currentTrack.title : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
 
   const filteredCareers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -318,7 +315,7 @@ export default function LearningHubScreen({ navigation }) {
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.name}</Text>
+                  <Text style={styles.cardTitle}>{track.title}</Text>
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
@@ -423,7 +420,10 @@ export default function LearningHubScreen({ navigation }) {
 
         <AppPressable
           style={styles.primaryBtn}
-          onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
+          onPress={() => navigation.navigate('CareerRoadmap', {
+            goal: selectedTrack,
+            careerTrackIds: currentCareer?.trackIds,
+          })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
         </AppPressable>
