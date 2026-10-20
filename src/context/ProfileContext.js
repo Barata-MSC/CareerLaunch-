@@ -62,7 +62,15 @@ export function ProfileProvider({ session, children }) {
 
   return (
     <ProfileContext.Provider
-      value={{ profile, loading, isGuest, hasGuestLogin, refreshProfile: fetchProfile, updateProfile }}
+      value={{
+        session,
+        profile,
+        loading,
+        isGuest,
+        hasGuestLogin,
+        refreshProfile: fetchProfile,
+        updateProfile,
+      }}
     >
       {children}
     </ProfileContext.Provider>

@@ -4,7 +4,7 @@
 
 **Trigger message to paste:**
 
-> Follow docs/tasks/00-careers-layer.md completely, in one execution. Inspect the existing code first, then implement the Careers layer, update the docs, and run the validation steps. Do not stop after the first screen, and do not ask me to prompt for each part separately.
+> Follow docs/tasks/00-careers-layer.md completely, in one execution. Inspect the existing code first, then implement the Careers layer, update the docs, and run the validation steps. Do not stop after the first screen, and do not ask me to prompt for each part separately. End the final report with the exact, unedited output of `git status --short` and `git diff --stat`, and say which branch you are on.
 
 ---
 
