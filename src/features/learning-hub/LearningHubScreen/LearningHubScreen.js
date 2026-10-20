@@ -19,6 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
+import AnimatedStage from '@components/motion/AnimatedStage';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
 import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
@@ -237,7 +239,7 @@ export default function LearningHubScreen({ navigation }) {
         {filteredCareers.length === 0 ? (
           <Text style={styles.empty}>No careers match your search</Text>
         ) : (
-          filteredCareers.map((career) => {
+          filteredCareers.map((career, index) => {
             const isAvailable = career.status === 'available';
             const careerCourseIds = (career.trackIds || [])
               .map((trackId) => TRACKS[trackId])
@@ -248,35 +250,36 @@ export default function LearningHubScreen({ navigation }) {
             const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
 
             return (
-              <AppPressable
-                key={career.id}
-                accessibilityRole="button"
-                accessibilityLabel={`${career.title}, ${career.status}`}
-                style={[styles.card, !isAvailable && styles.cardMuted]}
-                onPress={() => openCareer(career)}
-              >
-                <View style={[styles.icon, { backgroundColor: career.color }]}>
-                  <Text style={styles.iconEmoji}>{career.icon}</Text>
-                </View>
+              <FadeSlideIn key={career.id} delay={Math.min(index * 65, 380)}>
+                <AppPressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${career.title}, ${career.status}`}
+                  style={[styles.card, !isAvailable && styles.cardMuted]}
+                  onPress={() => openCareer(career)}
+                >
+                  <View style={[styles.icon, { backgroundColor: career.color }]}>
+                    <Text style={styles.iconEmoji}>{career.icon}</Text>
+                  </View>
 
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{career.title}</Text>
-                  <Text style={styles.meta}>{isAvailable ? `${career.trackIds.length} tracks` : 'Coming soon'}</Text>
-                  <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
+                  <View style={styles.cardBody}>
+                    <Text style={styles.cardTitle}>{career.title}</Text>
+                    <Text style={styles.meta}>{isAvailable ? `${career.trackIds.length} tracks` : 'Coming soon'}</Text>
+                    <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
 
-                  {isAvailable ? (
-                    <View style={styles.progressRow}>
-                      {renderProgress(percent)}
-                    </View>
-                  ) : (
-                    <View style={styles.comingSoonBadge}>
-                      <Text style={styles.comingSoonLabel}>Coming soon</Text>
-                    </View>
-                  )}
-                </View>
+                    {isAvailable ? (
+                      <View style={styles.progressRow}>
+                        {renderProgress(percent)}
+                      </View>
+                    ) : (
+                      <View style={styles.comingSoonBadge}>
+                        <Text style={styles.comingSoonLabel}>Coming soon</Text>
+                      </View>
+                    )}
+                  </View>
 
-                {isAvailable && <Text style={styles.chevron}>›</Text>}
-              </AppPressable>
+                  {isAvailable && <Text style={styles.chevron}>›</Text>}
+                </AppPressable>
+              </FadeSlideIn>
             );
           })
         )}
@@ -297,43 +300,44 @@ export default function LearningHubScreen({ navigation }) {
         {careerTracks.length === 0 ? (
           <Text style={styles.empty}>No tracks match this career yet.</Text>
         ) : (
-          careerTracks.map((track) => {
+          careerTracks.map((track, index) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
             const comingSoon = !track.courseCount;
 
             return (
-              <AppPressable
-                key={track.name}
-                accessibilityRole="button"
-                accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
-                style={[styles.card, comingSoon && styles.cardMuted]}
-                disabled={comingSoon}
-                onPress={() => openTrack(track)}
-              >
-                <View style={[styles.icon, { backgroundColor: meta.color }]}>
-                  <Text style={styles.iconEmoji}>{meta.icon}</Text>
-                </View>
+              <FadeSlideIn key={track.name} delay={Math.min(index * 65, 380)}>
+                <AppPressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${track.title}, ${comingSoon ? 'coming soon' : 'available'}`}
+                  style={[styles.card, comingSoon && styles.cardMuted]}
+                  disabled={comingSoon}
+                  onPress={() => openTrack(track)}
+                >
+                  <View style={[styles.icon, { backgroundColor: meta.color }]}>
+                    <Text style={styles.iconEmoji}>{meta.icon}</Text>
+                  </View>
 
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.title}</Text>
-                  <Text style={styles.meta}>
-                    {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
-                  </Text>
-                  {!!meta.blurb && (
-                    <Text style={styles.desc} numberOfLines={2}>
-                      {meta.blurb}
+                  <View style={styles.cardBody}>
+                    <Text style={styles.cardTitle}>{track.title}</Text>
+                    <Text style={styles.meta}>
+                      {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                     </Text>
-                  )}
+                    {!!meta.blurb && (
+                      <Text style={styles.desc} numberOfLines={2}>
+                        {meta.blurb}
+                      </Text>
+                    )}
 
-                  {!comingSoon && (
-                    <View style={styles.progressRow}>
-                      {renderProgress(track.percent)}
-                    </View>
-                  )}
-                </View>
+                    {!comingSoon && (
+                      <View style={styles.progressRow}>
+                        {renderProgress(track.percent)}
+                      </View>
+                    )}
+                  </View>
 
-                {!comingSoon && <Text style={styles.chevron}>›</Text>}
-              </AppPressable>
+                  {!comingSoon && <Text style={styles.chevron}>›</Text>}
+                </AppPressable>
+              </FadeSlideIn>
             );
           })
         )}
@@ -447,9 +451,21 @@ export default function LearningHubScreen({ navigation }) {
         <View style={styles.backBtn} />
       </View>
 
-      {view === 'careers' && renderCareers()}
-      {view === 'tracks' && renderTracks()}
-      {view === 'courses' && renderCourses()}
+      {view === 'careers' && (
+        <AnimatedStage stageKey={view} direction={1}>
+          {renderCareers()}
+        </AnimatedStage>
+      )}
+      {view === 'tracks' && (
+        <AnimatedStage stageKey={view} direction={1}>
+          {renderTracks()}
+        </AnimatedStage>
+      )}
+      {view === 'courses' && (
+        <AnimatedStage stageKey={view} direction={1}>
+          {renderCourses()}
+        </AnimatedStage>
+      )}
     </SafeAreaView>
   );
 }
