@@ -24,6 +24,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useApplications, STATUSES } from '../../context/ApplicationsContext';
+import AccountGate from '../../components/AccountGate';
 
 const PURPLE = '#5B21D6';
 
@@ -101,7 +102,7 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
   );
 }
 
-export default function JobApplicationTracker({ navigation }) {
+function JobApplicationTrackerContent({ navigation }) {
   const { applications, updateStatus } = useApplications();
 
   const [tab, setTab] = useState('All');
@@ -434,6 +435,18 @@ export default function JobApplicationTracker({ navigation }) {
         </View>
       </Modal>
     </SafeAreaView>
+  );
+}
+
+export default function JobApplicationTracker(props) {
+  return (
+    <AccountGate
+      featureName="Application Tracker"
+      description="Track the jobs you apply to and monitor their status. Complete your account to unlock the tracker and keep your applications tied to your account."
+      navigation={props.navigation}
+    >
+      <JobApplicationTrackerContent {...props} />
+    </AccountGate>
   );
 }
 

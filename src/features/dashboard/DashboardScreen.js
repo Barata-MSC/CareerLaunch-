@@ -41,7 +41,7 @@ const CAREER_CHECKLIST = [
 
 export default function DashboardScreen({ navigation }) {
   const [pressedId, setPressedId] = useState(null);
-  const { profile } = useProfile();
+  const { profile, isGuest } = useProfile();
   const { hasPracticed } = usePractice();
   const { applications } = useApplications();
   const { resumeData } = useResume();
@@ -137,6 +137,11 @@ export default function DashboardScreen({ navigation }) {
                   ]}
                 >
                   <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                  {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
+                    <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
+                      <Text style={styles.lockBadgeText}>🔒</Text>
+                    </View>
+                  ) : null}
                 </View>
                 <Text style={styles.quickActionLabel}>{action.label}</Text>
               </TouchableOpacity>
@@ -239,6 +244,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
+    position: 'relative',
   },
   quickActionTileActive: {
     borderWidth: 3,
@@ -250,6 +256,20 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   quickActionIcon: { fontSize: 24 },
+  lockBadge: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockBadgeText: { fontSize: 11 },
   quickActionLabel: { fontSize: 11, textAlign: 'center', color: '#1C1C1E' },
   tipCard: {
     backgroundColor: '#AAB4F0',
