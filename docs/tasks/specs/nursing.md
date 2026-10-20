@@ -1,6 +1,6 @@
 # Career Spec: Nursing
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: build`, have a nursing student, nurse, or nursing instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its foundations**, not clinical training. Content goes in `src/features/learning-hub/nursing/`.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: plan`, have a nursing student, nurse, or nursing instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its foundations**, not clinical training. Content goes in `src/features/learning-hub/nursing/`.
 
 > **Draft.** The track and course list below is a proposal. Have a teammate or a nursing student review it before running.
 
@@ -11,7 +11,7 @@ career:
   learner_level: senior high school and college students considering nursing, and pre-nursing students
   philippines_context: true
   review_required: true
-  run_mode: build
+  run_mode: plan
 
 tracks:
   - id: nurs-student-path

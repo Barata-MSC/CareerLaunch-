@@ -30,7 +30,6 @@ import statisticsCourse from './statistics-course/course';
 
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
-import { tracks as nursingTracks, courses as nursingCourses } from '../nursing';
 
 
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
@@ -59,13 +58,12 @@ const COURSES = [
   excelCourse,
   pandasCourse,
   sqlCourse,
-  ...nursingCourses,
 ];
 
 
 
 
-const SOFTWARE_ENGINEERING_TRACKS = {
+export const TRACKS = {
   'Software Engineer': {
     steps: [
       {
@@ -209,9 +207,6 @@ const SOFTWARE_ENGINEERING_TRACKS = {
   },
 };
 
-export const TRACKS = { ...SOFTWARE_ENGINEERING_TRACKS, ...nursingTracks };
-export { SOFTWARE_ENGINEERING_TRACKS };
-
 const TRACK_NAMES = Object.keys(TRACKS);
 
 const STATUS_LABEL = {
@@ -352,7 +347,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
       >
         <View style={styles.goalCard}>
           <Text style={styles.goalLabel}>Your goal</Text>
-          <Text style={styles.goalText}>Become a {trackData.title || selectedTrack}</Text>
+          <Text style={styles.goalText}>Become a {selectedTrack}</Text>
         </View>
 
         <Text style={styles.sectionLabel}>Choose a track</Text>
