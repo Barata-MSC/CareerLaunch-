@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
@@ -43,47 +44,45 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
 
         <View style={styles.lessonList}>
           {lessons.map((lesson, index) => (
-            <AppPressable
-              key={lesson.id}
-              style={styles.lessonCard}
-              onPress={() => onOpenLesson(index)}
-            >
-              <View
-                style={[
-                  styles.lessonNumber,
-                  lesson.status === 'completed' && styles.lessonCompleted,
-                  lesson.status === 'in-progress' && styles.lessonCurrent,
-                ]}
-              >
-                {lesson.status === 'completed' ? (
-                  <Text style={styles.check}>✓</Text>
-                ) : (
-                  <Text
-                    style={[
-                      styles.lessonNumberText,
-                      lesson.status === 'in-progress' && styles.currentNumber,
-                    ]}
-                  >
-                    {index + 1}
-                  </Text>
-                )}
-              </View>
-
-              <View style={styles.lessonText}>
-                <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                <Text style={styles.lessonSubtitle}>{lesson.subtitle}</Text>
-                <Text
+            <FadeSlideIn key={lesson.id} delay={Math.min(index * 55, 360)}>
+              <AppPressable style={styles.lessonCard} onPress={() => onOpenLesson(index)}>
+                <View
                   style={[
-                    styles.lessonStatus,
-                    lesson.status === 'in-progress' && styles.activeStatus,
+                    styles.lessonNumber,
+                    lesson.status === 'completed' && styles.lessonCompleted,
+                    lesson.status === 'in-progress' && styles.lessonCurrent,
                   ]}
                 >
-                  {getStatusLabel(lesson.status)}
-                </Text>
-              </View>
+                  {lesson.status === 'completed' ? (
+                    <Text style={styles.check}>✓</Text>
+                  ) : (
+                    <Text
+                      style={[
+                        styles.lessonNumberText,
+                        lesson.status === 'in-progress' && styles.currentNumber,
+                      ]}
+                    >
+                      {index + 1}
+                    </Text>
+                  )}
+                </View>
 
-              <Text style={common.chevron}>›</Text>
-            </AppPressable>
+                <View style={styles.lessonText}>
+                  <Text style={styles.lessonTitle}>{lesson.title}</Text>
+                  <Text style={styles.lessonSubtitle}>{lesson.subtitle}</Text>
+                  <Text
+                    style={[
+                      styles.lessonStatus,
+                      lesson.status === 'in-progress' && styles.activeStatus,
+                    ]}
+                  >
+                    {getStatusLabel(lesson.status)}
+                  </Text>
+                </View>
+
+                <Text style={common.chevron}>›</Text>
+              </AppPressable>
+            </FadeSlideIn>
           ))}
         </View>
 

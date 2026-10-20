@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import Pop from '@components/motion/Pop';
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
@@ -45,11 +46,13 @@ export default function ResultScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.resultContainer}
       >
-        <View style={[styles.scoreCircle, passed ? styles.scorePassed : styles.scoreFailed]}>
-          <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
-            {percentage}%
-          </Text>
-        </View>
+        <Pop trigger={passed ? 1 : 0} scaleTo={1.08}>
+          <View style={[styles.scoreCircle, passed ? styles.scorePassed : styles.scoreFailed]}>
+            <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
+              {percentage}%
+            </Text>
+          </View>
+        </Pop>
 
         <Text style={styles.resultTitle}>{passed ? 'Great job!' : 'Almost there!'}</Text>
         <Text style={styles.resultSubtitle}>

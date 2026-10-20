@@ -484,9 +484,12 @@ const styles = StyleSheet.create({
   errorText: { color: '#E5484D', fontSize: 12, marginTop: 6 },
   matchText: { color: '#2E9E5B', fontSize: 12, marginTop: 6 },
   primaryButton: {
+    width: '72%',
+    maxWidth: 280,
+    alignSelf: 'center',
     height: 50,
     backgroundColor: PURPLE,
-    borderRadius: 25,
+    borderRadius: 999,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
