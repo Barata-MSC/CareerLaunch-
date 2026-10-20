@@ -43,7 +43,6 @@ import DesignFundamentalsCourseScreen from '../features/learning-hub/software-en
 import UserResearchCourseScreen from '../features/learning-hub/software-engineering/user-research-course/UserResearchCourse';
 import WireframingCourseScreen from '../features/learning-hub/software-engineering/wireframing-course/WireframingCourse';
 import usabilityTestingCourseScreen from '../features/learning-hub/software-engineering/usability-testing-course/UsabilityTestingCourse';
-import { COURSE_ROUTES } from '../features/learning-hub/careers/registry';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,9 +85,6 @@ export default function AppNavigator() {
       <Stack.Screen name="UserResearchCourse" component={UserResearchCourseScreen} />
       <Stack.Screen name="WireframingCourse" component={WireframingCourseScreen} />
       <Stack.Screen name="UsabilityTestingCourse" component={usabilityTestingCourseScreen} />
-      {COURSE_ROUTES.map(({ routeName, screen }) => (
-        <Stack.Screen key={routeName} name={routeName} component={screen} />
-      ))}
       <Stack.Screen name="CareerDetail" component={CareerDetailScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
       <Stack.Screen name="CSSCourse" component={CSSCourseScreen} />
