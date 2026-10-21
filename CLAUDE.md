@@ -46,7 +46,7 @@ The current roadmap defines three tracks under the Software Engineering career:
 
 The available Teacher career has an **Elementary Teacher** track (estimated five months) with eight courses and a **Secondary Teacher** track (estimated four months) with seven courses. Each course has 10 lessons and a 10-question bank.
 
-Tracks now sit under a career picker and resolve through the shared Learning Hub registry. Both Teacher tracks are registered and accessible from the available Teacher career. Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
+The reviewed Nursing Student Path has eight introductory courses and is available from the same career picker. Its material is educational orientation, not clinical training or medical advice. Tracks now resolve through the shared Learning Hub registry. Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
 
 Cybersecurity is also available with two tracks: **Security Analyst** (eight courses, estimated five months) and **Security Governance and Compliance** (six courses, estimated four months). Its lessons and quizzes use defensive, authorized, conceptual examples; they are introductory content, not operational attack guidance. Other seeded careers remain coming soon.
 
@@ -86,7 +86,7 @@ These are recent code changes, not a claim that the overall product or every roa
 - `src/navigation/RootNavigator.js` separates authenticated app navigation from auth and password-recovery navigation.
 - `src/navigation/AppNavigator.js` registers app screens and course routes.
 - `src/features/` contains feature screens and logic; shared UI, context, configuration, navigation, and assets live in their corresponding `src/` directories.
-- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, and `teacher/`.
+- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, and `nursing/`.
 - Keep navigation route names consistent with `navigation.navigate(...)`, and preserve stable course/lesson IDs.
 
 ## Technology and working commands
