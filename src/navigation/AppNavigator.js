@@ -66,8 +66,8 @@ export default function AppNavigator() {
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="CareerDetail" component={CareerDetailScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
-      {COURSE_ROUTES.map(({ name, component }) => (
-        <Stack.Screen key={name} name={name} component={component} />
+      {COURSE_ROUTES.map(({ name, component, options }) => (
+        <Stack.Screen key={name} name={name} component={component} options={options} />
       ))}
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />

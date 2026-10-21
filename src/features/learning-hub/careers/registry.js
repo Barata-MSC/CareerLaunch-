@@ -1,5 +1,9 @@
 import { TRACKS as softwareEngineeringTracks } from '../software-engineering/tracks';
-import { tracks as cybersecurityTracks, courses as cybersecurityCourses } from '../cybersecurity';
+import {
+  tracks as cybersecurityTracks,
+  courses as cybersecurityCourses,
+} from '../cybersecurity';
+import { tracks as teacherTracks, courses as teacherCourses } from '../teacher';
 
 import cssCourse from '../software-engineering/css-course/course';
 import CSSCourseScreen from '../software-engineering/css-course/CSSCourse';
@@ -50,14 +54,20 @@ const softwareEngineeringCourses = [
   { course: dataCourse, routeName: 'DataCourse', component: DataCourseScreen },
   { course: statisticsCourse, routeName: 'StatisticsCourse', component: StatisticsCourseScreen },
   { course: dashboardCourse, routeName: 'DashboardCourse', component: DashboardCourseScreen },
-  { course: designFundamentalsCourse, routeName: 'DesignFundamentalsCourse', component: DesignFundamentalsCourseScreen },
+  {
+    course: designFundamentalsCourse,
+    routeName: 'DesignFundamentalsCourse',
+    component: DesignFundamentalsCourseScreen,
+  },
   { course: userResearchCourse, routeName: 'UserResearchCourse', component: UserResearchCourseScreen },
   { course: wireframingCourse, routeName: 'WireframingCourse', component: WireframingCourseScreen },
-  { course: usabilityTestingCourse, routeName: 'UsabilityTestingCourse', component: UsabilityTestingCourseScreen },
+  {
+    course: usabilityTestingCourse,
+    routeName: 'UsabilityTestingCourse',
+    component: UsabilityTestingCourseScreen,
+  },
 ];
 
-// Add each future career module here; its index.js exports the same tracks and
-// course entries, while existing Software Engineering keys and route names stay stable.
 export const CAREER_CONTENT = [
   {
     careerId: 'software-engineering',
@@ -69,17 +79,32 @@ export const CAREER_CONTENT = [
     tracks: cybersecurityTracks,
     courses: cybersecurityCourses,
   },
+  {
+    careerId: 'teacher',
+    tracks: teacherTracks,
+    courses: teacherCourses,
+  },
 ];
 
 export const TRACKS = Object.assign({}, ...CAREER_CONTENT.map((career) => career.tracks));
 
 export const COURSE_ENTRIES = CAREER_CONTENT.flatMap((career) =>
-  career.courses.map((entry) => ({ ...entry, careerId: career.careerId })),
+  career.courses.map((entry) => ({
+    ...entry,
+    routeName: entry.routeName || entry.route,
+    careerId: career.careerId,
+  })),
 );
 
 export const COURSES = COURSE_ENTRIES.map(({ course }) => course);
+export const ALL_COURSES = COURSES;
 
 export const COURSE_ROUTES = COURSE_ENTRIES.map(({ routeName, component }) => ({
   name: routeName,
   component,
+  ...(routeName === 'DataCourse' ||
+  routeName === 'DashboardCourse' ||
+  routeName === 'StatisticsCourse'
+    ? { options: { headerShown: false } }
+    : {}),
 }));
