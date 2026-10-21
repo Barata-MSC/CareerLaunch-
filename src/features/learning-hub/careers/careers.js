@@ -43,8 +43,8 @@ export const CAREERS = [
     subtitle: 'Support patient care, health education, and safe clinical practice.',
     icon: '🩺',
     color: '#10B981',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['nurs-student-path'],
     overview:
       'Nursing involves caring for patients, working with clinical teams, and helping people through health challenges with empathy and evidence-based practice.',
     skillsPreview: ['Care', 'Communication', 'Clinical thinking'],
