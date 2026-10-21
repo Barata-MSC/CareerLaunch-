@@ -12,13 +12,200 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
+import htmlCourse from './html-course/course';
+import cssCourse from './css-course/course';
+import javascriptCourse from './javascript-course/course';
+import gitCourse from './git-github-course/course';
+import reactCourse from './react-course/course';
+import designFundamentalsCourse from './design-fundamentals-course/course';
+import userResearchCourse from './user-research-course/course';
+import wireFramingCourse from './wireframing-course/course';
+import usabilityTestingCourse from './usability-testing-course/course';
+import nodeCourse from './nodejs-course/course';
+import databaseCourse from './database-course/course';
+import sqlCourse from './sql-course/course';
+import dataVisualizationCourse from './data-visualization-course/course';
+import dashboardCourse from './dashboard-course/course';
+import statisticsCourse from './statistics-course/course';
+
+import excelCourse from './excel-course/course';
+import pandasCourse from './panda-course/course';
+
+
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
-import { COURSES, TRACKS } from '../careers/registry';
 import { PURPLE, GREEN } from '../shared/styles';
 import { playSound } from '../../../utils/sounds';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-export { TRACKS };
+
+
+
+const COURSES = [
+  htmlCourse,
+  cssCourse,
+  javascriptCourse,
+  gitCourse,
+  reactCourse,
+  designFundamentalsCourse,
+  userResearchCourse,
+  wireFramingCourse,
+  usabilityTestingCourse,
+  nodeCourse,
+  databaseCourse,
+  dataVisualizationCourse,
+  dashboardCourse,
+  statisticsCourse,
+  excelCourse,
+  pandasCourse,
+  sqlCourse,
+];
+
+
+
+
+export const TRACKS = {
+  'Software Engineer': {
+    steps: [
+      {
+        id: '1',
+        title: 'HTML',
+        course: htmlCourse,
+        route: 'HTMLCourse',
+        description: 'The building blocks of every web page: structuring content with tags, forms, and semantic elements.',
+      },
+      {
+        id: '2',
+        title: 'CSS',
+        course: cssCourse,
+        route: 'CSSCourse',
+        description: 'Style layouts, use Flexbox/Grid, and make responsive designs.',
+      },
+      {
+        id: '3',
+        title: 'JavaScript',
+        course: javascriptCourse,
+        route: 'JavaScriptCourse',
+        description: 'Learn variables, functions, DOM manipulation, and async code — the language that powers interactivity.',
+      },
+      {
+        id: '4',
+        title: 'React',
+        course: reactCourse,
+        route: 'ReactCourse',
+        description: 'Learn components, props, state, and hooks. This is the step that turns JS into real apps.',
+      },
+      {
+        id: '5',
+        title: 'Node js',
+        course: nodeCourse,
+        route: 'NodeCourse',
+        description: 'Server-side JavaScript: build APIs and handle backend logic.',
+      },
+      {
+        id: '6',
+        title: 'Database',
+        course: databaseCourse,
+        route: 'DatabaseCourse',
+        description: 'Storing and querying data with SQL or NoSQL databases like PostgreSQL or MongoDB.',
+      },
+      {
+        id: '7',
+        title: 'Git & Github',
+        course: gitCourse,
+        route: 'GitCourse',
+        description: 'Version control and collaboration — tracking changes and working with a team.',
+      },
+    ],
+  },
+  'Data Analyst': {
+    steps: [
+      {
+        id: '1',
+        title: 'Excel & Spreadsheets',
+        course: excelCourse,
+        route: 'ExcelCourse',
+        description: 'Clean data, use formulas, and build pivot tables to summarize information.',
+      },
+      {
+        id: '2',
+        title: 'SQL',
+        course: sqlCourse,
+        route: 'SQLCourse',
+        description: 'Query, join, and filter data across relational database tables.',
+      },
+      {
+        id: '3',
+        title: 'Python (Pandas)',
+        course: pandasCourse,
+        route: 'PandasCourse',
+        description: 'Clean and analyze datasets using Python and the Pandas library.',
+      },
+      {
+        id: '4',
+        title: 'Data Visualization',
+        course: dataVisualizationCourse,
+        route: 'DataCourse',
+        description: 'Tell stories with data using charts and dashboards (e.g. Matplotlib, Power BI, Tableau).',
+      },
+      {
+        id: '5',
+        title: 'Statistics',
+        course: statisticsCourse,
+        route: 'StatisticsCourse',
+        description: 'Hypothesis testing, distributions, and the math behind trustworthy insights.',
+      },
+      {
+        id: '6',
+        title: 'Dashboards (Power BI / Tableau)',
+        course: dashboardCourse,
+        route: 'DashboardCourse',
+        description: 'Build interactive dashboards stakeholders can explore on their own.',
+      },
+    ],
+  },
+  'UI/UX Designer': {
+    steps: [
+      {
+        id: '1',
+        title: 'Design Fundamentals',
+        course: designFundamentalsCourse,
+        route: 'DesignFundamentalsCourse',
+        description: 'Color theory, typography, spacing, and visual hierarchy.',
+      },
+      {
+        id: '2',
+        title: 'User Research',
+        course: userResearchCourse,
+        route: 'UserResearchCourse',
+        description: 'Interview users, run surveys, and turn findings into actionable insights.',
+      },
+      {
+        id: '3',
+        title: 'Wireframing',
+        course: wireFramingCourse,
+        route: 'WireframingCourse',
+        description: 'Practice low-fidelity wireframes to map out layouts before visual design.',
+      },
+      {
+        id: '4',
+        title: 'Figma / Prototyping',
+        description: 'Build interactive, high-fidelity prototypes that feel like the real app.',
+      },
+      {
+        id: '5',
+        title: 'Usability Testing',
+        course: usabilityTestingCourse,
+        route: 'UsabilityTestingCourse',
+        description: 'Test your designs with real users and iterate on the feedback.',
+      },
+      {
+        id: '6',
+        title: 'Design Systems',
+        description: 'Build reusable components and a consistent design language.',
+      },
+    ],
+  },
+};
 
 const TRACK_NAMES = Object.keys(TRACKS);
 
@@ -59,14 +246,12 @@ function StepIndicator({ status, isLast }) {
 }
 
 export default function CareerRoadmapScreen({ navigation, route }) {
-  const availableTrackNames =
-    route?.params?.careerTrackIds?.filter((trackId) => TRACKS[trackId]) || TRACK_NAMES;
   // If a valid track name is passed in via navigation params, start there.
   // Otherwise default to the first track in the TRACKS object.
   const initialTrack =
-    route?.params?.goal && availableTrackNames.includes(route.params.goal)
+    route?.params?.goal && TRACKS[route.params.goal]
       ? route.params.goal
-      : availableTrackNames[0];
+      : TRACK_NAMES[0];
 
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   const selectedTrackRef = useRef(selectedTrack);
@@ -104,12 +289,12 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   };
 
   const goToTrack = (direction) => {
-    const currentIndex = availableTrackNames.indexOf(selectedTrackRef.current);
+    const currentIndex = TRACK_NAMES.indexOf(selectedTrackRef.current);
     const nextIndex =
       direction === 'next'
-        ? (currentIndex + 1) % availableTrackNames.length
-        : (currentIndex - 1 + availableTrackNames.length) % availableTrackNames.length;
-    setSelectedTrack(availableTrackNames[nextIndex]);
+        ? (currentIndex + 1) % TRACK_NAMES.length
+        : (currentIndex - 1 + TRACK_NAMES.length) % TRACK_NAMES.length;
+    setSelectedTrack(TRACK_NAMES[nextIndex]);
   };
 
   const panResponder = useRef(
@@ -162,7 +347,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
       >
         <View style={styles.goalCard}>
           <Text style={styles.goalLabel}>Your goal</Text>
-          <Text style={styles.goalText}>Become a {trackData.title || selectedTrack}</Text>
+          <Text style={styles.goalText}>Become a {selectedTrack}</Text>
         </View>
 
         <Text style={styles.sectionLabel}>Choose a track</Text>
@@ -171,7 +356,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.chipRow}
         >
-          {availableTrackNames.map((trackName) => {
+          {TRACK_NAMES.map((trackName) => {
             const active = trackName === selectedTrack;
             return (
               <AppPressable
@@ -180,7 +365,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
                 onPress={() => handleTrackPress(trackName)}
               >
                 <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                  {TRACKS[trackName].title || trackName}
+                  {trackName}
                 </Text>
               </AppPressable>
             );

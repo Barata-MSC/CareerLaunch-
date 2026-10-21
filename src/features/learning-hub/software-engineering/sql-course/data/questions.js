@@ -361,7 +361,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-4',
-    question: 'Which ORDER BY statement uses the correct clause order?',
+    question: 'Which statement is written correctly?',
     answers: [
       'SELECT * FROM Customers ORDER BY City;',
       'SELECT * ORDER BY City FROM Customers;',
@@ -687,7 +687,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-7',
-    question: 'Which UPDATE statement uses the correct clause order?',
+    question: 'Which statement is written correctly?',
     answers: [
       "UPDATE Customers SET City = 'Paris' WHERE CustomerID = 2;",
       "UPDATE SET City = 'Paris' FROM Customers WHERE CustomerID = 2;",
@@ -751,7 +751,7 @@ export const QUESTIONS = [
   },
   {
     lessonId: 'sql-8',
-    question: 'Which DELETE statement uses the correct clause order?',
+    question: 'Which statement is written correctly?',
     answers: [
       "DELETE Customers WHERE CustomerName = 'Alfreds' FROM;",
       "REMOVE FROM Customers WHERE CustomerName = 'Alfreds';",
