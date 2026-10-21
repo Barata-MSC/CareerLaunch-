@@ -231,7 +231,7 @@ export default function LearningHubScreen({ navigation }) {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
         <Text style={styles.intro}>Pick a career to explore.</Text>
 
         {filteredCareers.length === 0 ? (
@@ -291,7 +291,7 @@ export default function LearningHubScreen({ navigation }) {
     );
 
     return (
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
         <Text style={styles.intro}>Pick a track to see its courses.</Text>
 
         {careerTracks.length === 0 ? (

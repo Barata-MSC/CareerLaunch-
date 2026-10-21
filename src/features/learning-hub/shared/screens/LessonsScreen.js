@@ -43,11 +43,7 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
 
         <View style={styles.lessonList}>
           {lessons.map((lesson, index) => (
-            <AppPressable
-              key={lesson.id}
-              style={styles.lessonCard}
-              onPress={() => onOpenLesson(index)}
-            >
+            <AppPressable key={lesson.id} style={styles.lessonCard} onPress={() => onOpenLesson(index)}>
               <View
                 style={[
                   styles.lessonNumber,

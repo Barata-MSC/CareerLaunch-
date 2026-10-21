@@ -42,7 +42,9 @@ export default function CourseRunner({ course, navigation }) {
   const lastQuizPassAttemptRef = useRef('');
 
   // ---------- Navigation ----------
-  const goToLessons = () => setScreen('lessons');
+  const goToLessons = () => {
+    setScreen('lessons');
+  };
 
   // Back button: leave the course from the main list, otherwise go back to it
   const handleBack = () => {

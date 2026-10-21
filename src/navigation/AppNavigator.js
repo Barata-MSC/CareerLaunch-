@@ -57,7 +57,7 @@ export default function AppNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="MainTabs"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, animation: 'slide_from_right', animationDuration: 300 }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
