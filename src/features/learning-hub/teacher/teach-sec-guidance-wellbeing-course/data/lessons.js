@@ -1,0 +1,98 @@
+const referralNote = "For a concern that needs additional support, follow your school's referral process and involve the school counselor or designated staff.";
+
+const drafts = [
+  {
+    title: 'The teacher’s supportive role',
+    objective: 'Explain how teachers notice and respond to learner wellbeing needs.',
+    description: 'A teacher’s role is to notice changes that affect classroom participation, respond respectfully within the learning setting, and use the school’s support process when a concern is beyond the teacher’s role. This course offers general educational guidance, not counseling or health advice.',
+    example: 'A Grade 9 teacher notices that a learner has stopped joining group tasks. The teacher checks the classroom task is clear and, if the concern continues or needs additional support, follows the school referral process and involves the school counselor or designated staff.',
+    keyPoints: ['Notice classroom participation and learning patterns.', 'Respond respectfully within the teacher role.', 'Do not diagnose or provide counseling.', referralNote, 'Keep learner information within appropriate school processes.'],
+    activity: { type: 'quickCheck', question: 'A teacher notices a continuing change in a student’s participation. What fits the teacher’s role?', options: ['Diagnose the reason', 'Notice the pattern and use the school referral process if additional support is needed', 'Provide counseling', 'Discuss the student’s situation with the class'], correct: 1, hint: 'Stay within the educational role and established school process.', explanation: 'Teachers notice and support in the learning setting, then refer concerns through school processes.' },
+  },
+  {
+    title: 'Noticing changes in participation',
+    objective: 'Identify general indicators that a learner may need additional support.',
+    description: 'A teacher may notice a change in attendance, classroom participation, or completion of learning tasks. These observations do not explain a cause and should not be used to label a learner; they are information to consider within the school’s support process.',
+    example: 'A Grade 11 teacher sees that a student who usually contributes to lab groups has recently stopped taking a role. The teacher records the classroom observation according to school practice rather than guessing why it happened.',
+    keyPoints: ['Notice observable changes in the learning setting.', 'Do not infer a diagnosis or cause from an observation.', 'Use school procedures for concerns beyond classroom support.', referralNote],
+    activity: { type: 'matchPairs', title: 'Teacher observations', task: 'Match an observation with a neutral description.', pairs: [{ left: 'Fewer group contributions', right: 'Change in participation' }, { left: 'Several tasks not submitted', right: 'Change in task completion' }, { left: 'Repeated absence from class', right: 'Attendance pattern to follow through school process' }], hint: 'Describe what is observable rather than assigning a reason.', explanation: 'Neutral observations avoid diagnosing and can inform appropriate school support.' },
+  },
+  {
+    title: 'Boundaries and referral pathways',
+    objective: 'Describe when and how a teacher should involve a school counselor or support team.',
+    description: 'Teachers provide classroom support but are not expected to diagnose, counsel, or manage concerns outside their role. When a concern requires additional support, teachers follow their school’s referral process and involve the school counselor or designated staff.',
+    example: `A Grade 8 adviser notices repeated difficulty participating across several classes. The adviser shares only relevant observations through the school’s referral process. ${referralNote}`,
+    keyPoints: ['Know the school’s designated referral route.', 'Share observable information with appropriate staff.', 'Do not promise secrecy or provide counseling.', referralNote],
+    activity: { type: 'quickCheck', question: 'A learner concern is beyond ordinary classroom support. What should the teacher do?', options: ['Handle it alone', 'Ask classmates to investigate', 'Follow the school referral process and involve the school counselor or designated staff', 'Offer a diagnosis'], correct: 2, hint: 'Use the school’s designated support pathway.', explanation: referralNote },
+  },
+  {
+    title: 'Classroom practices that support wellbeing',
+    objective: 'Explain supportive routines that reduce overwhelm and improve focus.',
+    description: 'Clear instructions, predictable routines, and visible task steps can make classroom participation more manageable. These are teaching practices for the learning environment; they are not treatment or individualized counseling.',
+    example: 'For a Grade 10 project, the teacher posts a short sequence of milestones and reminds students where to find the assignment criteria.',
+    keyPoints: ['Make task directions and milestones visible.', 'Use predictable classroom routines.', 'Keep expectations connected to the learning goal.', 'Refer concerns beyond classroom practice through school processes.'],
+    activity: { type: 'order', title: 'Make a class task predictable', task: 'Sequence a routine for a multi-step assignment.', items: ['Share the task goal', 'Display the steps and criteria', 'Review the current milestone', 'Invite task-related questions'], hint: 'Learners need to see the purpose and steps before beginning.', explanation: 'Visible goals, steps, criteria, and check-ins support classroom participation.' },
+  },
+  {
+    title: 'Communication with learners',
+    objective: 'Use calm, respectful communication when a student seems distressed.',
+    description: 'Teachers can use calm, respectful, nonjudgmental language in ordinary classroom communication and avoid pressing for personal details. If a concern calls for additional support, the teacher uses the school’s referral process rather than attempting counseling.',
+    example: `A Grade 12 teacher notices a student has stepped away from a group task. The teacher offers a neutral classroom check-in about the task and, if more support is needed, ${referralNote.toLowerCase()}`,
+    keyPoints: ['Use respectful and nonjudgmental classroom language.', 'Keep conversation within the teacher role.', 'Do not probe for personal details or counsel.', referralNote],
+    activity: { type: 'matchPairs', title: 'Professional communication', task: 'Match a communication choice with its boundary.', pairs: [{ left: 'Ask whether task directions are clear', right: 'Keep the check-in classroom-focused' }, { left: 'Avoid demanding personal details', right: 'Respect learner boundaries' }, { left: 'Use the school referral process', right: 'Connect a concern with designated support' }], hint: 'Choose communication that stays within an educator’s role.', explanation: 'Classroom-focused communication and referral respect professional boundaries.' },
+  },
+  {
+    title: 'Supporting inclusion and belonging',
+    objective: 'Explain how inclusion helps learners feel safe and connected.',
+    description: 'Inclusive routines give learners fair ways to join lessons, groups, and discussions. Teachers can make participation options clear and respond to disrespectful behavior using established classroom and school processes.',
+    example: 'In a Grade 7 discussion, students may first write an idea, then share it with a partner or the class, so participation is not limited to quick whole-class responses.',
+    keyPoints: ['Offer clear and respectful participation routines.', 'Use more than one appropriate way to contribute.', 'Address exclusion through classroom expectations.', 'Refer concerns that require additional school support.'],
+    activity: { type: 'quickCheck', question: 'Which classroom design offers multiple ways to participate?', options: ['Only accept rapid spoken answers', 'Allow writing, partner discussion, or a whole-class contribution', 'Require personal stories from every learner', 'Let interruptions decide who contributes'], correct: 1, hint: 'Participation can be structured in more than one way.', explanation: 'Different participation modes can make classroom involvement more accessible.' },
+  },
+  {
+    title: 'Working with families and school teams',
+    objective: 'Describe teacher communication with caregivers and support staff.',
+    description: 'When appropriate under school practice, teachers and designated staff may coordinate with caregivers to support a learner’s school experience. Communication should be factual, respectful, limited to relevant information, and guided by the school’s established process.',
+    example: 'A Grade 9 teacher shares specific class observations with the designated school staff member, who coordinates the appropriate next communication according to school practice.',
+    keyPoints: ['Follow school guidance on communication and roles.', 'Share observations rather than conclusions.', 'Limit information to what is relevant.', referralNote],
+    activity: { type: 'order', title: 'Share a classroom observation appropriately', task: 'Arrange a school-based communication sequence.', items: ['Record the observable classroom concern', 'Check the school’s designated process', 'Share relevant information with appropriate staff', 'Follow the role assigned by the school'], hint: 'Begin with an observation and use the established school pathway.', explanation: 'Factual, role-appropriate communication supports coordinated school responses.' },
+  },
+  {
+    title: 'Preventing and responding to conflict',
+    objective: 'Explain adult roles in managing social tension and promoting safety.',
+    description: 'Teachers can establish respectful discussion norms, notice conflict that affects learning, and apply the school’s classroom and referral processes. They do not investigate beyond their role or provide counseling; concerns needing additional support go through designated school staff.',
+    example: 'During a Grade 10 group project, the teacher pauses a disrespectful exchange, reminds students of the class discussion norm, and uses the school’s process if the concern needs further support.',
+    keyPoints: ['Teach and reinforce respectful classroom norms.', 'Address learning-task conflict within the teacher role.', 'Avoid diagnosing, counseling, or investigating beyond that role.', referralNote],
+    activity: { type: 'quickCheck', question: 'A conflict needs support beyond the teacher’s classroom role. What is the appropriate route?', options: ['Ask peers to investigate', 'Provide counseling', 'Follow the school referral process and involve the school counselor or designated staff', 'Share the situation publicly'], correct: 2, hint: 'Use the established school support pathway.', explanation: referralNote },
+  },
+  {
+    title: 'Teacher self-awareness',
+    objective: 'Describe how educators monitor their own stress and professional limits.',
+    description: 'Teachers benefit from noticing when a concern is outside their role or capacity and seeking guidance through appropriate school channels. This is professional boundary awareness, not personal health or counseling advice.',
+    example: 'A Grade 11 teacher is unsure which staff member handles a learner-support concern, so the teacher consults the school’s designated contact or supervisor.',
+    keyPoints: ['Recognize the limits of the teacher role.', 'Seek guidance through school channels when unsure.', 'Keep learner information appropriately shared.', referralNote],
+    activity: { type: 'matchPairs', title: 'Professional boundaries', task: 'Match a situation with a role-aware response.', pairs: [{ left: 'Unsure who receives a concern', right: 'Consult the school’s designated contact' }, { left: 'Concern beyond classroom support', right: 'Use the school referral process' }, { left: 'Learner information', right: 'Share only through appropriate channels' }], hint: 'Each response connects to a professional boundary.', explanation: 'School guidance helps teachers act within their role and reach designated staff.' },
+  },
+  {
+    title: 'Supporting the learner, not diagnosing',
+    objective: 'Summarize the teacher’s role as a supportive observer and referral partner.',
+    description: 'A teacher notices observable classroom changes, maintains respectful learning routines, and refers concerns that need support beyond teaching. Teachers do not diagnose or provide psychological, medical, or counseling advice.',
+    example: `A Grade 8 teacher records a specific change in classroom participation and follows the school’s process. ${referralNote}`,
+    keyPoints: ['Notice and describe what happens in the learning setting.', 'Offer classroom support within the teacher role.', 'Do not diagnose or counsel.', referralNote],
+    activity: { type: 'quickCheck', question: 'Which statement best summarizes the teacher’s role in learner wellbeing?', options: ['Diagnose a concern', 'Notice, support within the classroom role, and refer through school process', 'Provide counseling to resolve it', 'Keep every concern private from designated staff'], correct: 1, hint: 'The role is supportive and educational, not clinical.', explanation: 'Teachers notice and support in class, then use designated school processes when further support is needed.' },
+  },
+];
+
+export const LESSONS = drafts.map((lesson, index) => ({
+  id: `sec-guidance-${index + 1}`,
+  title: lesson.title,
+  subtitle: lesson.objective,
+  contentTitle: lesson.title,
+  description: lesson.description,
+  sections: [
+    { heading: 'Key idea', text: lesson.description },
+    { heading: 'Worked example', text: lesson.example },
+  ],
+  keyPoints: lesson.keyPoints,
+  activities: [lesson.activity],
+}));

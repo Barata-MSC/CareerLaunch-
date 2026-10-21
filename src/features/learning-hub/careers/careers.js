@@ -31,8 +31,8 @@ export const CAREERS = [
     subtitle: 'Guide learning, support growth, and shape classroom experiences.',
     icon: '📚',
     color: '#F59E0B',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['teacher-elementary', 'teacher-secondary'],
     overview:
       'Teaching blends subject knowledge, communication, and support to help learners build skills and confidence in a classroom or training setting.',
     skillsPreview: ['Communication', 'Planning', 'Mentorship'],
@@ -40,13 +40,13 @@ export const CAREERS = [
   {
     id: 'nursing',
     title: 'Nursing',
-    subtitle: 'Explore patient-centered care, communication, and the foundations of nursing.',
+    subtitle: 'Support patient care, health education, and safe clinical practice.',
     icon: '🩺',
     color: '#10B981',
     status: 'available',
     trackIds: ['nurs-student-path'],
     overview:
-      'Nursing brings together communication, ethical responsibility, education, and collaboration in support of people and communities.',
+      'Nursing involves caring for patients, working with clinical teams, and helping people through health challenges with empathy and evidence-based practice.',
     skillsPreview: ['Care', 'Communication', 'Clinical thinking'],
   },
   {

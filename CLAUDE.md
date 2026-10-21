@@ -31,7 +31,7 @@ The approved prototype scope connects the Learning Hub, course lessons, quizzes,
 | Application Tracker | Tracks jobs selected from Job Finder and supports Applied, Interview, Hired, and Rejected statuses. Guest access is gated; a full account is required. | State is held in React context, not stored in Supabase or durable local storage; it is lost when the app state resets. |
 | Interview Coach | Common interview questions, typed responses, feedback, suggestions, and a session summary. Guest access is gated; a full account is required. | Text feedback uses local heuristic checks. Voice feedback is simulated; there is no speech transcription, speech analysis, or AI service integration. Practice history is in memory only. |
 | Resume Builder | Personal information, education, skills, experience, certificates, projects, validation, a completeness score/suggestions, and a preview flow. Guest access to the builder, sections, and preview is gated; a full account is required. | Resume state is in React context, not persisted to Supabase or durable local storage. The score is rule-based, not an AI evaluation. |
-| Learning Hub | Career-first browsing leads from careers to tracks, courses, lessons, and quizzes. Software Engineering, Cybersecurity, and Nursing are available. Cybersecurity has two tracks, 14 courses, 140 lessons, and 140 quiz questions using defensive, authorized conceptual examples. Nursing has one track and eight team-reviewed courses. Career progress is derived from course statuses, not stored separately. | Other careers remain coming soon; some UI/UX roadmap steps intentionally have no course data yet. |
+| Learning Hub | Career-first browsing: Software Engineering, Cybersecurity, Teacher, and Nursing have available tracks and courses, leading to the existing lessons and quizzes. Cybersecurity has two tracks and 14 courses; Teacher has two tracks and 15 courses; Nursing has one team-reviewed track and eight courses. Career progress is derived from course statuses, not stored separately. | Some Software Engineering roadmap steps have no course yet (notably most UI/UX steps); those remain detail-only items. |
 | Profile and avatar | Profile data is read and updated in the Supabase `profiles` table; avatar upload uses Supabase Storage and can stage a pending upload locally. | The actual remote schema, bucket configuration, and RLS policies must be verified in the Supabase project; do not infer them from the client alone. |
 
 The interview screen's “AI” name reflects the approved product concept, not its current implementation: do not claim that it calls an LLM or provides model-generated feedback. Similarly, do not claim that a job was submitted to an employer; the app opens external links and tracks the user's intent to apply.
@@ -43,11 +43,12 @@ The current roadmap defines three tracks under the Software Engineering career:
 - **Software Engineer** (estimated five months): HTML, CSS, JavaScript, React, Node.js, Database, and Git/GitHub.
 - **Data Analyst** (estimated four months): Excel, SQL, Python/Pandas, Data Visualization, Statistics, and Dashboards (Power BI/Tableau).
 - **UI/UX Designer** (estimated three months): Design Fundamentals has course content; User Research, Wireframing, Figma/Prototyping, Usability Testing, and Design Systems are roadmap steps without course data yet.
-- **Nursing Student Path** (estimated five months; available after team review): eight introductory courses, 80 lessons, and 80 quiz questions. The content is educational orientation, not clinical training.
-- **Security Analyst** (estimated five months): eight Cybersecurity courses covering networking, operating systems, security fundamentals, cryptography, web application security, identity and access, monitoring, and incident response.
-- **Security Governance and Compliance** (estimated four months): six Cybersecurity courses covering risk, policies, privacy, awareness, continuity, and audit fundamentals.
 
-Tracks now sit under a career picker and are combined through `careers/registry.js`. Software Engineering, Cybersecurity, and Nursing are available; other careers remain coming soon without course access. Cybersecurity lessons use defensive, authorized, conceptual examples and do not provide operational attack guidance. Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
+The available Teacher career has an **Elementary Teacher** track (estimated five months) with eight courses and a **Secondary Teacher** track (estimated four months) with seven courses. Each course has 10 lessons and a 10-question bank.
+
+The reviewed Nursing Student Path has eight introductory courses and is available from the same career picker. Its material is educational orientation, not clinical training or medical advice. Tracks now resolve through the shared Learning Hub registry. Track durations are displayed estimates, not guarantees. Course IDs and lesson IDs are persistence keys: keep them stable and ensure quiz lesson references match real lesson IDs. A course is considered completed when all its lessons are marked complete and a quiz attempt is passed; an attempted quiz or completed lesson makes it in progress.
+
+Cybersecurity is also available with two tracks: **Security Analyst** (eight courses, estimated five months) and **Security Governance and Compliance** (six courses, estimated four months). Its lessons and quizzes use defensive, authorized, conceptual examples; they are introductory content, not operational attack guidance. Other seeded careers remain coming soon.
 
 ## Supabase data and persistence
 
@@ -83,7 +84,7 @@ These are recent code changes, not a claim that the overall product or every roa
 - `src/navigation/RootNavigator.js` separates authenticated app navigation from auth and password-recovery navigation.
 - `src/navigation/AppNavigator.js` registers app screens and course routes.
 - `src/features/` contains feature screens and logic; shared UI, context, configuration, navigation, and assets live in their corresponding `src/` directories.
-- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course-route registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `cybersecurity/` and `nursing/` alongside `software-engineering/`.
+- Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, and `nursing/`.
 - Keep navigation route names consistent with `navigation.navigate(...)`, and preserve stable course/lesson IDs.
 
 ## Technology and working commands
@@ -125,13 +126,6 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - `src/utils/sounds.js` owns the sound registry and playback; `src/components/AppPressable.js` provides default tap feedback for interactive controls. Use `sound="none"` when a control plays a more specific cue.
 - The global preference is stored in AsyncStorage under `careerlaunch:sound-enabled` and is controlled from Profile settings.
 - Sound assets live in `src/assets/sounds/`; source and license notes belong in `src/assets/sounds/CREDITS.md`.
-
-### Motion
-
-- The motion layer lives in `src/components/motion/` and centralizes timing in `motionTokens.js`.
-- Shared primitives are `Float`, `FadeSlideIn`, `AnimatedStage`, `Pop`, and `useReduceMotion`; they follow the built-in `Animated` API and respect the system reduce-motion setting.
-- The app keeps motion subtle: small transitions, lightweight screen-to-screen fades/slides, and limited levitation on hero elements only.
-- `Float` is intentionally used sparingly; avoid floating items inside large scroll lists or frequently reused list rows.
 
 ## Expo, web, and project commands
 

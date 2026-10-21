@@ -1,32 +1,43 @@
-import { coursesById as byId } from './courses';
+import networkingCourse from './cyber-networking-basics-course/course';
+import osCourse from './cyber-os-fundamentals-course/course';
+import securityFundamentalsCourse from './cyber-security-fundamentals-course/course';
+import cryptographyCourse from './cyber-cryptography-basics-course/course';
+import webAppSecurityCourse from './cyber-web-app-security-course/course';
+import identityAccessCourse from './cyber-identity-access-course/course';
+import monitoringCourse from './cyber-monitoring-detection-course/course';
+import incidentResponseCourse from './cyber-incident-response-course/course';
+import riskManagementCourse from './cyber-risk-management-course/course';
+import policiesCourse from './cyber-security-policies-course/course';
+import privacyCourse from './cyber-data-privacy-course/course';
+import awarenessCourse from './cyber-security-awareness-course/course';
+import continuityCourse from './cyber-business-continuity-course/course';
+import auditCourse from './cyber-audit-compliance-course/course';
 
-export const tracks = {
+export const TRACKS = {
   'cyber-security-analyst': {
     title: 'Security Analyst',
-    subtitle: 'Monitor systems, spot threats, and respond to incidents.',
     estimatedDuration: '5 months',
     steps: [
-      { id: '1', title: byId['cyber-networking-basics'].title, description: byId['cyber-networking-basics'].outcome, course: byId['cyber-networking-basics'], route: 'CyberNetworkingBasicsCourse' },
-      { id: '2', title: byId['cyber-os-fundamentals'].title, description: byId['cyber-os-fundamentals'].outcome, course: byId['cyber-os-fundamentals'], route: 'CyberOsFundamentalsCourse' },
-      { id: '3', title: byId['cyber-security-fundamentals'].title, description: byId['cyber-security-fundamentals'].outcome, course: byId['cyber-security-fundamentals'], route: 'CyberSecurityFundamentalsCourse' },
-      { id: '4', title: byId['cyber-cryptography-basics'].title, description: byId['cyber-cryptography-basics'].outcome, course: byId['cyber-cryptography-basics'], route: 'CyberCryptographyBasicsCourse' },
-      { id: '5', title: byId['cyber-web-app-security'].title, description: byId['cyber-web-app-security'].outcome, course: byId['cyber-web-app-security'], route: 'CyberWebAppSecurityCourse' },
-      { id: '6', title: byId['cyber-identity-access'].title, description: byId['cyber-identity-access'].outcome, course: byId['cyber-identity-access'], route: 'CyberIdentityAccessCourse' },
-      { id: '7', title: byId['cyber-monitoring-detection'].title, description: byId['cyber-monitoring-detection'].outcome, course: byId['cyber-monitoring-detection'], route: 'CyberMonitoringDetectionCourse' },
-      { id: '8', title: byId['cyber-incident-response'].title, description: byId['cyber-incident-response'].outcome, course: byId['cyber-incident-response'], route: 'CyberIncidentResponseCourse' },
+      { id: 'cyber-networking-basics', title: 'Networking Basics', course: networkingCourse, route: 'CyberNetworkingBasicsCourse', description: 'Learn how devices and services communicate, and why network boundaries should be managed by authorized owners.' },
+      { id: 'cyber-os-fundamentals', title: 'Operating Systems for Security', course: osCourse, route: 'CyberOsFundamentalsCourse', description: 'Understand accounts, files, permissions, processes, updates, and endpoint safeguards at a beginner level.' },
+      { id: 'cyber-security-fundamentals', title: 'Security Fundamentals', course: securityFundamentalsCourse, route: 'CyberSecurityFundamentalsCourse', description: 'Connect the CIA triad, assets, threats, risk, and layered defensive controls.' },
+      { id: 'cyber-cryptography-basics', title: 'Cryptography Basics', course: cryptographyCourse, route: 'CyberCryptographyBasicsCourse', description: 'Learn the conceptual roles of encryption, hashing, signatures, certificates, and key stewardship.' },
+      { id: 'cyber-web-app-security', title: 'Web and Application Security', course: webAppSecurityCourse, route: 'CyberWebAppSecurityCourse', description: 'Recognize common application risk areas conceptually and understand their defensive design goals.' },
+      { id: 'cyber-identity-access', title: 'Identity and Access Management', course: identityAccessCourse, route: 'CyberIdentityAccessCourse', description: 'Understand authentication, authorization, least privilege, and accountable access review.' },
+      { id: 'cyber-monitoring-detection', title: 'Monitoring and Threat Detection', course: monitoringCourse, route: 'CyberMonitoringDetectionCourse', description: 'Read fictional log examples and understand alerts, context, privacy, and escalation.' },
+      { id: 'cyber-incident-response', title: 'Incident Response', course: incidentResponseCourse, route: 'CyberIncidentResponseCourse', description: 'Learn response roles, communication, recovery concepts, and approved reporting boundaries.' },
     ],
   },
   'cyber-grc': {
     title: 'Security Governance and Compliance',
-    subtitle: 'Policies, risk, and privacy: the people side of security.',
     estimatedDuration: '4 months',
     steps: [
-      { id: '1', title: byId['cyber-risk-management'].title, description: byId['cyber-risk-management'].outcome, course: byId['cyber-risk-management'], route: 'CyberRiskManagementCourse' },
-      { id: '2', title: byId['cyber-security-policies'].title, description: byId['cyber-security-policies'].outcome, course: byId['cyber-security-policies'], route: 'CyberSecurityPoliciesCourse' },
-      { id: '3', title: byId['cyber-data-privacy'].title, description: byId['cyber-data-privacy'].outcome, course: byId['cyber-data-privacy'], route: 'CyberDataPrivacyCourse' },
-      { id: '4', title: byId['cyber-security-awareness'].title, description: byId['cyber-security-awareness'].outcome, course: byId['cyber-security-awareness'], route: 'CyberSecurityAwarenessCourse' },
-      { id: '5', title: byId['cyber-business-continuity'].title, description: byId['cyber-business-continuity'].outcome, course: byId['cyber-business-continuity'], route: 'CyberBusinessContinuityCourse' },
-      { id: '6', title: byId['cyber-audit-compliance'].title, description: byId['cyber-audit-compliance'].outcome, course: byId['cyber-audit-compliance'], route: 'CyberAuditComplianceCourse' },
+      { id: 'cyber-risk-management', title: 'Risk Management', course: riskManagementCourse, route: 'CyberRiskManagementCourse', description: 'Identify assets and risks, communicate uncertainty, and compare broad treatment choices.' },
+      { id: 'cyber-security-policies', title: 'Security Policies and Frameworks', course: policiesCourse, route: 'CyberSecurityPoliciesCourse', description: 'Understand organizational rules, responsibilities, frameworks, exceptions, and review.' },
+      { id: 'cyber-data-privacy', title: 'Data Privacy Fundamentals', course: privacyCourse, route: 'CyberDataPrivacyCourse', description: 'Explore privacy-minded handling of personal information and current-source awareness.' },
+      { id: 'cyber-security-awareness', title: 'Security Awareness and Social Engineering Defense', course: awarenessCourse, route: 'CyberSecurityAwarenessCourse', description: 'Practice supportive, authorized ways to recognize and report suspicious requests.' },
+      { id: 'cyber-business-continuity', title: 'Business Continuity and Disaster Recovery', course: continuityCourse, route: 'CyberBusinessContinuityCourse', description: 'Understand continuity planning, dependencies, recovery concepts, and tabletop exercises.' },
+      { id: 'cyber-audit-compliance', title: 'Audits and Compliance Basics', course: auditCourse, route: 'CyberAuditComplianceCourse', description: 'Learn about audit scope, evidence, findings, corrective actions, and governance roles.' },
     ],
   },
 };

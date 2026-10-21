@@ -22,7 +22,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `00-careers-layer.md` | Careers screen above the tracks | Ready |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
 | `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Ready (needs audio files first) |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity is built, validated, and available. Nursing is built, team-reviewed, and available. Teacher, Lawyer, Doctor, and Marine remain regulated career builds; use plan mode first. |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity and Teacher are built and available. Nursing is built, team-reviewed, and available. Lawyer, Doctor, and Marine remain planned career builds; use plan mode first. |
 | `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Ready |
 | `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked until the coverage test passes |
 | `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Ready |
@@ -38,13 +38,15 @@ Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & To
 2. **04 Guest gating** early. Briefs 05, 06, and 07 reuse its hook, lock screen, and server helper.
 3. **02 SFX, then 01 Animation.** SFX creates the shared `AppPressable` wrapper; Animation adds press feedback inside it. Merge 02 before starting 01.
 4. **06, then 05, then 07, then 08.** 06 can run any time after 04 and works with the sample listings. 05 needs the coverage test. 07 needs a key. 08 needs 07 and a development build. **09** (Resume Builder saving) only needs 04 and can run any time after it.
-5. **03 Career content**: one career per branch, and each career's content goes in its own folder under `src/features/learning-hub/` (for example `learning-hub/cybersecurity/`), next to `software-engineering/`. `careers/` holds only the shared layer (career metadata, screens, and the registry). The shared registry and validator already exist; extend them for each new career rather than recreating them. Merge `00` before career work.
+5. **03 Career content**: one career per branch, and each career's content goes in its own folder under `src/features/learning-hub/` (for example `learning-hub/cybersecurity/`), next to `software-engineering/`. `careers/` holds only the shared layer (career metadata, screens, and the registry). The shared registry and validator were introduced with Cybersecurity; future career runs should extend them instead of creating replacements. Merge `00` before career work, and merge a career before starting another to avoid registry conflicts.
 
 ## Files outside the briefs
 
 - `specs/<career-id>.md`: the Career Spec for each career (binding input for brief 03).
+- `scripts/validate-learning-content.mjs`: shared integrity validator for all registered careers; run it with `npm run validate:content` after content or registry changes.
 - `scripts/job-api-coverage-test.mjs`: dev-only script that checks whether the job API returns usable Philippine listings. Keep your key in your shell, never in a file.
 - `progress/`: created by runs. Checkpoints for career builds and the coverage report. Commit them; they are the resume point if a run stops early.
+- `src/features/learning-hub/careers/registry.js`: shared career track/course registry. Add future career modules here through their `index.js`; do not duplicate Software Engineering or Cybersecurity track/course wiring.
 - Career content folders: `learning-hub/<career-id>/` (created by brief 03 runs). Each regulated career (Teacher, Lawyer, Nursing, Doctor, Marine) also gets a `REVIEW_NOTES.md` there for the expert reviewer.
 
 ## Merge-conflict hotspots
@@ -56,7 +58,7 @@ Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & To
 - Adding and licensing audio files.
 - Creating API keys and storing them as Supabase secrets; applying migrations; deploying Supabase Edge Functions (the lead dev).
 - Running the job API coverage test.
-- Expert review of Teacher, Lawyer, Nursing, Doctor, Marine, and similar content before it is shown as available.
+- Expert review of Lawyer, Doctor, Marine, and similar regulated career content before it is shown as available. Teacher and Nursing have completed review and are available.
 - Approving the new voice dependency and building a development build for voice testing (brief 08).
 - Testing on real devices.
 

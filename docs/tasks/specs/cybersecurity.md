@@ -1,6 +1,6 @@
 # Career Spec: Cybersecurity
 
-Run with `docs/tasks/03-career-content-template.md`. Suggested order: run once with `run_mode: plan`, review the outline, then switch to `build`. Build track 1 first; track 2 can follow in a later run through the checkpoint file.
+Run with `docs/tasks/03-career-content-template.md`. Suggested order: run once with `run_mode: build`, review the outline, then switch to `build`. Build track 1 first; track 2 can follow in a later run through the checkpoint file.
 
 ```yaml
 career:
