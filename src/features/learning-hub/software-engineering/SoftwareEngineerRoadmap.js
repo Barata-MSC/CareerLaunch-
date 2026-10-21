@@ -31,6 +31,7 @@ import statisticsCourse from './statistics-course/course';
 import excelCourse from './excel-course/course';
 import pandasCourse from './panda-course/course';
 import { tracks as nursingTracks, courses as nursingCourses } from '../nursing';
+import { tracks as cybersecurityTracks, courses as cybersecurityCourses } from '../cybersecurity';
 
 
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
@@ -60,6 +61,7 @@ const COURSES = [
   pandasCourse,
   sqlCourse,
   ...nursingCourses,
+  ...cybersecurityCourses,
 ];
 
 
@@ -209,7 +211,7 @@ const SOFTWARE_ENGINEERING_TRACKS = {
   },
 };
 
-export const TRACKS = { ...SOFTWARE_ENGINEERING_TRACKS, ...nursingTracks };
+export const TRACKS = { ...SOFTWARE_ENGINEERING_TRACKS, ...nursingTracks, ...cybersecurityTracks };
 export { SOFTWARE_ENGINEERING_TRACKS };
 
 const TRACK_NAMES = Object.keys(TRACKS);
@@ -251,12 +253,16 @@ function StepIndicator({ status, isLast }) {
 }
 
 export default function CareerRoadmapScreen({ navigation, route }) {
+  const careerTrackIds = route?.params?.trackIds;
+  const trackNames = Array.isArray(careerTrackIds) && careerTrackIds.length
+    ? careerTrackIds.filter((trackId) => TRACKS[trackId])
+    : TRACK_NAMES;
   // If a valid track name is passed in via navigation params, start there.
   // Otherwise default to the first track in the TRACKS object.
   const initialTrack =
     route?.params?.goal && TRACKS[route.params.goal]
       ? route.params.goal
-      : TRACK_NAMES[0];
+      : trackNames[0];
 
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   const selectedTrackRef = useRef(selectedTrack);
@@ -294,12 +300,12 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   };
 
   const goToTrack = (direction) => {
-    const currentIndex = TRACK_NAMES.indexOf(selectedTrackRef.current);
+    const currentIndex = trackNames.indexOf(selectedTrackRef.current);
     const nextIndex =
       direction === 'next'
-        ? (currentIndex + 1) % TRACK_NAMES.length
-        : (currentIndex - 1 + TRACK_NAMES.length) % TRACK_NAMES.length;
-    setSelectedTrack(TRACK_NAMES[nextIndex]);
+        ? (currentIndex + 1) % trackNames.length
+        : (currentIndex - 1 + trackNames.length) % trackNames.length;
+      setSelectedTrack(trackNames[nextIndex]);
   };
 
   const panResponder = useRef(
@@ -361,7 +367,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.chipRow}
         >
-          {TRACK_NAMES.map((trackName) => {
+          {trackNames.map((trackName) => {
             const active = trackName === selectedTrack;
             return (
               <AppPressable

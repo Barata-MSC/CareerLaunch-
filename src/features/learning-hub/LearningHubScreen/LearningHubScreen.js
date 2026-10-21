@@ -29,6 +29,16 @@ const TRACK_NAMES = Object.keys(TRACKS);
 // Every course of every track, so progress loads with one query per table.
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
+  'Security Analyst': {
+    icon: '🛡️',
+    color: '#2E7DFF',
+    blurb: 'Monitor systems, recognize concerns, and support authorized defense.',
+  },
+  'Security Governance and Compliance': {
+    icon: '📋',
+    color: '#2F8F83',
+    blurb: 'Understand security policy, risk, privacy, and responsible oversight.',
+  },
   'Software Engineer': {
     icon: '💻',
     color: '#6C4CE0',
@@ -421,7 +431,10 @@ export default function LearningHubScreen({ navigation }) {
 
         <AppPressable
           style={styles.primaryBtn}
-          onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
+          onPress={() => navigation.navigate('CareerRoadmap', {
+            goal: selectedTrack,
+            trackIds: currentCareer?.trackIds,
+          })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
         </AppPressable>

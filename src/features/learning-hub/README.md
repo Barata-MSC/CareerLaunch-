@@ -28,7 +28,7 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Career | Status | Tracks mapping |
 |---|---|---|
 | Software Engineering | Available | Software Engineer, UI/UX Designer, Data Analyst |
-| Cybersecurity | Coming soon | None |
+| Cybersecurity | Available | Security Analyst, Security Governance and Compliance |
 | Teacher | Coming soon | None |
 | Nursing | Available (team reviewed) | Nursing Student Path |
 | Doctor | Coming soon | None |
@@ -38,7 +38,7 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is a legacy organizational name: it contains courses for all three Software Engineering career tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Nursing's reviewed track and course content is available from the career picker.
+The folder name `software-engineering/` is a legacy organizational name: it contains courses for all three Software Engineering career tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Cybersecurity's two tracks and Nursing's reviewed track are available from the career picker.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
@@ -46,6 +46,8 @@ The folder name `software-engineering/` is a legacy organizational name: it cont
 | Data Analyst | Excel & Spreadsheets, SQL, Python (Pandas), Data Visualization, Statistics, Dashboards (Power BI / Tableau) | All six steps have courses. |
 | UI/UX Designer | Design Fundamentals, User Research, Wireframing, Figma / Prototyping, Usability Testing, Design Systems | Design Fundamentals has a course. The other five steps have descriptions but no course route/data yet. |
 | Nursing Student Path | The Nursing Profession and Ethics, Human Body Basics, Communication with Patients and Families, Fundamentals of Nursing Care, Infection Prevention Basics, Health Promotion and Community Health, Patient Safety/Documentation/Teamwork, Path to Practice and Caring for Yourself | Eight available courses have ten lessons and ten quiz questions each; content was reviewed and approved by the team. |
+| Security Analyst | Networking Basics, Operating Systems for Security, Security Fundamentals, Cryptography Basics, Web and Application Security, Identity and Access Management, Monitoring and Threat Detection, Incident Response | All eight courses have ten lessons and ten quiz questions each; examples are defensive, fictional, and authorization-focused. |
+| Security Governance and Compliance | Risk Management, Security Policies and Frameworks, Data Privacy Fundamentals, Security Awareness and Social Engineering Defense, Business Continuity and Disaster Recovery, Audits and Compliance Basics | All six courses have ten lessons and ten quiz questions each; privacy references are limited to the supplied name-level statements. |
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -86,16 +88,22 @@ src/features/learning-hub/
       data/
         lessons.js                  Ten ordered lessons with examples and activities
         questions.js                Ten lesson-linked quiz questions
+  cybersecurity/
+    index.js                        Cybersecurity track, course, and route exports
+    tracks.js                       Two stable-ID tracks and ordered course steps
+    courses.js                      Resolved course catalog for routes and progress
+    data/curriculum.js              Course metadata, outcomes, objectives, examples, and quizzes
+    CybersecurityCourseScreen.js    Shared CourseRunner wrapper for Cybersecurity routes
 ```
 
-`careers/` is the shared layer for career metadata, screens, and the registry. Each career's content lives in a sibling folder beside `software-engineering/`; a regulated career may have registered tracks and courses while its `coming-soon` status continues to gate access until human expert review.
+`careers/` is the shared layer for career metadata, screens, and the registry. Each career's content lives in a sibling folder beside `software-engineering/`. Cybersecurity is available with defensive, conceptual content; a regulated career may have registered tracks and courses while its `coming-soon` status gates access until human expert review.
 
 The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
 
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines the Software Engineering and registered career tracks, aggregates course data for progress, and supplies data-driven routes for new career courses. `software-engineering/SoftwareEngineerRoadmap.js` renders the combined track list and uses `useAllCoursesProgress` for roadmap status.
+- `careers/registry.js` combines Software Engineering, Nursing, Cybersecurity, and registered career tracks, aggregates course data for progress, and supplies data-driven course routes. `software-engineering/SoftwareEngineerRoadmap.js` renders the combined track list, scoped to the selected career, and uses `useAllCoursesProgress` for roadmap status.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.

@@ -1,13 +1,16 @@
 import { SOFTWARE_ENGINEERING_TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import { tracks as nursingTracks, courses as nursingCourses, courseRoutes as nursingCourseRoutes } from '../nursing';
+import { tracks as cybersecurityTracks, courses as cybersecurityCourses, courseRoutes as cybersecurityCourseRoutes } from '../cybersecurity';
 
 export const TRACKS = {
   ...SOFTWARE_ENGINEERING_TRACKS,
   ...nursingTracks,
+  ...cybersecurityTracks,
 };
 
 export const COURSE_ROUTES = [
   ...nursingCourseRoutes,
+  ...cybersecurityCourseRoutes,
 ];
 
 export const ALL_COURSES = [...new Map(
@@ -19,4 +22,5 @@ export const ALL_COURSES = [...new Map(
 
 export const COURSES_BY_CAREER = {
   nursing: nursingCourses,
+  cybersecurity: cybersecurityCourses,
 };

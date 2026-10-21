@@ -21,7 +21,8 @@ function loadModule(filePath, cache = new Map()) {
   const absolutePath = path.resolve(filePath);
   if (cache.has(absolutePath)) return cache.get(absolutePath);
 
-  let source = fs.readFileSync(absolutePath, 'utf8');
+  const originalSource = fs.readFileSync(absolutePath, 'utf8');
+  let source = originalSource;
   const bindings = {};
   const firstDeclaration = source.search(/^(?:export\s+)?(?:const|let|var|function)\s/m);
   const header = firstDeclaration < 0 ? source : source.slice(0, firstDeclaration);
@@ -48,8 +49,8 @@ function loadModule(filePath, cache = new Map()) {
     .replace(/export\s+default\s+/g, '')
     .replace(/export\s+const\s+/g, 'const ')
     .replace(/export\s+function\s+/g, 'function ');
-  const namedExports = [...source.matchAll(/\bconst\s+([A-Za-z_$][\w$]*)\s*=/g)].map((match) => match[1]);
-  const defaultExport = fs.readFileSync(absolutePath, 'utf8').match(/export\s+default\s+([A-Za-z_$][\w$]*)\s*;/)?.[1];
+  const namedExports = [...originalSource.matchAll(/^export\s+(?:const|function)\s+([A-Za-z_$][\w$]*)/gm)].map((match) => match[1]);
+  const defaultExport = originalSource.match(/export\s+default\s+([A-Za-z_$][\w$]*)\s*;/)?.[1];
   const returnNames = [...new Set(namedExports)].map((name) => `${JSON.stringify(name)}: typeof ${name} === 'undefined' ? undefined : ${name}`);
   if (defaultExport) returnNames.push(`default: ${defaultExport}`);
 
@@ -104,6 +105,24 @@ function readSoftwareTracks(coursesByPath) {
 }
 
 function loadCourses(careerDir) {
+  if (path.basename(careerDir) === 'cybersecurity') {
+    try {
+      const curriculum = loadModule(path.join(careerDir, 'data', 'curriculum.js'));
+      return curriculum.COURSES.map((definition, index) => {
+        const course = curriculum.buildCourse(definition, index);
+        return {
+          folder: path.join(careerDir, `${course.id}-course`),
+          course,
+          lessons: course.lessons,
+          questions: course.questions,
+        };
+      });
+    } catch (error) {
+      issues.push(`${path.relative(root, careerDir)}: could not load catalog: ${error.message}`);
+      return [];
+    }
+  }
+
   const courseFolders = fs.readdirSync(careerDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && entry.name.endsWith('-course'))
     .map((entry) => path.join(careerDir, entry.name));
@@ -287,6 +306,20 @@ if (fs.existsSync(nursingIndex)) {
     routeCounts.set(routeName, (routeCounts.get(routeName) || 0) + 1);
   }
 }
+const cyberIndex = path.join(learningHub, 'cybersecurity', 'index.js');
+if (fs.existsSync(cyberIndex)) {
+  const cyberIndexSource = fs.readFileSync(cyberIndex, 'utf8');
+  if (!/export\s+const\s+courseRoutes\s*=\s*courses\.map/.test(cyberIndexSource) || !/name:\s*course\.route/.test(cyberIndexSource)) {
+    issues.push('cybersecurity: courseRoutes must map each registered course to the shared course screen');
+  }
+  for (const track of Object.values(tracks)) {
+    for (const step of track.steps || []) {
+      if (step.course?.id?.startsWith('cyber-') && step.route) {
+        routeCounts.set(step.route, (routeCounts.get(step.route) || 0) + 1);
+      }
+    }
+  }
+}
 for (const [routeName, count] of routeCounts) {
   if (count > 1) issues.push(`duplicate registered route name ${routeName}`);
 }
@@ -319,6 +352,15 @@ try {
   issues.push(`career registry: ${error.message}`);
 }
 
+const stepRoutes = new Set();
+for (const [trackId, track] of Object.entries(tracks)) {
+  for (const step of track?.steps || []) {
+    if (step.course && !courseIds.has(step.course.id)) issues.push(`${trackId}: step refers to an unknown course ${step.course.id}`);
+    if (step.route && stepRoutes.has(step.route)) issues.push(`duplicate track step route ${step.route}`);
+    if (step.route) stepRoutes.add(step.route);
+  }
+}
+
 if (issues.length) {
   console.error('Learning content validation failed:');
   for (const issue of issues) console.error(`- ${issue}`);
@@ -327,12 +369,4 @@ if (issues.length) {
   for (const warning of warnings) console.warn(`Warning: ${warning}`);
   const totalCourses = [...coursesByCareer.values()].flat().length;
   console.log(`Learning content validation passed: ${totalCourses} courses across ${coursesByCareer.size} registered career folders.`);
-}
-const stepRoutes = new Set();
-for (const [trackId, track] of Object.entries(tracks)) {
-  for (const step of track?.steps || []) {
-    if (step.course && !courseIds.has(step.course.id)) issues.push(`${trackId}: step refers to an unknown course ${step.course.id}`);
-    if (step.route && stepRoutes.has(step.route)) issues.push(`duplicate track step route ${step.route}`);
-    if (step.route) stepRoutes.add(step.route);
-  }
 }
