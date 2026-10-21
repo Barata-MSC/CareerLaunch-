@@ -1,10 +1,11 @@
 import AppPressable from '@components/AppPressable';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
-  Image,
+  Alert,
+  Platform,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,8 +14,8 @@ import {
   areRequiredResumeSectionsComplete,
   isResumeSectionComplete,
 } from './validators';
-import { useProfile } from '../../context/ProfileContext';
 import AccountGate from '../../components/AccountGate';
+import ResumeDataGate from './ResumeDataGate';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -34,7 +35,13 @@ function isSectionDone(section, resumeData) {
 }
 
 function ResumeBuilderContent({ navigation }) {
-  const { resumeData } = useResume();
+  const { resumeData, saveStatus, saveNow, deleteResume, deleting } = useResume();
+  const [deleteError, setDeleteError] = useState('');
+
+  useEffect(() => {
+    if (!navigation) return undefined;
+    return navigation.addListener('blur', saveNow);
+  }, [navigation, saveNow]);
 
   const progress = useMemo(() => {
     const completed = SECTIONS.filter((s) => isSectionDone(s, resumeData)).length;
@@ -44,8 +51,48 @@ function ResumeBuilderContent({ navigation }) {
   // Generating unlocks once every required section is filled in
   const missingRequired = SECTIONS.filter((s) => s.required && !isSectionDone(s, resumeData));
   const canGenerate = areRequiredResumeSectionsComplete(resumeData);
+  const hasResumeContent =
+    Object.values(resumeData.personalInfo).some((value) => typeof value === 'string' && value.trim()) ||
+    ['education', 'skills', 'experience', 'certificates', 'projects'].some(
+      (section) => resumeData[section].length > 0,
+    );
 
   const sectionStatus = (section) => (isSectionDone(section, resumeData) ? 'done' : 'empty');
+
+  const deleteConfirmedResume = async () => {
+    const deleted = await deleteResume();
+    if (deleted) {
+      setDeleteError('');
+    } else {
+      setDeleteError('Could not delete resume. Check your connection and try again.');
+      if (Platform.OS !== 'web') {
+        Alert.alert('Could not delete resume', 'Check your connection and try again.');
+      }
+    }
+  };
+
+  const confirmDeleteResume = () => {
+    const message = 'This permanently deletes the resume saved to your account.';
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(message)) {
+        deleteConfirmedResume();
+      }
+      return;
+    }
+
+    Alert.alert(
+      'Delete my resume?',
+      message,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: deleteConfirmedResume,
+        },
+      ],
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -58,6 +105,29 @@ function ResumeBuilderContent({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.privacyNote}>
+          Your resume is saved to your account and can be deleted at any time. Profile photos are not saved yet.
+        </Text>
+        {(saveStatus === 'pending' || saveStatus === 'saving') && (
+          <Text accessibilityLiveRegion="polite" style={styles.saveStatus}>Saving…</Text>
+        )}
+        {saveStatus === 'saved' && (
+          <Text accessibilityLiveRegion="polite" style={styles.saveStatus}>Saved</Text>
+        )}
+        {saveStatus === 'error' && (
+          <View style={styles.saveErrorRow}>
+            <Text accessibilityLiveRegion="polite" style={styles.saveError}>Couldn’t save. </Text>
+            <AppPressable onPress={saveNow}>
+              <Text style={styles.retryText}>Retry</Text>
+            </AppPressable>
+          </View>
+        )}
+        {!hasResumeContent && (
+          <Text style={styles.emptyState}>
+            You have not added any resume details yet. Choose a section below to get started.
+          </Text>
+        )}
+
         <Text style={styles.progressLabel}>Resume progress</Text>
         <Text style={styles.progressPercent}>{progress}% complete</Text>
         <View style={styles.progressTrack}>
@@ -114,6 +184,17 @@ function ResumeBuilderContent({ navigation }) {
         <AppPressable onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
           <Text style={styles.testLink}>Test Resume here</Text>
         </AppPressable>
+
+        <AppPressable
+          style={styles.deleteButton}
+          disabled={deleting}
+          onPress={confirmDeleteResume}
+        >
+          <Text style={styles.deleteButtonText}>
+            {deleting ? 'Deleting…' : 'Delete my resume'}
+          </Text>
+        </AppPressable>
+        {deleteError ? <Text style={styles.deleteError}>{deleteError}</Text> : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -144,6 +225,54 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 24,
+  },
+  privacyNote: {
+    color: '#6B7280',
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  saveStatus: {
+    color: '#4B5563',
+    fontSize: 12,
+    marginBottom: 12,
+  },
+  saveErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  saveError: {
+    color: '#B42318',
+    fontSize: 12,
+  },
+  emptyState: {
+    color: '#6B7280',
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 16,
+  },
+  retryText: {
+    color: PURPLE,
+    fontSize: 12,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  deleteButton: {
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 12,
+  },
+  deleteButtonText: {
+    color: '#B42318',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  deleteError: {
+    color: '#B42318',
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   progressLabel: {
     fontSize: 13,
@@ -262,7 +391,9 @@ export default function ResumeBuilderScreen(props) {
       description="Build and preview your resume with confidence. Complete your account to unlock the Resume Builder and keep your work saved."
       navigation={props.navigation}
     >
-      <ResumeBuilderContent {...props} />
+      <ResumeDataGate>
+        <ResumeBuilderContent {...props} />
+      </ResumeDataGate>
     </AccountGate>
   );
 }
