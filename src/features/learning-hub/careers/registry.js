@@ -1,6 +1,14 @@
 import { TRACKS as softwareEngineeringTracks } from '../software-engineering/tracks';
-import { tracks as cybersecurityTracks, courses as cybersecurityCourses } from '../cybersecurity';
+import {
+  tracks as cybersecurityTracks,
+  courses as cybersecurityCourses,
+} from '../cybersecurity';
 import { tracks as lawyerTracks, courses as lawyerCourses } from '../lawyer';
+import {
+  tracks as nursingTracks,
+  courses as nursingCourses,
+  courseRoutes as nursingCourseRoutes,
+} from '../nursing';
 import { tracks as teacherTracks, courses as teacherCourses } from '../teacher';
 
 import cssCourse from '../software-engineering/css-course/course';
@@ -66,6 +74,19 @@ const softwareEngineeringCourses = [
   },
 ];
 
+const nursingCourseEntries = nursingCourses.map((course) => {
+  const step = Object.values(nursingTracks)
+    .flatMap((track) => track.steps)
+    .find((trackStep) => trackStep.course.id === course.id);
+  const route = nursingCourseRoutes.find(({ name }) => name === step?.route);
+
+  return {
+    course,
+    routeName: step?.route,
+    component: route?.component,
+  };
+});
+
 export const CAREER_CONTENT = [
   {
     careerId: 'software-engineering',
@@ -81,6 +102,11 @@ export const CAREER_CONTENT = [
     careerId: 'lawyer',
     tracks: lawyerTracks,
     courses: lawyerCourses,
+  },
+  {
+    careerId: 'nursing',
+    tracks: nursingTracks,
+    courses: nursingCourseEntries,
   },
   {
     careerId: 'teacher',
