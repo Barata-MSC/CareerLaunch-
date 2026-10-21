@@ -378,3 +378,13 @@ Branch: `lawyer`
 - `npx expo export -p web` — passed; web bundle exported to `dist` with the `/CareerLaunch-/` base path.
 - `git diff --check` — passed.
 - `git grep --untracked -n -i -E "awaiting expert review|coming-soon" -- src/features/learning-hub/careers` — matches only the eight careers that remain `coming-soon`; Lawyer has no match.
+
+## Validation after main integration
+
+Date: 2026-10-21; branch: `lawyer`
+
+- `npm run validate:content` — passed; checked 10 careers, 7 tracks, and 45 courses. The only warning was an answer-index skew in `data-visualization` (60%); no Lawyer warnings were reported.
+- `npm run lint -- --no-cache` — passed.
+- `npx expo export -p web` — passed; the web bundle exported to `dist` using the `/CareerLaunch-/` base path.
+- `git diff --check` — passed with no output.
+- Manual app/device checklist — not run. Team checklist: open Lawyer from Careers; open both tracks; open at least one course in each track; mark a lesson complete; take passing and failing quizzes; confirm progress updates; spot-check lessons for accuracy. Subject-expert review notes remain in `lawyer/REVIEW_NOTES.md`.

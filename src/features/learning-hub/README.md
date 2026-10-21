@@ -21,32 +21,34 @@ Course durations in the product are estimates, not promises. Learning content sh
 
 ## Current careers and roadmap
 
-The current Learning Hub begins with a career picker and then moves into a career's track list. Career metadata lives in `careers/careers.js`; `careers/registry.js` combines track data from the existing Software Engineering module and each built career folder. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation remains in `software-engineering/SoftwareEngineerRoadmap.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
 
 ### Careers
 
 | Career | Status | Tracks mapping |
 |---|---|---|
 | Software Engineering | Available | Software Engineer, UI/UX Designer, Data Analyst |
-| Cybersecurity | Coming soon | None |
+| Cybersecurity | Available | Security Analyst (8 courses); Security Governance and Compliance (6 courses) |
 | Teacher | Coming soon | None |
 | Nursing | Coming soon | None |
 | Doctor | Coming soon | None |
-| Lawyer | Available | Lawyer Path and Paralegal and Legal Support are available, with 14 courses and registered routes. |
+| Lawyer | Available | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
 | Marine (Seafarer / Marine Engineering) | Coming soon | None |
 | Accountancy | Coming soon | None |
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three Software Engineering tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Lawyer routes and tracks are registered and accessible from the career picker.
+The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, and Lawyer are wired to real tracks and courses; the other seeded careers remain coming soon.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
 | Software Engineer | HTML, CSS, JavaScript, React, Node.js, Database, Git & GitHub | All seven steps have courses. |
 | Data Analyst | Excel & Spreadsheets, SQL, Python (Pandas), Data Visualization, Statistics, Dashboards (Power BI / Tableau) | All six steps have courses. |
 | UI/UX Designer | Design Fundamentals, User Research, Wireframing, Figma / Prototyping, Usability Testing, Design Systems | Design Fundamentals has a course. The other five steps have descriptions but no course route/data yet. |
-| Lawyer Path | The Legal Profession and Ethics, The Philippine Legal System, Legal Research Skills, Legal Writing and Analysis, Constitutional Law Concepts, Civil and Criminal Law Overview, Procedure, Evidence, and Advocacy Basics, Path to Practice and Client Communication | All eight courses have lessons, quizzes, and registered routes; available to learners. |
-| Paralegal and Legal Support | Legal Office Operations, Legal Documents and Drafting Basics, Court Processes and Filing Basics, Legal Research Support, Client Intake and Confidentiality, Legal Technology and Records Management | All six courses have lessons, quizzes, and registered routes; available to learners. |
+| Security Analyst | Networking Basics, Operating Systems for Security, Security Fundamentals, Cryptography Basics, Web and Application Security, Identity and Access Management, Monitoring and Threat Detection, Incident Response | All eight steps have courses. |
+| Security Governance and Compliance | Risk Management, Security Policies and Frameworks, Data Privacy Fundamentals, Security Awareness and Social Engineering Defense, Business Continuity and Disaster Recovery, Audits and Compliance Basics | All six steps have courses. |
+| Lawyer Path | The Legal Profession and Ethics, The Philippine Legal System, Legal Research Skills, Legal Writing and Analysis, Constitutional Law Concepts, Civil and Criminal Law Overview, Procedure, Evidence, and Advocacy Basics, Path to Practice and Client Communication | All eight steps have courses; introductory career orientation, not legal advice. |
+| Paralegal and Legal Support | Legal Office Operations, Legal Documents and Drafting Basics, Court Processes and Filing Basics, Legal Research Support, Client Intake and Confidentiality, Legal Technology and Records Management | All six steps have courses; administrative and support concepts only. |
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -59,20 +61,8 @@ src/features/learning-hub/
     LearningHubScreen.js            Career list, track list, and course browsing entry point
   careers/
     careers.js                      Career data, stable IDs, and data validation helpers
-    registry.js                     Combined tracks and course-route registry for all career folders
-    CareerDetailScreen.js           Coming-soon career detail-only screen
-  lawyer/
-    index.js                         Lawyer track and course registration entry point
-    tracks.js                        Lawyer Path and Paralegal and Legal Support roadmaps
-    courseCatalog.js                 Authored lesson objectives, explanations, and examples
-    courseContent.js                 Shared lawyer lesson/activity/question assembly
-    REVIEW_NOTES.md                  Subject-expert review notes and sign-off placeholders
-    <course-id>-course/
-      course.js                      Course metadata, outcome, and prerequisites
-      <CourseName>Course.js          Thin wrapper around CourseRunner
-      data/
-        lessons.js                   Ordered lesson content
-        questions.js                 Quiz question bank
+    registry.js                     Combined track and course-route registry
+    CareerDetailScreen.js           Detail view for careers that are not yet available
   shared/
     CourseRunner.js                 Shared course flow and orchestration
     courseUtils.js                  Derived lesson status and quiz question selection
@@ -81,7 +71,8 @@ src/features/learning-hub/
     progress/                       Supabase-backed per-course and multi-course hooks
     screens/                        Reusable lesson, quiz, and result screens
   software-engineering/
-    SoftwareEngineerRoadmap.js      Track definitions, course lists, and roadmap UI
+    tracks.js                       Software Engineering track data
+    SoftwareEngineerRoadmap.js      Shared roadmap UI
     <course>-course/
       course.js                     Course metadata and data composition
       <Course>Course.js              Thin screen wrapper around CourseRunner
@@ -89,22 +80,42 @@ src/features/learning-hub/
         lessons.js                  Ordered lesson content
         lessonExtras.js             Optional lesson enhancements, where used
         questions.js                Quiz question bank
+  cybersecurity/
+    index.js                        Career registration entry point
+    tracks.js                       Security Analyst and GRC track definitions
+    data/
+      securityAnalyst.js            Authored Security Analyst lesson objectives/examples
+      governance.js                 Authored governance lesson objectives/examples
+      courseContent.js               Builds shared lesson and question data
+    cyber-<course-id>-course/
+      course.js                     Course config
+      <CourseName>Course.js          Thin wrapper around CourseRunner
+  lawyer/
+    index.js                         Career registration entry point
+    tracks.js                        Lawyer Path and Paralegal track definitions
+    <course>-course/
+      course.js                      Course metadata and data composition
+      <CourseName>Course.js           Thin wrapper around CourseRunner
+      data/
+        lessons.js                   Ordered lesson content
+        questions.js                 Quiz question bank
 ```
 
-The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another. New career content belongs in a sibling folder such as `lawyer/`; `careers/` is the shared metadata and registry layer.
+`careers/` is the shared layer for career metadata, detail screens, and the combined track/course registry. Career-specific content belongs in sibling career folders such as `software-engineering/`, `cybersecurity/`, and `lawyer/`.
+
+The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
 
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines track definitions and deduplicated course configurations. It also supplies course-route records for new career folders; `AppNavigator.js` maps those records to stack screens while keeping legacy course routes unchanged.
-- `software-engineering/SoftwareEngineerRoadmap.js` owns the current track/step definitions and roadmap presentation. It builds its course set from the imported course configurations and uses `useAllCoursesProgress` for roadmap status.
+- `careers/registry.js` combines each career's track data and course-route entries. `software-engineering/SoftwareEngineerRoadmap.js` uses that registry to display a selected career's roadmap while preserving existing track keys and route names.
+- `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.
 - `shared/progress/useAllCoursesProgress.js` loads progress for a set of courses for roadmap/list displays and provides the common course-status rule.
 - `shared/screens/` contains the reusable course lesson overview, lesson content screen, lesson list/review screen, quiz introduction, question screen, and result/review screen.
 - `shared/components/` contains the reusable course header and optional lesson content: `LessonActivities`, `LessonReferences`, `LessonVideo`, `MiniSheet`, `QuickCheck`, `CodePlayground`, `JsPlayground`, `ReactPlayground`, `PyPlayground`, `StepOrder`, `VisualBuilder`, and `MatchPairs`.
-- `shared/validateLearningContent.js` validates career, track, route, lesson, question, and activity integrity. Run `npm run validate:content` for the complete registered-content check; the same validator also runs in development when the Learning Hub screen loads.
 - `shared/styles.js` centralizes the current course palette and common spacing, typography, and button styles.
 
 Individual course folders keep the course configuration, wrapper, lesson data, optional lesson extras, and question bank together. For example, the JavaScript course has `javascript-course/course.js`, `JavaScriptCourse.js`, and `data/lessons.js`, `data/lessonExtras.js`, and `data/questions.js`.
@@ -127,7 +138,7 @@ Career data is authored separately from the UI in `careers/careers.js` and follo
 }
 ```
 
-`id` is stable and should not be derived from the display title. `trackIds` must reference real track IDs in the shared registry, and a coming-soon career must keep `trackIds` empty so its tracks are not exposed. A review-required career may have complete, route-registered content in its sibling folder while remaining hidden behind this status gate. All career IDs should be unique; if a career is available it must have at least one resolvable track.
+`id` is stable and should not be derived from the display title. `trackIds` must reference real track IDs in the available career's `TRACKS`, and a coming-soon career must keep `trackIds` empty and no course data attached. All career IDs should be unique; if a career is available it must have at least one resolvable track.
 
 ## Course data contract
 

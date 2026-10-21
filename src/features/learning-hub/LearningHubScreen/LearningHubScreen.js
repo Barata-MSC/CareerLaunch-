@@ -3,7 +3,7 @@
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -19,23 +19,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import {
-  TRACKS,
-  COURSES,
-  COURSE_ROUTES,
-  REGISTERED_COURSE_ROUTE_NAMES,
-} from '../careers/registry';
-import validateLearningContent from '../shared/validateLearningContent';
+import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
 
-const TRACK_NAMES = Object.keys(TRACKS);
-
 // Every course of every track, so progress loads with one query per table.
-const ALL_COURSES = Object.values(TRACKS)
-  .flatMap((track) => track.steps.map((step) => step.course))
-  .filter(Boolean);
+const ALL_COURSES = COURSES;
 
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
@@ -54,34 +44,8 @@ const TRACK_META = {
     color: '#F0637D',
     blurb: 'Design clear, friendly experiences that people enjoy using.',
   },
-  'Lawyer Path': {
-    icon: '⚖️',
-    color: '#7C3AED',
-    blurb: 'Build analysis, research, writing, and advocacy foundations.',
-  },
-  'Paralegal and Legal Support': {
-    icon: '📁',
-    color: '#0F766E',
-    blurb: 'Explore organized office, document, and research-support work.',
-  },
 };
-const FALLBACK_META = { icon: '📚', color: PURPLE, blurb: '' };
-
-if (__DEV__) {
-  const validation = validateLearningContent({
-    careers: CAREERS,
-    tracks: TRACKS,
-    courses: COURSES,
-    courseRoutes: COURSE_ROUTES,
-    registeredRoutes: REGISTERED_COURSE_ROUTE_NAMES,
-  });
-  if (validation.errors.length) {
-    console.error('Learning content validation errors:', validation.errors);
-  }
-  if (validation.warnings.length) {
-    console.warn('Learning content validation warnings:', validation.warnings);
-  }
-}
+const FALLBACK_META = { icon: '📚', color: PURPLE };
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -96,12 +60,10 @@ const BUTTON_LABEL = {
   completed: 'Review',
 };
 
-export default function LearningHubScreen({ navigation, route }) {
-  const [view, setView] = useState(route?.params?.initialView || 'careers'); // 'careers' | 'tracks' | 'courses'
-  const [selectedTrack, setSelectedTrack] = useState(route?.params?.trackName || null);
-  const [selectedCareerId, setSelectedCareerId] = useState(route?.params?.careerId || null);
-  const returnToDetail = useRef(Boolean(route?.params?.returnToDetail));
-  const initialized = useRef(false);
+export default function LearningHubScreen({ navigation }) {
+  const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
+  const [selectedTrack, setSelectedTrack] = useState(null);
+  const [selectedCareerId, setSelectedCareerId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
@@ -112,17 +74,14 @@ export default function LearningHubScreen({ navigation, route }) {
 
   useFocusEffect(
     useCallback(() => {
-      if (!initialized.current) {
-        const initialView = route?.params?.initialView || 'careers';
-        setView(initialView);
-        setSelectedTrack(route?.params?.trackName || null);
-        setSelectedCareerId(route?.params?.careerId || null);
-        returnToDetail.current = Boolean(route?.params?.returnToDetail);
-        initialized.current = true;
-      }
+      setView('careers');
+      setSelectedTrack(null);
+      setSelectedCareerId(null);
+      setQuery('');
+      setFilter('all');
       setProgressLoaded(false);
       refresh().finally(() => setProgressLoaded(true));
-    }, [refresh, route?.params?.careerId, route?.params?.initialView, route?.params?.returnToDetail, route?.params?.trackName]),
+    }, [refresh]),
   );
 
   // Android back button: from the courses list go back to the tracks.
@@ -135,11 +94,6 @@ export default function LearningHubScreen({ navigation, route }) {
           return true;
         }
         if (view === 'tracks') {
-          if (returnToDetail.current) {
-            returnToDetail.current = false;
-            navigation.goBack();
-            return true;
-          }
           setSelectedCareerId(null);
           setView('careers');
           return true;
@@ -147,13 +101,13 @@ export default function LearningHubScreen({ navigation, route }) {
         return false;
       });
       return () => sub.remove();
-    }, [navigation, view]),
+    }, [view]),
   );
 
   // Each track with its steps, their status, and its overall progress.
   const tracks = useMemo(
     () =>
-      TRACK_NAMES.map((name) => {
+      Object.keys(TRACKS).map((name) => {
         const track = TRACKS[name];
         const steps = track.steps.map((step) => ({
           ...step,
@@ -166,6 +120,7 @@ export default function LearningHubScreen({ navigation, route }) {
 
         return {
           name,
+          title: track.title || name,
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -217,11 +172,6 @@ export default function LearningHubScreen({ navigation, route }) {
       return;
     }
     if (view === 'tracks') {
-      if (returnToDetail.current) {
-        returnToDetail.current = false;
-        navigation.goBack();
-        return;
-      }
       setSelectedCareerId(null);
       setView('careers');
       return;
@@ -238,7 +188,7 @@ export default function LearningHubScreen({ navigation, route }) {
   // Career progress is derived from the underlying course statuses, not saved as a
   // separate career record. The percentage is completed courses divided by total
   // courses in that career, using the same per-course status rule as the roadmap.
-  const title = view === 'courses' && currentTrack ? currentTrack.name : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
+  const title = view === 'courses' && currentTrack ? currentTrack.title : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
 
   const filteredCareers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -290,7 +240,7 @@ export default function LearningHubScreen({ navigation, route }) {
           filteredCareers.map((career) => {
             const isAvailable = career.status === 'available';
             const careerCourseIds = (career.trackIds || [])
-              .map((trackId) => TRACKS[trackId] || Object.values(TRACKS).find((track) => track.id === trackId))
+              .map((trackId) => TRACKS[trackId])
               .filter(Boolean)
               .flatMap((track) => (track.steps || []).filter((step) => step.course).map((step) => step.course));
             const totalCourses = careerCourseIds.length;
@@ -337,9 +287,7 @@ export default function LearningHubScreen({ navigation, route }) {
   // ---------- Step 1: tracks ----------
   const renderTracks = () => {
     const careerTracks = tracks.filter((track) =>
-      (currentCareer?.trackIds || []).some((trackId) =>
-        trackId === track.name || trackId === TRACKS[track.name]?.id,
-      ),
+      (currentCareer?.trackIds || []).includes(track.name),
     );
 
     return (
@@ -351,6 +299,7 @@ export default function LearningHubScreen({ navigation, route }) {
         ) : (
           careerTracks.map((track) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
+            const blurb = meta.blurb || track.subtitle;
             const comingSoon = !track.courseCount;
 
             return (
@@ -367,13 +316,13 @@ export default function LearningHubScreen({ navigation, route }) {
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.name}</Text>
+                  <Text style={styles.cardTitle}>{track.title}</Text>
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
-                  {!!meta.blurb && (
+                  {!!blurb && (
                     <Text style={styles.desc} numberOfLines={2}>
-                      {meta.blurb}
+                      {blurb}
                     </Text>
                   )}
 
@@ -472,7 +421,10 @@ export default function LearningHubScreen({ navigation, route }) {
 
         <AppPressable
           style={styles.primaryBtn}
-          onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
+          onPress={() => navigation.navigate('CareerRoadmap', {
+            goal: selectedTrack,
+            careerTrackIds: currentCareer?.trackIds,
+          })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
         </AppPressable>

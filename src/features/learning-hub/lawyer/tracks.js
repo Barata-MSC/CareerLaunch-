@@ -85,4 +85,4 @@ export const TRACKS = {
   },
 };
 
-export const tracks = Object.values(TRACKS);
+export const tracks = TRACKS;

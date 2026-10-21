@@ -19,8 +19,8 @@ export const CAREERS = [
     subtitle: 'Protect systems, data, and people from digital risk.',
     icon: '🛡️',
     color: '#2E7DFF',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['cyber-security-analyst', 'cyber-grc'],
     overview:
       'Cybersecurity focuses on defending digital systems and helping organizations respond to risks, threats, and security issues.',
     skillsPreview: ['Risk awareness', 'Attention to detail', 'Critical thinking'],
@@ -72,6 +72,7 @@ export const CAREERS = [
     overview:
       'Lawyers work with legal principles, research, and clear reasoning to advise clients, prepare arguments, and support fair outcomes.',
     skillsPreview: ['Research', 'Reading', 'Judgment'],
+    educationalNote: 'Educational, not legal advice.',
   },
   {
     id: 'marine',
@@ -128,10 +129,7 @@ export const getCareerById = (id) => CAREERS.find((career) => career.id === id) 
 export function validateCareerData(careers = CAREERS) {
   const issues = [];
   const seenIds = new Set();
-  const validTrackIds = new Set([
-    ...Object.keys(TRACKS),
-    ...Object.values(TRACKS).map((track) => track.id).filter(Boolean),
-  ]);
+  const validTrackIds = new Set(Object.keys(TRACKS));
 
   careers.forEach((career) => {
     if (!career || typeof career.id !== 'string') {

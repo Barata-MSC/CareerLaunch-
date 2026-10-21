@@ -4,15 +4,15 @@ Use this file **once per career**. Attach it together with that career's spec fi
 
 **Terms:** a *career* is the broad field (Teacher). A *track* is a specific pathway inside it (Classroom Teacher). A *course* is one step in a track, with about 10 lessons and a 10-question quiz. A track has about 7 to 8 courses, depending on the subject.
 
-**Run `00-careers-layer.md` first.** This brief assumes the `careers/` module (`careers.js` and the Careers screens) and the Careers screen exist.
+**Run `00-careers-layer.md` first.** This brief assumes the shared Careers layer and Learning Hub exist. The shared `careers/registry.js` and `scripts/validate-learning-content.mjs` now also exist; reuse them for every career.
 
-**Folder layout (decided):** `learning-hub/careers/` is the shared layer (career metadata, screens, and the registry). Each career's *content* lives in its own folder directly under `src/features/learning-hub/`, named by the career ID, as a sibling of the existing `software-engineering/` folder (for example `learning-hub/cybersecurity/`, `learning-hub/teacher/`, `learning-hub/lawyer/`). `software-engineering/` is the existing career folder for the Software Engineering career (its Software Engineer, UI/UX Designer, and Data Analyst tracks).
+**Folder layout (decided):** `learning-hub/careers/` is the shared layer (career metadata, screens, and `registry.js`). Each career's *content* lives in its own folder directly under `src/features/learning-hub/`, named by the career ID, as a sibling of `software-engineering/` (for example `cybersecurity/`, `teacher/`, `lawyer/`). `software-engineering/` is the existing Software Engineering content folder. Cybersecurity is the completed reference implementation: it uses per-course config/wrapper folders plus authored per-track data modules under `cybersecurity/data/` and builds lesson/question arrays from stable course IDs. Either per-course data files or shared career data modules are acceptable; keep authored content separate from UI and ensure each course config resolves to complete lessons and questions.
 
 ---
 
 ## A. Career Spec (the human fills this in)
 
-Copilot must follow this spec. Blank fields are decisions Copilot makes and reports; filled fields are binding. Draft specs already exist for `specs/teacher.md`, `specs/lawyer.md`, and `specs/cybersecurity.md`. They are drafts: have a teammate review the course list before running.
+Copilot must follow this spec. Blank fields are decisions Copilot makes and reports; filled fields are binding. Cybersecurity (`specs/cybersecurity.md`) is the completed reference build. Draft specs for Teacher and Lawyer are in `specs/`; have a teammate review each proposed course list before building it.
 
 ```yaml
 career:
@@ -77,19 +77,18 @@ Put each new career's content in its own folder directly under `src/features/lea
 <career-id>/                 # a sibling of software-engineering/, careers/, shared/, LearningHubScreen/
   index.js                 exports { tracks, courses } for this career (the registration entry point)
   tracks.js                track definitions (ordered steps, each pointing to a course and a route)
+  data/                    optional authored content shared by courses in this career
+    <track-content>.js     definitions keyed by stable course id
   <course-id>-course/
     course.js              course config (data contract in the README)
     <CourseName>Course.js  thin wrapper: <CourseRunner course={course} navigation={navigation} />
-    data/lessons.js
-    data/lessonExtras.js   only if lessons use extras
-    data/questions.js
 ```
+
+The Cybersecurity implementation uses shared per-track data modules under its career-level `data/` folder, then builds each course's resolved `lessons` and `questions` from stable course IDs. Per-course `data/lessons.js` and `data/questions.js` files are also valid. Choose the smallest clear arrangement; keep authored content separate from UI, and ensure every course config resolves to complete content before registering it.
 
 Do **not** move or rename the existing `software-engineering/` folder or any existing ID or route. It already is the Software Engineering career's folder, so it needs no restructuring: the registry reads its existing `TRACKS` and course configs directly, and you do not add an `index.js` to it unless the smallest refactor clearly needs one.
 
-**Registration, designed to avoid merge conflicts between careers.** If track lists and course routes are currently registered by hand in one file each, introduce a small data-driven registry on this first run: a combined track registry (existing `TRACKS` plus each career's `tracks`) and course-route registration in `AppNavigator.js` that maps over each career's exported `courses` (route name plus component). Existing routes must keep working with identical names. If the registry already exists (from an earlier career run), reuse it and only add this career's entry. The roadmap and track screens must work for any registered track, not only the three existing ones. Make the smallest refactor that achieves this, and describe it in the report.
-
-Put the registry in `src/features/learning-hub/careers/registry.js` (or the equivalent file name that matches the existing style). It imports the existing Software Engineering tracks and courses as they are, plus each new career folder's `index.js`. Anything from brief 00 that resolves a career's `trackIds` directly against `TRACKS` (the Career Tracks screen, the career progress calculation, and the dev-time integrity check) must resolve through the registry instead, so new careers work without touching those screens again. Make that change as small as possible and list it in the report.
+**Registration uses the shared registry.** `src/features/learning-hub/careers/registry.js` already combines Software Engineering with each career module's `{ tracks, courses }` exports. Add the new career's `index.js` to `CAREER_CONTENT`; do not create a second registry or another hand-written route list. `AppNavigator.js` maps the registry's course routes. Preserve existing route names and track keys. The Learning Hub and roadmap must resolve career `trackIds` against the combined registry, display titles separately from stable IDs, and keep roadmap track switching scoped to the selected career.
 
 ### 4. ID and naming rules (binding)
 
@@ -116,7 +115,7 @@ Put the registry in `src/features/learning-hub/careers/registry.js` (or the equi
 
 ### 6. Integrity validator (create once, reuse after)
 
-If `scripts/validate-learning-content.mjs` does not exist, create it and add an npm script `validate:content` (a dependency-free Node script; do not add packages). If it exists, reuse it and extend it only if needed. It must check, across **all** careers:
+Reuse `scripts/validate-learning-content.mjs` and `npm run validate:content`; Cybersecurity introduced the shared validator. Do not create a second script or add dependencies. It uses Babel tooling already installed in the project to load the ESM/JSX-backed course modules from Node. Extend it only when a new content contract or supported activity type requires it. It must check, across **all** careers:
 
 - Course IDs and track IDs are unique; route names are unique.
 - Lesson IDs are unique within each course; required lesson fields are present and non-empty.
@@ -126,7 +125,7 @@ If `scripts/validate-learning-content.mjs` does not exist, create it and add an 
 - Warn if more than 50 percent of a course's correct answers share one index.
 - Every activity `type` is in the supported list.
 
-If the course data files cannot be loaded by plain Node (aliases, JSX, or module-format issues), do not fight the toolchain: report the limitation and fall back to a dev-time `__DEV__` validation function with the same checks, plus clear instructions for running it. Run the validator and fix every error before finishing.
+Run the validator and fix every error before finishing. Report any answer-index skew warnings even when validation passes; do not silently weaken or skip a check to get a green result.
 
 ### 7. Hard constraints
 
@@ -152,6 +151,8 @@ Update `CLAUDE.md` (Learning Hub row and the learning-tracks section: this caree
 3. `npx expo export -p web`.
 4. A **human test checklist**: open the career from the Careers screen, open every track, open at least one course per track, mark a lesson complete, take a quiz (pass and fail), confirm progress updates, and spot-check lesson content for accuracy. List which parts need subject-expert review.
 
+Do not claim the manual checklist was completed unless it was actually exercised on the app. If device testing is unavailable, list it as not run and provide the exact checklist for the team.
+
 ### 10. Final report
 
-Summarize the curriculum built (tracks, courses, lesson and question counts), list files added and modified, report each validation result (passed, failed, or not run, and why), list `// VERIFY:` items and any review notes, list assumptions and decisions needed, and state whether the career is `available` or `coming-soon` and why.
+Summarize the curriculum built (tracks, courses, lesson and question counts), list files added and modified, report each validation result (passed, failed, or not run, and why), report validator warnings, list `// VERIFY:` items and any review notes, list assumptions and decisions needed, and state whether the career is `available` or `coming-soon` and why. End with the exact, unedited output of `git status --short` and `git diff --stat`, and state the branch name. Do not stage, commit, or push unless explicitly asked.

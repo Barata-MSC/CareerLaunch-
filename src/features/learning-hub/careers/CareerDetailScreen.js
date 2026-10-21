@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AppPressable from '@components/AppPressable';
 import { getCareerById } from './careers';
-import { getTrackById } from './registry';
 
 export default function CareerDetailScreen({ navigation, route }) {
   const career = getCareerById(route?.params?.careerId);
@@ -43,6 +42,9 @@ export default function CareerDetailScreen({ navigation, route }) {
 
         <Text style={styles.title}>{career.title}</Text>
         <Text style={styles.subtitle}>{career.subtitle}</Text>
+        {career.educationalNote ? (
+          <Text style={styles.bodyText}>{career.educationalNote}</Text>
+        ) : null}
 
         <View style={styles.infoCard}>
           <Text style={styles.sectionLabel}>Overview</Text>
@@ -60,45 +62,14 @@ export default function CareerDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        {career.id === 'lawyer' && (
-          <Text style={styles.bodyText}>Educational, not legal advice.</Text>
-        )}
-
-        {career.status === 'available' ? (
-          <View style={styles.tracksSection}>
-            <Text style={styles.sectionLabel}>Tracks</Text>
-            {career.trackIds.map((trackId) => {
-              const track = getTrackById(trackId);
-              if (!track) return null;
-
-              return (
-                <AppPressable
-                  key={track.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${track.title}, ${track.estimatedDuration}`}
-                  style={styles.trackCard}
-                  onPress={() => navigation.push('LearningHub', {
-                    careerId: career.id,
-                    initialView: 'courses',
-                    trackName: track.title,
-                    returnToDetail: true,
-                  })}
-                >
-                  <Text style={styles.trackTitle}>{track.title}</Text>
-                  <Text style={styles.bodyText}>{track.subtitle}</Text>
-                  <Text style={styles.trackDuration}>Estimated duration: {track.estimatedDuration}</Text>
-                </AppPressable>
-              );
-            })}
-          </View>
-        ) : (
+        {career.status !== 'available' ? (
           <View style={styles.noticeCard}>
             <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
             <Text style={styles.noticeText}>
               This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
             </Text>
           </View>
-        )}
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -192,29 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#5B21F5',
-  },
-  tracksSection: {
-    marginBottom: 16,
-  },
-  trackCard: {
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 16,
-    backgroundColor: '#F9FAFB',
-    padding: 16,
-    marginTop: 10,
-  },
-  trackTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 6,
-  },
-  trackDuration: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginTop: 8,
   },
   noticeCard: {
     borderWidth: 1,
