@@ -166,7 +166,7 @@ function JobFinderContent({ navigation }) {
   const [selectedJob, setSelectedJob] = useState(null);
 
   // Shared with JobApplicationTracker
-  const { applications, appliedIds, addApplication } = useApplications();
+  const { applications, isJobTracked, addApplication } = useApplications();
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -199,7 +199,7 @@ function JobFinderContent({ navigation }) {
     return new Promise((resolve) => {
       Alert.alert(title, message, [
         { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
-        { text: 'Apply', onPress: () => resolve(true) },
+        { text: 'Track job', onPress: () => resolve(true) },
       ]);
     });
   };
@@ -213,15 +213,32 @@ function JobFinderContent({ navigation }) {
   };
 
   const handleApply = async (job) => {
-    if (appliedIds.includes(job.id)) {
-      notify('Already applied', `You already applied to ${job.title} at ${job.company}.`);
+    if (isJobTracked(job)) {
+      notify('Already tracked', `${job.title} at ${job.company} is already in your tracker.`);
       return;
     }
-    const confirmed = await confirmApply('Confirm application', `Apply to ${job.title} at ${job.company}?`);
+    const confirmed = await confirmApply(
+      'Track this job?',
+      `Add ${job.title} at ${job.company} to your Application Tracker? This will not submit an application to the employer.`,
+    );
     if (!confirmed) return;
 
-    addApplication(job);
-    notify('Application sent', 'You can follow its status in your Application Tracker.');
+    const result = await addApplication(job);
+    if (result.error) {
+      notify(
+        'Could not save tracker entry',
+        'Check your connection and confirm the job tracker migration has been applied.',
+      );
+      return;
+    }
+    if (!result.added) {
+      notify('Already tracked', `${job.title} at ${job.company} is already in your tracker.`);
+      return;
+    }
+    notify(
+      'Added to tracker',
+      'You can follow its status in your Application Tracker. The app did not submit an application to the employer.',
+    );
   };
 
   const openLink = (url) => {
@@ -235,7 +252,7 @@ function JobFinderContent({ navigation }) {
   // ---------- Screens ----------
 
   const renderJobCard = ({ item }) => {
-    const applied = appliedIds.includes(item.id);
+    const applied = isJobTracked(item);
     return (
       <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
         <CompanyLogo company={item.company} color={item.color} logo={item.logo} />
@@ -254,7 +271,7 @@ function JobFinderContent({ navigation }) {
           onPress={() => handleApply(item)}
         >
           <Text style={[styles.applyText, applied && styles.applyTextDone]}>
-            {applied ? 'Applied' : 'Apply'}
+            {applied ? 'Tracked' : 'Track'}
           </Text>
         </AppPressable>
       </AppPressable>
@@ -306,7 +323,7 @@ function JobFinderContent({ navigation }) {
         style={styles.primaryBtn}
         onPress={() => navigation && navigation.navigate('JobApplicationTracker')}
       >
-        <Text style={styles.primaryBtnText}>Applied Jobs ({applications.length})</Text>
+        <Text style={styles.primaryBtnText}>Tracked Jobs ({applications.length})</Text>
       </AppPressable>
     </View>
   );
@@ -314,7 +331,7 @@ function JobFinderContent({ navigation }) {
   const renderDetail = () => {
     if (!selectedJob) return null;
     const job = selectedJob;
-    const applied = appliedIds.includes(job.id);
+    const applied = isJobTracked(job);
     const rows = [
       ['Company', job.company],
       ['Location', job.location],
@@ -347,7 +364,7 @@ function JobFinderContent({ navigation }) {
           style={[styles.primaryBtn, applied && styles.primaryBtnDone]}
           onPress={() => handleApply(job)}
         >
-          <Text style={styles.primaryBtnText}>{applied ? 'Applied' : 'Apply'}</Text>
+            <Text style={styles.primaryBtnText}>{applied ? 'Tracked' : 'Track job'}</Text>
         </AppPressable>
         <AppPressable style={styles.secondaryBtn} onPress={() => setView('list')}>
           <Text style={styles.secondaryBtnText}>Back to job list</Text>
