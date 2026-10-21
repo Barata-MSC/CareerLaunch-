@@ -66,6 +66,9 @@ export default function AppNavigator() {
       <Stack.Screen name="JobFinder" component={JobFinderScreen} />
       <Stack.Screen name="CareerDetail" component={CareerDetailScreen} />
       <Stack.Screen name="CareerRoadmap" component={CareerRoadmapScreen} />
+      {COURSE_ROUTES.map(({ name, component, options }) => (
+        <Stack.Screen key={name} name={name} component={component} options={options} />
+      ))}
       <Stack.Screen name="AIInterviewCoach" component={AIInterviewCoachScreen} />
       <Stack.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Stack.Screen name="personalInfo" component={GatedPersonalInfoScreen} />
@@ -77,9 +80,6 @@ export default function AppNavigator() {
       <Stack.Screen name="ResumePreview" component={GatedResumePreviewScreen} />
       <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
       <Stack.Screen name="LearningHub" component={LearningHubScreen} />
-      {COURSE_ROUTES.map(({ route, component, options }) => (
-        <Stack.Screen key={route} name={route} component={component} options={options} />
-      ))}
     </Stack.Navigator>
   );
 }

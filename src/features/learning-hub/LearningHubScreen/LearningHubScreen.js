@@ -19,12 +19,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import { TRACKS, ALL_COURSES } from '../careers/registry';
+import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
 
-const TRACK_NAMES = Object.keys(TRACKS);
+// Every course of every track, so progress loads with one query per table.
+const ALL_COURSES = COURSES;
 
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
@@ -116,7 +117,7 @@ export default function LearningHubScreen({ navigation }) {
   // Each track with its steps, their status, and its overall progress.
   const tracks = useMemo(
     () =>
-      TRACK_NAMES.map((name) => {
+      Object.keys(TRACKS).map((name) => {
         const track = TRACKS[name];
         const steps = track.steps.map((step) => ({
           ...step,
@@ -431,7 +432,7 @@ export default function LearningHubScreen({ navigation }) {
           style={styles.primaryBtn}
           onPress={() => navigation.navigate('CareerRoadmap', {
             goal: selectedTrack,
-            trackIds: currentCareer?.trackIds,
+            careerTrackIds: currentCareer?.trackIds,
           })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>

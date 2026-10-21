@@ -21,15 +21,15 @@ Course durations in the product are estimates, not promises. Learning content sh
 
 ## Current careers and roadmap
 
-The current Learning Hub begins with a career picker and then moves into a career's track list. Career metadata lives in `careers/careers.js`; `careers/registry.js` combines the track definitions, career content, and course routes. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation remains in `software-engineering/SoftwareEngineerRoadmap.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
 
 ### Careers
 
 | Career | Status | Tracks mapping |
 |---|---|---|
 | Software Engineering | Available | Software Engineer, UI/UX Designer, Data Analyst |
-| Cybersecurity | Coming soon | None |
-| Teacher | Available | Elementary Teacher (8 courses) and Secondary Teacher (7 courses), available from the career picker |
+| Cybersecurity | Available | Security Analyst (8 courses); Security Governance and Compliance (6 courses) |
+| Teacher | Available | Elementary Teacher (8 courses); Secondary Teacher (7 courses) |
 | Nursing | Coming soon | None |
 | Doctor | Coming soon | None |
 | Lawyer | Coming soon | None |
@@ -38,15 +38,17 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is a legacy organizational name: it contains courses for three Software Engineering career tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher content is stored in the sibling `teacher/` folder. Both Teacher tracks are registered and available from the career picker. "Careers" is the top level of the learner journey, while "tracks" is the second level.
+The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher content is stored in the sibling `teacher/` folder. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, and Teacher are wired to real tracks and courses; the other seeded careers remain coming soon.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
 | Software Engineer | HTML, CSS, JavaScript, React, Node.js, Database, Git & GitHub | All seven steps have courses. |
 | Data Analyst | Excel & Spreadsheets, SQL, Python (Pandas), Data Visualization, Statistics, Dashboards (Power BI / Tableau) | All six steps have courses. |
 | UI/UX Designer | Design Fundamentals, User Research, Wireframing, Figma / Prototyping, Usability Testing, Design Systems | Design Fundamentals has a course. The other five steps have descriptions but no course route/data yet. |
-| Elementary Teacher | Foundations of Teaching, Child Development and Learning, Curriculum and Lesson Planning, Classroom Management, Teaching Literacy and Numeracy, Assessment of Learning, Inclusive and Differentiated Instruction, Professional Growth and Licensure Preparation | All eight courses have 10 lessons and 10 quiz questions each, accessible from the available Teacher career. |
-| Secondary Teacher | Adolescent Development and Learning, Subject Content and Pedagogy, Curriculum Design and Unit Planning, Classroom Culture and Behavior, Assessment and Feedback, Learner Guidance and Wellbeing, Teaching Career and Licensure Preparation | All seven courses have 10 lessons and 10 quiz questions each, accessible from the available Teacher career. |
+| Security Analyst | Networking Basics, Operating Systems for Security, Security Fundamentals, Cryptography Basics, Web and Application Security, Identity and Access Management, Monitoring and Threat Detection, Incident Response | All eight steps have courses. |
+| Security Governance and Compliance | Risk Management, Security Policies and Frameworks, Data Privacy Fundamentals, Security Awareness and Social Engineering Defense, Business Continuity and Disaster Recovery, Audits and Compliance Basics | All six steps have courses. |
+| Elementary Teacher | Foundations of Teaching, Child Development and Learning, Curriculum and Lesson Planning, Classroom Management, Teaching Literacy and Numeracy, Assessment of Learning, Inclusive and Differentiated Instruction, Professional Growth and Licensure Preparation | All eight courses have 10 lessons and 10 quiz questions each. |
+| Secondary Teacher | Adolescent Development and Learning, Subject Content and Pedagogy, Curriculum Design and Unit Planning, Classroom Culture and Behavior, Assessment and Feedback, Learner Guidance and Wellbeing, Teaching Career and Licensure Preparation | All seven courses have 10 lessons and 10 quiz questions each. |
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -59,7 +61,7 @@ src/features/learning-hub/
     LearningHubScreen.js            Career list, track list, and course browsing entry point
   careers/
     careers.js                      Career data, stable IDs, and data validation helpers
-    registry.js                     Combined track registry, career courses, and course routes
+    registry.js                     Combined track and course-route registry
     CareerDetailScreen.js           Coming-soon career detail-only screen
   shared/
     CourseRunner.js                 Shared course flow and orchestration
@@ -70,7 +72,7 @@ src/features/learning-hub/
     screens/                        Reusable lesson, quiz, and result screens
   software-engineering/
     tracks.js                       Software Engineering track data
-    SoftwareEngineerRoadmap.js      Shared roadmap presentation
+    SoftwareEngineerRoadmap.js      Shared roadmap UI
     <course>-course/
       course.js                     Course metadata and data composition
       <Course>Course.js              Thin screen wrapper around CourseRunner
@@ -78,6 +80,16 @@ src/features/learning-hub/
         lessons.js                  Ordered lesson content
         lessonExtras.js             Optional lesson enhancements, where used
         questions.js                Quiz question bank
+  cybersecurity/
+    index.js                        Career registration entry point
+    tracks.js                       Security Analyst and GRC track definitions
+    data/
+      securityAnalyst.js            Authored Security Analyst lesson objectives/examples
+      governance.js                 Authored governance lesson objectives/examples
+      courseContent.js               Builds shared lesson and question data
+    cyber-<course-id>-course/
+      course.js                     Course config
+      <CourseName>Course.js          Thin wrapper around CourseRunner
   teacher/
     index.js                        Teacher track and course exports
     REVIEW_NOTES.md                 Subject-expert review checklist
@@ -94,8 +106,9 @@ The `careers/` folder is the shared layer for career metadata, screens, and the 
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines Software Engineering tracks with each career module registered in `CAREER_CONTENT`, registers course routes, and provides the aggregate course list used for progress.
-- `software-engineering/tracks.js` owns the Software Engineering track data. `software-engineering/SoftwareEngineerRoadmap.js` renders the shared roadmap presentation from the combined registry and scopes track switching to the career passed from the Learning Hub.
+- `careers/registry.js` combines each career's track data and course-route entries. `software-engineering/SoftwareEngineerRoadmap.js` uses that registry to display a selected career's roadmap while preserving existing track keys and route names.
+- `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
+- `teacher/` contains the Elementary Teacher and Secondary Teacher pathways, with 15 courses registered through the same shared registry.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.

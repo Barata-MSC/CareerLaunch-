@@ -32,6 +32,7 @@
     "predeploy": "npx expo export -p web",
     "deploy": "gh-pages --nojekyll -d dist",
     "lint": "eslint .",
+    "validate:content": "node scripts/validate-learning-content.mjs",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",

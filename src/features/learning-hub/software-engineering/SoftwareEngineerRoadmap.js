@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { TRACKS, ALL_COURSES } from '../careers/registry';
-
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
+import { ALL_COURSES, TRACKS } from '../careers/registry';
 import { PURPLE, GREEN } from '../shared/styles';
 import { playSound } from '../../../utils/sounds';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+export { TRACKS };
 
 const TRACK_NAMES = Object.keys(TRACKS);
 
@@ -58,11 +58,15 @@ function StepIndicator({ status, isLast }) {
 }
 
 export default function CareerRoadmapScreen({ navigation, route }) {
-  const requestedTrackNames = Array.isArray(route?.params?.trackIds)
-    ? route.params.trackIds.filter((trackName) =>
+  const requestedTrackNames = Array.isArray(route?.params?.careerTrackIds)
+    ? route.params.careerTrackIds.filter((trackName) =>
       Object.prototype.hasOwnProperty.call(TRACKS, trackName),
     )
-    : [];
+    : Array.isArray(route?.params?.trackIds)
+      ? route.params.trackIds.filter((trackName) =>
+        Object.prototype.hasOwnProperty.call(TRACKS, trackName),
+      )
+      : [];
   const trackNames = requestedTrackNames.length
     ? requestedTrackNames
     : TRACK_NAMES;
@@ -173,7 +177,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
       >
         <View style={styles.goalCard}>
           <Text style={styles.goalLabel}>Your goal</Text>
-          <Text style={styles.goalText}>{TRACKS[selectedTrack].title || selectedTrack}</Text>
+          <Text style={styles.goalText}>Become a {trackData.title || selectedTrack}</Text>
         </View>
 
         <Text style={styles.sectionLabel}>Choose a track</Text>
