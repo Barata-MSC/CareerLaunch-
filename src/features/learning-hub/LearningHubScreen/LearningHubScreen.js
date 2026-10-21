@@ -19,8 +19,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import AnimatedStage from '@components/motion/AnimatedStage';
-import FadeSlideIn from '@components/motion/FadeSlideIn';
 import { ALL_COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
@@ -244,13 +242,18 @@ export default function LearningHubScreen({ navigation }) {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView
+        style={styles.scrollList}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.intro}>Pick a career to explore.</Text>
 
         {filteredCareers.length === 0 ? (
           <Text style={styles.empty}>No careers match your search</Text>
         ) : (
-          filteredCareers.map((career, index) => {
+          filteredCareers.map((career) => {
             const isAvailable = career.status === 'available';
             const careerCourseIds = (career.trackIds || [])
               .map((trackId) => TRACKS[trackId])
@@ -261,8 +264,8 @@ export default function LearningHubScreen({ navigation }) {
             const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
 
             return (
-              <FadeSlideIn key={career.id} delay={Math.min(index * 65, 380)}>
                 <AppPressable
+                  key={career.id}
                   accessibilityRole="button"
                   accessibilityLabel={`${career.title}, ${career.status}`}
                   style={[styles.card, !isAvailable && styles.cardMuted]}
@@ -290,7 +293,6 @@ export default function LearningHubScreen({ navigation }) {
 
                   {isAvailable && <Text style={styles.chevron}>›</Text>}
                 </AppPressable>
-              </FadeSlideIn>
             );
           })
         )}
@@ -305,22 +307,24 @@ export default function LearningHubScreen({ navigation }) {
     );
 
     return (
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView
+        style={styles.scrollList}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.intro}>Pick a track to see its courses.</Text>
 
         {careerTracks.length === 0 ? (
           <Text style={styles.empty}>No tracks match this career yet.</Text>
         ) : (
-          careerTracks.map((track, index) => {
+          careerTracks.map((track) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
             const comingSoon = !track.courseCount;
 
             return (
-                    <FadeSlideIn
-                    key={track.name}
-                delay={Math.min(index * 65, 380)}
-                >
                 <AppPressable
+                  key={track.name}
                   accessibilityRole="button"
                   accessibilityLabel={`${track.name}, ${
                     comingSoon ? 'coming soon' : 'available'
@@ -359,15 +363,6 @@ export default function LearningHubScreen({ navigation }) {
                         {meta.blurb || track.subtitle}
                       </Text>
                     )}
-                  </View>
-                </AppPressable>
-              </FadeSlideIn>
-                    </Text>
-                    {!!meta.blurb && (
-                      <Text style={styles.desc} numberOfLines={2}>
-                        {meta.blurb}
-                      </Text>
-                    )}
 
                     {!comingSoon && (
                       <View style={styles.progressRow}>
@@ -378,7 +373,6 @@ export default function LearningHubScreen({ navigation }) {
 
                   {!comingSoon && <Text style={styles.chevron}>›</Text>}
                 </AppPressable>
-              </FadeSlideIn>
             );
           })
         )}
@@ -492,21 +486,9 @@ export default function LearningHubScreen({ navigation }) {
         <View style={styles.backBtn} />
       </View>
 
-      {view === 'careers' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderCareers()}
-        </AnimatedStage>
-      )}
-      {view === 'tracks' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderTracks()}
-        </AnimatedStage>
-      )}
-      {view === 'courses' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderCourses()}
-        </AnimatedStage>
-      )}
+      {view === 'careers' && renderCareers()}
+      {view === 'tracks' && renderTracks()}
+      {view === 'courses' && renderCourses()}
     </SafeAreaView>
   );
 }
@@ -519,6 +501,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   flex: { flex: 1 },
+  scrollList: { flex: 1, minHeight: 0 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

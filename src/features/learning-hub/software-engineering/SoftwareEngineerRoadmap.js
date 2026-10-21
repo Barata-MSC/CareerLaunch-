@@ -79,9 +79,6 @@ const SOFTWARE_ENGINEERING_TRACKS = {
       },
       {
         id: '2',
-        title: 'CSS',
-        course: cssCourse,
-        route: 'CSSCourse',
         description: 'Style layouts, use Flexbox/Grid, and make responsive designs.',
       },
       {
