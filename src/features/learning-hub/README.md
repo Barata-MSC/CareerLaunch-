@@ -21,14 +21,14 @@ Course durations in the product are estimates, not promises. Learning content sh
 
 ## Current careers and roadmap
 
-The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation remains in `software-engineering/SoftwareEngineerRoadmap.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+The current Learning Hub begins with a career picker and then moves into a career's track list. The actual career data lives in `careers/careers.js`, while the roadmap definitions for the available career remain in `software-engineering/SoftwareEngineerRoadmap.js` as `TRACKS`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
 
 ### Careers
 
 | Career | Status | Tracks mapping |
 |---|---|---|
 | Software Engineering | Available | Software Engineer, UI/UX Designer, Data Analyst |
-| Cybersecurity | Available | Security Analyst (8 courses); Security Governance and Compliance (6 courses) |
+| Cybersecurity | Coming soon | None |
 | Teacher | Coming soon | None |
 | Nursing | Coming soon | None |
 | Doctor | Coming soon | None |
@@ -38,15 +38,13 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering and Cybersecurity are wired to real tracks and courses; the other seeded careers remain coming soon.
+The folder name `software-engineering/` is a legacy organizational name: it currently contains courses for all three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. "Careers" is the top level of the learner journey, while "tracks" is the second level. Only Software Engineering is wired to real track/course data at this stage.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
 | Software Engineer | HTML, CSS, JavaScript, React, Node.js, Database, Git & GitHub | All seven steps have courses. |
 | Data Analyst | Excel & Spreadsheets, SQL, Python (Pandas), Data Visualization, Statistics, Dashboards (Power BI / Tableau) | All six steps have courses. |
 | UI/UX Designer | Design Fundamentals, User Research, Wireframing, Figma / Prototyping, Usability Testing, Design Systems | Design Fundamentals has a course. The other five steps have descriptions but no course route/data yet. |
-| Security Analyst | Networking Basics, Operating Systems for Security, Security Fundamentals, Cryptography Basics, Web and Application Security, Identity and Access Management, Monitoring and Threat Detection, Incident Response | All eight steps have courses. |
-| Security Governance and Compliance | Risk Management, Security Policies and Frameworks, Data Privacy Fundamentals, Security Awareness and Social Engineering Defense, Business Continuity and Disaster Recovery, Audits and Compliance Basics | All six steps have courses. |
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -59,7 +57,6 @@ src/features/learning-hub/
     LearningHubScreen.js            Career list, track list, and course browsing entry point
   careers/
     careers.js                      Career data, stable IDs, and data validation helpers
-    registry.js                     Combined track and course-route registry
     CareerDetailScreen.js           Coming-soon career detail-only screen
   shared/
     CourseRunner.js                 Shared course flow and orchestration
@@ -69,8 +66,7 @@ src/features/learning-hub/
     progress/                       Supabase-backed per-course and multi-course hooks
     screens/                        Reusable lesson, quiz, and result screens
   software-engineering/
-    tracks.js                       Software Engineering track data
-    SoftwareEngineerRoadmap.js      Shared roadmap UI
+    SoftwareEngineerRoadmap.js      Track definitions, course lists, and roadmap UI
     <course>-course/
       course.js                     Course metadata and data composition
       <Course>Course.js              Thin screen wrapper around CourseRunner
@@ -78,16 +74,6 @@ src/features/learning-hub/
         lessons.js                  Ordered lesson content
         lessonExtras.js             Optional lesson enhancements, where used
         questions.js                Quiz question bank
-  cybersecurity/
-    index.js                        Career registration entry point
-    tracks.js                       Security Analyst and GRC track definitions
-    data/
-      securityAnalyst.js            Authored Security Analyst lesson objectives/examples
-      governance.js                 Authored governance lesson objectives/examples
-      courseContent.js               Builds shared lesson and question data
-    cyber-<course-id>-course/
-      course.js                     Course config
-      <CourseName>Course.js          Thin wrapper around CourseRunner
 ```
 
 The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
@@ -99,8 +85,7 @@ The Learning Hub and course flow use a small motion system built from shared pri
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines each career's track data and course-route entries. `software-engineering/SoftwareEngineerRoadmap.js` uses that registry to display a selected career's roadmap while preserving existing track keys and route names.
-- `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
+- `software-engineering/SoftwareEngineerRoadmap.js` owns the current track/step definitions and roadmap presentation. It builds its course set from the imported course configurations and uses `useAllCoursesProgress` for roadmap status.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.
