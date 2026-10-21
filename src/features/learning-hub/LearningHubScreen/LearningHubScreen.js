@@ -1,5 +1,5 @@
 // Learning Hub entrance. Same look as JobFinderScreen.
-//   view 'tracks'  -> the 3 tracks
+//   view 'tracks'  -> the selected career's registered tracks
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
@@ -19,17 +19,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { TRACKS, ALL_COURSES } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
 
 const TRACK_NAMES = Object.keys(TRACKS);
-
-// Every course of every track, so progress loads with one query per table.
-const ALL_COURSES = Object.values(TRACKS)
-  .flatMap((track) => track.steps.map((step) => step.course))
-  .filter(Boolean);
 
 // Look of each track card. A new track in TRACKS still works without an entry here.
 const TRACK_META = {
@@ -47,6 +42,16 @@ const TRACK_META = {
     icon: '🎨',
     color: '#F0637D',
     blurb: 'Design clear, friendly experiences that people enjoy using.',
+  },
+  'teacher-elementary': {
+    icon: '📚',
+    color: '#F59E0B',
+    blurb: 'Build a foundation for teaching young learners.',
+  },
+  'teacher-secondary': {
+    icon: '📚',
+    color: '#F59E0B',
+    blurb: 'Build skills for teaching adolescents in Junior and Senior High School.',
   },
 };
 const FALLBACK_META = { icon: '📚', color: PURPLE, blurb: '' };
@@ -124,6 +129,7 @@ export default function LearningHubScreen({ navigation }) {
 
         return {
           name,
+          title: track.title || name,
           steps,
           courseCount: available.length,
           percent: available.length ? Math.round((done / available.length) * 100) : 0,
@@ -191,7 +197,7 @@ export default function LearningHubScreen({ navigation }) {
   // Career progress is derived from the underlying course statuses, not saved as a
   // separate career record. The percentage is completed courses divided by total
   // courses in that career, using the same per-course status rule as the roadmap.
-  const title = view === 'courses' && currentTrack ? currentTrack.name : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
+  const title = view === 'courses' && currentTrack ? currentTrack.title : view === 'tracks' && currentCareer ? currentCareer.title : 'Learning Hub';
 
   const filteredCareers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -318,13 +324,13 @@ export default function LearningHubScreen({ navigation }) {
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.name}</Text>
+                  <Text style={styles.cardTitle}>{track.title}</Text>
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
                   {!!meta.blurb && (
                     <Text style={styles.desc} numberOfLines={2}>
-                      {meta.blurb}
+                      {track.subtitle || meta.blurb}
                     </Text>
                   )}
 
@@ -362,7 +368,7 @@ export default function LearningHubScreen({ navigation }) {
           <Text style={styles.cardTitle}>{item.title}</Text>
           <Text style={styles.meta}>{lessonCount} lessons</Text>
           <Text style={styles.desc} numberOfLines={2}>
-            {item.description}
+            {selectedCareerId === 'teacher' ? item.course.subtitle : item.description}
           </Text>
         </View>
 
@@ -423,7 +429,10 @@ export default function LearningHubScreen({ navigation }) {
 
         <AppPressable
           style={styles.primaryBtn}
-          onPress={() => navigation.navigate('CareerRoadmap', { goal: selectedTrack })}
+          onPress={() => navigation.navigate('CareerRoadmap', {
+            goal: selectedTrack,
+            trackIds: currentCareer?.trackIds,
+          })}
         >
           <Text style={styles.primaryBtnText}>View Roadmap</Text>
         </AppPressable>

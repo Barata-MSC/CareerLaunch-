@@ -1,26 +1,27 @@
 # Teacher Career Build Plan
 
-Status: `plan` only. This content is approved for a human review pass before the build is executed.
+Status: Teacher is available; both tracks are built and registered.
 
 - Career ID: `teacher`
-- Status in `careers.js`: `coming-soon`
+- Status in `careers.js`: `available`
+- Sign-off: Project owner confirmed team review and approved availability on 2026-10-21.
 - Review-required: `true`
-- Run mode: `plan`
-- Tracks: 2
-- Total courses: 15
-- Estimated lesson count: 150
-- Estimated question bank target: 150+ questions
+- Run mode: `build`
+- Curriculum outline: 2 tracks, 15 planned courses
+- Built in prior run: Track 1 (`teacher-elementary`), 8 courses, 80 lessons, 80 questions
+- Built in this run: Track 2 (`teacher-secondary`), 7 courses, 70 lessons, 70 questions
+- Not built in this run: none
 
 ## Scope and notes
 
-This plan follows the approved teacher spec in `docs/tasks/specs/teacher.md` and intentionally stops at the checkpoint stage. It does not add route registrations, course files, or content modules yet. The output below is the curriculum outline a reviewer should approve before the build run.
+This checkpoint records the curriculum draft and both completed tracks. The project owner confirmed team review and approved Teacher availability on 2026-10-21; individual items in the human review checklist remain for the owner to complete.
 
 Important review expectations:
 - The elementary and secondary tracks must feel distinct in examples, tone, and classroom situations.
 - Maintain the age-appropriate structure of basic education and general teaching practice.
 - Keep PRC, DepEd, and CHED references general and non-legalistic, linked only to high-level guidance.
 - No code-playground activities; prefer quickCheck, order, and matchPairs.
-- All career status handling remains `coming-soon` until a human reviewer signs off.
+- Teacher availability follows the project owner's team-review sign-off; other career statuses are unchanged.
 
 ---
 
@@ -45,7 +46,7 @@ Lesson outline:
 9. Teacher wellbeing and boundaries — Objective: describe sustainable teaching habits and appropriate professional boundaries.
 10. Becoming an elementary teacher — Objective: summarize what a beginner teacher learns as they begin the role.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 2 — `teach-child-development` | Child Development and Learning
 Outcome: Explain major stages of child development and how they shape teaching.
@@ -62,7 +63,7 @@ Lesson outline:
 9. Assessment through observation — Objective: explain how teacher observation helps understand learner progress.
 10. Teaching with child development in mind — Objective: connect developmental understanding to classroom planning.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 3 — `teach-curriculum-planning` | Curriculum and Lesson Planning
 Outcome: Write a clear lesson objective and plan a simple lesson.
@@ -79,7 +80,7 @@ Lesson outline:
 9. Checking for understanding — Objective: describe ways to see whether learners are grasping the instruction.
 10. Planning a full mini lesson — Objective: assemble a short lesson plan with objective, activities, and assessment.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 4 — `teach-classroom-management` | Classroom Management
 Outcome: Describe routines and positive strategies for managing a young class.
@@ -96,7 +97,7 @@ Lesson outline:
 9. Supporting difficult moments — Objective: describe how teachers respond when learners are upset or disengaged.
 10. Building a proactive classroom climate — Objective: summarize a whole-class strategy for calm, organized learning.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 5 — `teach-literacy-numeracy` | Teaching Literacy and Numeracy
 Outcome: Explain how early reading and number skills develop and common ways to teach them.
@@ -113,7 +114,7 @@ Lesson outline:
 9. Supporting learners who need more practice — Objective: describe ways to provide additional support without labeling students.
 10. Balanced instruction in literacy and numeracy — Objective: summarize a practical approach to teaching foundational skills.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 6 — `teach-assessment` | Assessment of Learning
 Outcome: Distinguish formative and summative assessment and design a simple one.
@@ -130,7 +131,7 @@ Lesson outline:
 9. Learner self-assessment — Objective: describe how students can reflect on their own learning progress.
 10. Assessment as part of learning — Objective: summarize how assessment supports teaching, not just grading.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 7 — `teach-inclusive-education` | Inclusive and Differentiated Instruction
 Outcome: Describe ways to adjust teaching for learners with different needs and backgrounds.
@@ -147,7 +148,7 @@ Lesson outline:
 9. Adapting assessment and feedback — Objective: describe how expectations and feedback can be fair and flexible.
 10. Inclusive teaching in practice — Objective: summarize how to build an accessible, supportive classroom experience.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 8 — `teach-professional-growth` | Professional Growth and Licensure Preparation
 Outcome: Explain the path to becoming a licensed teacher and how teachers keep growing.
@@ -164,7 +165,7 @@ Lesson outline:
 9. Building a portfolio and goals — Objective: explain how teachers document evidence of learning and practice.
 10. Planning the next steps — Objective: summarize how to prepare for entry into teaching and future growth.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ---
 
@@ -189,7 +190,7 @@ Lesson outline:
 9. Observation and supportive teaching — Objective: explain how teacher observation informs supportive instruction.
 10. Teaching adolescents with developmental awareness — Objective: connect developmental understanding to age-appropriate pedagogy.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 2 — `teach-sec-content-pedagogy` | Subject Content and Pedagogy
 Outcome: Describe how teachers turn subject knowledge into clear, engaging instruction.
@@ -206,7 +207,7 @@ Lesson outline:
 9. Connecting content to real life — Objective: explain how relevant examples increase engagement.
 10. A strong subject lesson — Objective: summarize the components of a clear, effective lesson sequence.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 3 — `teach-sec-curriculum-design` | Curriculum Design and Unit Planning
 Outcome: Plan a short unit with aligned objectives, activities, and assessment.
@@ -223,7 +224,7 @@ Lesson outline:
 9. Reviewing and revising a unit — Objective: explain how teacher reflection improves a future plan.
 10. Designing a mini unit — Objective: assemble an initial unit plan with aligned components.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 4 — `teach-sec-classroom-culture` | Classroom Culture and Behavior
 Outcome: Describe strategies for a positive classroom culture with teenagers.
@@ -240,7 +241,7 @@ Lesson outline:
 9. Restorative conversations — Objective: describe how teachers can guide repair after conflict.
 10. Creating a strong culture — Objective: summarize the habits that sustain a positive classroom environment.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 5 — `teach-sec-assessment` | Assessment and Feedback
 Outcome: Design assessments and give feedback that helps learners improve.
@@ -257,7 +258,7 @@ Lesson outline:
 9. Feedback for growth — Objective: craft feedback that focuses on improvement, not just mistakes.
 10. Assessment and feedback cycle — Objective: summarize a practical cycle for measuring and improving learning.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 6 — `teach-sec-guidance-wellbeing` | Learner Guidance and Wellbeing
 Outcome: Describe a teacher's role in supporting learners and when and how to refer concerns.
@@ -274,7 +275,7 @@ Lesson outline:
 9. Teacher self-awareness — Objective: describe how educators monitor their own stress and professional limits.
 10. Supporting the learner, not diagnosing — Objective: summarize the teacher's role as a supportive observer and referral partner.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ### Course 7 — `teach-sec-career-licensure` | Teaching Career and Licensure Preparation
 Outcome: Explain the path to becoming a licensed teacher and how to keep developing.
@@ -291,13 +292,13 @@ Lesson outline:
 9. Career growth opportunities — Objective: explain how teachers may grow into coordination, mentoring, or leadership roles.
 10. Planning a next-step pathway — Objective: summarize how to move from study into teaching practice and ongoing development.
 
-Checklist: [ ] `course.js` [ ] lessons [ ] questions [ ] wrapper [ ] route registration [ ] validator
+Checklist: [x] `course.js` [x] lessons [x] questions [x] wrapper [x] route registration [x] validator
 
 ---
 
 ## Human review checklist
 
-Use this pass/fail prompt before moving to the build run:
+Use this pass/fail prompt before a human reviewer approves the content and changes the career status:
 
 - [ ] Elementary and secondary tracks have distinct examples and teaching concerns.
 - [ ] The teacher guidance is general, educational, and not counseling or medical advice.
@@ -309,4 +310,4 @@ Use this pass/fail prompt before moving to the build run:
 
 ## Build checkpoint status
 
-This plan is the stop point. The Teacher career is intentionally left as `coming-soon` and is ready for a human review before the content build begins.
+Both tracks are built, registered, and validated. Teacher is available following the project owner's team-review sign-off. The human review checklist remains for the owner and is intentionally unchecked.

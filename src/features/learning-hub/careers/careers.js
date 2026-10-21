@@ -1,4 +1,4 @@
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { TRACKS, validateLearningContent } from './registry';
 
 export const CAREERS = [
   {
@@ -31,8 +31,8 @@ export const CAREERS = [
     subtitle: 'Guide learning, support growth, and shape classroom experiences.',
     icon: '📚',
     color: '#F59E0B',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['teacher-elementary', 'teacher-secondary'],
     overview:
       'Teaching blends subject knowledge, communication, and support to help learners build skills and confidence in a classroom or training setting.',
     skillsPreview: ['Communication', 'Planning', 'Mentorship'],
@@ -161,7 +161,7 @@ export function validateCareerData(careers = CAREERS) {
 }
 
 if (__DEV__) {
-  const issues = validateCareerData();
+  const issues = [...validateCareerData(), ...validateLearningContent(CAREERS)];
   if (issues.length > 0) {
     console.warn('Career data warnings:', issues);
   }
