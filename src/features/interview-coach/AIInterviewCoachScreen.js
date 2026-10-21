@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
   resultBullet: { fontSize: 14, color: '#333344', lineHeight: 22, alignSelf: 'flex-start' },
 
   primaryButton: {
-    width: '100%', backgroundColor: PURPLE, borderRadius: 14,
+    width: '72%', maxWidth: 280, alignSelf: 'center', backgroundColor: PURPLE, borderRadius: 999,
     paddingVertical: 16, alignItems: 'center', marginTop: 8,
     shadowColor: PURPLE_DARK, shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25, shadowRadius: 10, elevation: 4,
