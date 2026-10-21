@@ -21,7 +21,7 @@ export default function AuthNavigator({
   return (
     <Stack.Navigator
       initialRouteName={recovery ? 'ResetPassword' : initialRouteName}
-      screenOptions={{ headerShown: false, animation: 'slide_from_right', animationDuration: 250 }}
+      screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
