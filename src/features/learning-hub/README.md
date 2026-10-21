@@ -32,13 +32,13 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Teacher | Available | Elementary Teacher (8 courses); Secondary Teacher (7 courses) |
 | Nursing | Available (team reviewed) | Nursing Student Path (8 courses) |
 | Doctor | Coming soon | None |
-| Lawyer | Coming soon | None |
+| Lawyer | Available | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
 | Marine (Seafarer / Marine Engineering) | Coming soon | None |
 | Accountancy | Coming soon | None |
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher and Nursing content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, and Nursing are wired to real tracks and courses; the other seeded careers remain coming soon.
+The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher, Nursing, and Lawyer content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer are wired to real tracks and courses; the other seeded careers remain coming soon.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
@@ -50,6 +50,8 @@ The folder name `software-engineering/` is the existing content folder for the S
 | Nursing Student Path | The Nursing Profession and Ethics, Human Body Basics, Communication with Patients and Families, Fundamentals of Nursing Care, Infection Prevention Basics, Health Promotion and Community Health, Patient Safety/Documentation/Teamwork, Path to Practice and Caring for Yourself | Eight team-reviewed courses have ten lessons and ten quiz questions each; the content is educational orientation, not clinical training. |
 | Elementary Teacher | Foundations of Teaching, Child Development and Learning, Curriculum and Lesson Planning, Classroom Management, Teaching Literacy and Numeracy, Assessment of Learning, Inclusive and Differentiated Instruction, Professional Growth and Licensure Preparation | All eight courses have 10 lessons and 10 quiz questions each. |
 | Secondary Teacher | Adolescent Development and Learning, Subject Content and Pedagogy, Curriculum Design and Unit Planning, Classroom Culture and Behavior, Assessment and Feedback, Learner Guidance and Wellbeing, Teaching Career and Licensure Preparation | All seven courses have 10 lessons and 10 quiz questions each. |
+| Lawyer Path | The Legal Profession and Ethics, The Philippine Legal System, Legal Research Skills, Legal Writing and Analysis, Constitutional Law Concepts, Civil and Criminal Law Overview, Procedure, Evidence, and Advocacy Basics, Path to Practice and Client Communication | All eight courses have 10 lessons and 10 quiz questions each; introductory career orientation, not legal advice. |
+| Paralegal and Legal Support | Legal Office Operations, Legal Documents and Drafting Basics, Court Processes and Filing Basics, Legal Research Support, Client Intake and Confidentiality, Legal Technology and Records Management | All six courses have 10 lessons and 10 quiz questions each; support concepts only. |
 
 When adding or changing a track, check that step IDs are unique within the track, course references and navigation route names match registered screens, and course ordering supports a sensible prerequisite progression. A step without a course is intentionally a roadmap/detail view, not a broken course.
 
@@ -63,7 +65,7 @@ src/features/learning-hub/
   careers/
     careers.js                      Career data, stable IDs, and data validation helpers
     registry.js                     Combined track and course-route registry
-    CareerDetailScreen.js           Coming-soon career detail-only screen
+    CareerDetailScreen.js           Detail view for careers that are not yet available
   shared/
     CourseRunner.js                 Shared course flow and orchestration
     courseUtils.js                  Derived lesson status and quiz question selection
@@ -100,6 +102,16 @@ src/features/learning-hub/
       data/
         lessons.js                  Ordered lesson content
         questions.js                Quiz question bank
+  lawyer/
+    index.js                        Lawyer track and course exports
+    REVIEW_NOTES.md                 Subject-expert review notes
+    tracks.js                       Lawyer Path and Paralegal track definitions
+    <course>-course/                Lawyer courses, beside software-engineering/
+      course.js                     Course metadata and data composition
+      <Course>Course.js              Thin screen wrapper around CourseRunner
+      data/
+        lessons.js                  Ordered lesson content
+        questions.js                Quiz question bank
   nursing/
     index.js                        Nursing track, course, and route exports
     tracks.js                       Nursing Student Path and ordered course steps
@@ -107,14 +119,15 @@ src/features/learning-hub/
     <course>-course/                Nursing course data and runner screens
 ```
 
-The `careers/` folder is the shared layer for career metadata, screens, and the registry; career-specific course content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, and `nursing/`. The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
+The `careers/` folder is the shared layer for career metadata, screens, and the registry; career-specific course content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, and `lawyer/`. The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
 
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, and Nursing tracks, courses, and routes. `software-engineering/SoftwareEngineerRoadmap.js` displays the selected career's roadmap while preserving existing track keys and route names.
+- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer tracks, courses, and routes. `software-engineering/SoftwareEngineerRoadmap.js` displays the selected career's roadmap while preserving existing track keys and route names.
 - `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
 - `teacher/` contains the Elementary Teacher and Secondary Teacher pathways, with 15 courses registered through the same shared registry.
+- `lawyer/` contains Lawyer Path and Paralegal and Legal Support, with 14 introductory courses registered through the same shared registry.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.

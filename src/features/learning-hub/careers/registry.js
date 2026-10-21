@@ -3,6 +3,7 @@ import {
   tracks as cybersecurityTracks,
   courses as cybersecurityCourses,
 } from '../cybersecurity';
+import { tracks as lawyerTracks, courses as lawyerCourses } from '../lawyer';
 import {
   tracks as nursingTracks,
   courses as nursingCourses,
@@ -96,6 +97,11 @@ export const CAREER_CONTENT = [
     careerId: 'cybersecurity',
     tracks: cybersecurityTracks,
     courses: cybersecurityCourses,
+  },
+  {
+    careerId: 'lawyer',
+    tracks: lawyerTracks,
+    courses: lawyerCourses,
   },
   {
     careerId: 'nursing',

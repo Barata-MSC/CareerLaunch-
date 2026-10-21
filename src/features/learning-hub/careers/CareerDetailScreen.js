@@ -42,6 +42,9 @@ export default function CareerDetailScreen({ navigation, route }) {
 
         <Text style={styles.title}>{career.title}</Text>
         <Text style={styles.subtitle}>{career.subtitle}</Text>
+        {career.educationalNote ? (
+          <Text style={styles.bodyText}>{career.educationalNote}</Text>
+        ) : null}
 
         <View style={styles.infoCard}>
           <Text style={styles.sectionLabel}>Overview</Text>
@@ -59,12 +62,14 @@ export default function CareerDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        <View style={styles.noticeCard}>
-          <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
-          <Text style={styles.noticeText}>
-            This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
-          </Text>
-        </View>
+        {career.status !== 'available' ? (
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
+            <Text style={styles.noticeText}>
+              This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );

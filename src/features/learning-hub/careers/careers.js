@@ -67,11 +67,12 @@ export const CAREERS = [
     subtitle: 'Advise, advocate, and help people navigate legal issues.',
     icon: '⚖️',
     color: '#7C3AED',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['law-lawyer-path', 'law-paralegal'],
     overview:
       'Lawyers work with legal principles, research, and clear reasoning to advise clients, prepare arguments, and support fair outcomes.',
     skillsPreview: ['Research', 'Reading', 'Judgment'],
+    educationalNote: 'Educational, not legal advice.',
   },
   {
     id: 'marine',

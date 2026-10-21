@@ -241,7 +241,7 @@ export default function LearningHubScreen({ navigation }) {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
         <Text style={styles.intro}>Pick a career to explore.</Text>
 
         {filteredCareers.length === 0 ? (
@@ -301,7 +301,7 @@ export default function LearningHubScreen({ navigation }) {
     );
 
     return (
-      <ScrollView contentContainerStyle={styles.listContent}>
+      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
         <Text style={styles.intro}>Pick a track to see its courses.</Text>
 
         {careerTracks.length === 0 ? (
@@ -309,6 +309,7 @@ export default function LearningHubScreen({ navigation }) {
         ) : (
           careerTracks.map((track) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
+            const blurb = track.subtitle || meta.blurb;
             const comingSoon = !track.courseCount;
 
             return (
@@ -325,13 +326,13 @@ export default function LearningHubScreen({ navigation }) {
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.title}</Text>
+                  <Text style={styles.cardTitle}>{track.title || track.name}</Text>
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
-                  {!!meta.blurb && (
+                  {!!blurb && (
                     <Text style={styles.desc} numberOfLines={2}>
-                      {track.subtitle || meta.blurb}
+                      {blurb}
                     </Text>
                   )}
 
