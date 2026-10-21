@@ -80,7 +80,7 @@ The course modules are deliberately data-driven. A course wrapper normally impor
 
 ### Motion and shared screen primitives
 
-The Learning Hub and course flow use a small motion system built from shared primitives in `src/components/motion/`: `Float`, `FadeSlideIn`, `AnimatedStage`, `Pop`, and the central `motionTokens.js` values. The app reads the system reduce-motion setting via `useReduceMotion`, and the motion layer avoids heavy layout animation. `Float` is intentionally used sparingly on hero elements only, never inside long lists, and it pauses when a screen is not focused.
+The Learning Hub and course flow use a small motion system built from shared primitives in `src/components/motion/`: `Float`, `FadeSlideIn`, `AnimatedStage`, `AnimatedProgressFill`, `Pop`, and the central `motionTokens.js` values. The app reads the system reduce-motion setting via `useReduceMotion`; it disables press and navigator motion and keeps in-screen transitions static when enabled. Stage wrappers stay mounted while content changes so transitions run without changing course state. List entrances are limited to the first visible items, progress fills animate their values, and `Float` is reserved for a few hero elements, never long-list rows, and pauses while its screen is not focused.
 
 ### Shared flow and responsibilities
 

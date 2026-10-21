@@ -87,7 +87,7 @@ export default function LessonScreen({
         <LessonActivities key={lesson.id} activities={lesson.activities} />
         <LessonReferences references={lesson.references} />
 
-        <Pop trigger={isDone ? 1 : 0} scaleTo={1.06}>
+        <Pop trigger={isDone ? 1 : 0} animateOnMount scaleTo={1.06}>
           <AppPressable
             style={styles.completeCard}
             onPress={() => onToggleComplete(lesson.id)}

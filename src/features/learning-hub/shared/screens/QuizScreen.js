@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import Pop from '@components/motion/Pop';
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
@@ -45,21 +46,26 @@ export default function QuizScreen({
             const selected = selectedAnswer === index;
 
             return (
-              <AppPressable
+              <Pop
                 key={answer}
-                style={[styles.answerButton, selected && styles.answerSelected]}
-                onPress={() => onSelectAnswer(index)}
+                trigger={selected ? (questionIndex + 1) * 4 + index + 1 : 0}
+                scaleTo={1.025}
               >
-                <View style={[styles.answerCircle, selected && styles.answerCircleSelected]}>
-                  <Text style={[styles.answerLetter, selected && styles.answerLetterSelected]}>
-                    {String.fromCharCode(65 + index)}
-                  </Text>
-                </View>
+                <AppPressable
+                  style={[styles.answerButton, selected && styles.answerSelected]}
+                  onPress={() => onSelectAnswer(index)}
+                >
+                  <View style={[styles.answerCircle, selected && styles.answerCircleSelected]}>
+                    <Text style={[styles.answerLetter, selected && styles.answerLetterSelected]}>
+                      {String.fromCharCode(65 + index)}
+                    </Text>
+                  </View>
 
-                <Text style={[styles.answerText, selected && styles.answerTextSelected]}>
-                  {answer}
-                </Text>
-              </AppPressable>
+                  <Text style={[styles.answerText, selected && styles.answerTextSelected]}>
+                    {answer}
+                  </Text>
+                </AppPressable>
+              </Pop>
             );
           })}
         </View>

@@ -5,6 +5,7 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
 import { getStatusLabel } from '../courseUtils';
+import AnimatedProgressFill from '@components/motion/AnimatedProgressFill';
 
 // `lessons` already carries a derived `status` (see courseUtils.withStatus).
 export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, onStartQuiz }) {
@@ -36,15 +37,15 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
           </View>
 
           <View style={styles.progressBackground}>
-            <View style={[styles.progressFill, { width: `${progress}%` }]} />
+            <AnimatedProgressFill progress={progress} style={styles.progressFill} />
           </View>
         </View>
 
         <Text style={common.sectionTitle}>Your lessons</Text>
 
         <View style={styles.lessonList}>
-          {lessons.map((lesson, index) => (
-            <FadeSlideIn key={lesson.id} delay={Math.min(index * 55, 360)}>
+          {lessons.map((lesson, index) => {
+            const card = (
               <AppPressable style={styles.lessonCard} onPress={() => onOpenLesson(index)}>
                 <View
                   style={[
@@ -82,8 +83,16 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
 
                 <Text style={common.chevron}>›</Text>
               </AppPressable>
-            </FadeSlideIn>
-          ))}
+            );
+
+            return index < 5 ? (
+              <FadeSlideIn key={lesson.id} delay={Math.min(index * 55, 220)}>
+                {card}
+              </FadeSlideIn>
+            ) : (
+              <React.Fragment key={lesson.id}>{card}</React.Fragment>
+            );
+          })}
         </View>
 
         <AppPressable style={common.quizButton} onPress={onStartQuiz}>

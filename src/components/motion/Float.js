@@ -26,18 +26,18 @@ export default function Float({
       Animated.sequence([
         Animated.timing(translateY, {
           toValue: -amplitude,
-          duration: duration / 2,
+          duration: duration / 4,
           delay: phaseOffset,
           useNativeDriver,
         }),
         Animated.timing(translateY, {
           toValue: amplitude,
-          duration,
+          duration: duration / 2,
           useNativeDriver,
         }),
         Animated.timing(translateY, {
           toValue: 0,
-          duration: duration / 2,
+          duration: duration / 4,
           useNativeDriver,
         }),
       ]),

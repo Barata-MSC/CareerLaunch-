@@ -20,6 +20,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
 import AnimatedStage from '@components/motion/AnimatedStage';
+import AnimatedProgressFill from '@components/motion/AnimatedProgressFill';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
 import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
@@ -70,6 +71,7 @@ export default function LearningHubScreen({ navigation }) {
   const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedCareerId, setSelectedCareerId] = useState(null);
+  const [stageDirection, setStageDirection] = useState(1);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
@@ -83,6 +85,7 @@ export default function LearningHubScreen({ navigation }) {
       setView('careers');
       setSelectedTrack(null);
       setSelectedCareerId(null);
+      setStageDirection(0);
       setQuery('');
       setFilter('all');
       setProgressLoaded(false);
@@ -95,11 +98,13 @@ export default function LearningHubScreen({ navigation }) {
     useCallback(() => {
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
         if (view === 'courses') {
+          setStageDirection(-1);
           setSelectedTrack(null);
           setView('tracks');
           return true;
         }
         if (view === 'tracks') {
+          setStageDirection(-1);
           setSelectedCareerId(null);
           setView('careers');
           return true;
@@ -154,6 +159,7 @@ export default function LearningHubScreen({ navigation }) {
   // ---------- Actions ----------
   const openTrack = (track) => {
     if (!track.courseCount) return; // "Coming soon" tracks do nothing
+    setStageDirection(1);
     setSelectedTrack(track.name);
     setQuery('');
     setFilter('all');
@@ -162,6 +168,7 @@ export default function LearningHubScreen({ navigation }) {
 
   const openCareer = (career) => {
     if (career.status === 'available') {
+      setStageDirection(1);
       setSelectedCareerId(career.id);
       setQuery('');
       setView('tracks');
@@ -172,11 +179,13 @@ export default function LearningHubScreen({ navigation }) {
 
   const handleBack = () => {
     if (view === 'courses') {
+      setStageDirection(-1);
       setSelectedTrack(null);
       setView('tracks');
       return;
     }
     if (view === 'tracks') {
+      setStageDirection(-1);
       setSelectedCareerId(null);
       setView('careers');
       return;
@@ -211,7 +220,7 @@ export default function LearningHubScreen({ navigation }) {
     return (
       <>
         <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${percent}%` }]} />
+          <AnimatedProgressFill progress={percent} style={styles.progressFill} />
         </View>
         <Text style={styles.progressText}>{percent}%</Text>
       </>
@@ -252,9 +261,8 @@ export default function LearningHubScreen({ navigation }) {
             const completedCourses = careerCourseIds.filter((course) => getCourseStatus(course, progressByCourseId[course.id]) === 'completed').length;
             const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
 
-            return (
-              <FadeSlideIn key={career.id} delay={Math.min(index * 65, 380)}>
-                <AppPressable
+            const card = (
+              <AppPressable
                   accessibilityRole="button"
                   accessibilityLabel={`${career.title}, ${career.status}`}
                   style={[styles.card, !isAvailable && styles.cardMuted]}
@@ -281,8 +289,15 @@ export default function LearningHubScreen({ navigation }) {
                   </View>
 
                   {isAvailable && <Text style={styles.chevron}>›</Text>}
-                </AppPressable>
+              </AppPressable>
+            );
+
+            return index < 5 ? (
+              <FadeSlideIn key={career.id} delay={Math.min(index * 65, 260)}>
+                {card}
               </FadeSlideIn>
+            ) : (
+              <React.Fragment key={career.id}>{card}</React.Fragment>
             );
           })
         )}
@@ -307,9 +322,8 @@ export default function LearningHubScreen({ navigation }) {
             const meta = TRACK_META[track.name] || FALLBACK_META;
             const comingSoon = !track.courseCount;
 
-            return (
-              <FadeSlideIn key={track.name} delay={Math.min(index * 65, 380)}>
-                <AppPressable
+            const card = (
+              <AppPressable
                   accessibilityRole="button"
                   accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
                   style={[styles.card, comingSoon && styles.cardMuted]}
@@ -339,8 +353,15 @@ export default function LearningHubScreen({ navigation }) {
                   </View>
 
                   {!comingSoon && <Text style={styles.chevron}>›</Text>}
-                </AppPressable>
+              </AppPressable>
+            );
+
+            return index < 5 ? (
+              <FadeSlideIn key={track.name} delay={Math.min(index * 65, 260)}>
+                {card}
               </FadeSlideIn>
+            ) : (
+              <React.Fragment key={track.name}>{card}</React.Fragment>
             );
           })
         )}
@@ -349,14 +370,14 @@ export default function LearningHubScreen({ navigation }) {
   };
 
   // ---------- Step 2: courses of the chosen track ----------
-  const renderCourseCard = ({ item }) => {
+  const renderCourseCard = ({ item, index }) => {
     if (!item?.course) return null;
 
     const done = item.status === 'completed';
     const lessonCount = item.course.lessons ? item.course.lessons.length : 0;
     const code = (item.course.shortCode || item.title).slice(0, 4).toUpperCase();
 
-    return (
+    const card = (
       <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
         <View style={styles.courseIcon}>
           <Text style={styles.courseIconText}>{code}</Text>
@@ -376,6 +397,12 @@ export default function LearningHubScreen({ navigation }) {
           </Text>
         </View>
       </AppPressable>
+    );
+
+    return index < 5 ? (
+      <FadeSlideIn delay={Math.min(index * 55, 220)}>{card}</FadeSlideIn>
+    ) : (
+      card
     );
   };
 
@@ -451,21 +478,17 @@ export default function LearningHubScreen({ navigation }) {
         <View style={styles.backBtn} />
       </View>
 
-      {view === 'careers' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderCareers()}
-        </AnimatedStage>
-      )}
-      {view === 'tracks' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderTracks()}
-        </AnimatedStage>
-      )}
-      {view === 'courses' && (
-        <AnimatedStage stageKey={view} direction={1}>
-          {renderCourses()}
-        </AnimatedStage>
-      )}
+      <AnimatedStage stageKey={view} direction={stageDirection}>
+        {view === 'careers' && (
+          renderCareers()
+        )}
+        {view === 'tracks' && (
+          renderTracks()
+        )}
+        {view === 'courses' && (
+          renderCourses()
+        )}
+      </AnimatedStage>
     </SafeAreaView>
   );
 }

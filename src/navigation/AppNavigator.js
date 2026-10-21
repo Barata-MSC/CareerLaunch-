@@ -39,6 +39,7 @@ import {
 } from '@features/resume-builder';
 import AccountGate from '../components/AccountGate';
 import MainTabs from '@features/resume-builder/MainTabs';
+import useReduceMotion from '../components/motion/useReduceMotion';
 import DesignFundamentalsCourseScreen from '../features/learning-hub/software-engineering/design-fundamentals-course/DesignFundamentalsCourse';
 import UserResearchCourseScreen from '../features/learning-hub/software-engineering/user-research-course/UserResearchCourse';
 import WireframingCourseScreen from '../features/learning-hub/software-engineering/wireframing-course/WireframingCourse';
@@ -71,10 +72,16 @@ const GatedProjectsScreen = withResumeAccountGate(ProjectsScreen);
 const GatedResumePreviewScreen = withResumeAccountGate(ResumePreviewScreen);
 
 export default function AppNavigator() {
+  const reducedMotion = useReduceMotion();
+
   return (
     <Stack.Navigator
       initialRouteName="MainTabs"
-      screenOptions={{ headerShown: false, animation: 'slide_from_right', animationDuration: 300 }}
+      screenOptions={{
+        headerShown: false,
+        animation: reducedMotion ? 'none' : 'slide_from_right',
+        animationDuration: 300,
+      }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 
 import { MOTION, useNativeDriver } from './motionTokens';
@@ -15,7 +15,7 @@ export default function FadeSlideIn({
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(distance)).current;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (reducedMotion) {
       opacity.setValue(1);
       translateY.setValue(0);

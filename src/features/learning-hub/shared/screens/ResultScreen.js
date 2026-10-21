@@ -1,7 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import Pop from '@components/motion/Pop';
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Animated, Easing, View, Text, ScrollView, StyleSheet } from 'react-native';
+import useReduceMotion from '@components/motion/useReduceMotion';
 import CourseHeader from '../components/CourseHeader';
 import common, { GREEN, RED } from '../styles';
 
@@ -15,6 +16,7 @@ export default function ResultScreen({
   onReviewLessons,
   onRetake,
 }) {
+  const reducedMotion = useReduceMotion();
   const { questions, lessons } = course;
   const percentage = Math.round((score / questions.length) * 100);
   const passed = percentage >= course.passingPercent;
@@ -46,11 +48,9 @@ export default function ResultScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.resultContainer}
       >
-        <Pop trigger={passed ? 1 : 0} scaleTo={1.08}>
+        <Pop trigger={passed ? 1 : 0} animateOnMount scaleTo={1.08}>
           <View style={[styles.scoreCircle, passed ? styles.scorePassed : styles.scoreFailed]}>
-            <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
-              {percentage}%
-            </Text>
+            <ScoreCounter value={percentage} passed={passed} reducedMotion={reducedMotion} />
           </View>
         </Pop>
 
@@ -168,6 +168,41 @@ export default function ResultScreen({
         </View>
       </ScrollView>
     </>
+  );
+}
+
+function ScoreCounter({ value, passed, reducedMotion }) {
+  const [displayValue, setDisplayValue] = React.useState(reducedMotion ? value : 0);
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (reducedMotion) {
+      setDisplayValue(value);
+      animatedValue.setValue(value);
+      return undefined;
+    }
+
+    const listener = animatedValue.addListener(({ value: nextValue }) => {
+      setDisplayValue(Math.round(nextValue));
+    });
+    const animation = Animated.timing(animatedValue, {
+      toValue: value,
+      duration: 650,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    });
+
+    animation.start();
+    return () => {
+      animation.stop();
+      animatedValue.removeListener(listener);
+    };
+  }, [animatedValue, reducedMotion, value]);
+
+  return (
+    <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
+      {displayValue}%
+    </Text>
   );
 }
 

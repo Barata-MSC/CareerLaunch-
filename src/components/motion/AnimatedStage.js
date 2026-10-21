@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 
 import { MOTION, useNativeDriver } from './motionTokens';
@@ -16,7 +16,7 @@ export default function AnimatedStage({
   const translateY = useRef(new Animated.Value(0)).current;
   const prevKeyRef = useRef(stageKey);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (reducedMotion) {
       opacity.setValue(1);
       translateY.setValue(0);
@@ -30,7 +30,7 @@ export default function AnimatedStage({
       return undefined;
     }
 
-    const startValue = direction > 0 ? 12 : -12;
+    const startValue = direction > 0 ? 12 : direction < 0 ? -12 : 0;
     translateY.setValue(startValue);
     opacity.setValue(0);
 
@@ -56,6 +56,7 @@ export default function AnimatedStage({
     <Animated.View
       style={[
         style,
+        { flex: 1 },
         {
           opacity,
           transform: [{ translateY }],

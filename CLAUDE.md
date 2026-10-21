@@ -126,9 +126,10 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 ### Motion
 
 - The motion layer lives in `src/components/motion/` and centralizes timing in `motionTokens.js`.
-- Shared primitives are `Float`, `FadeSlideIn`, `AnimatedStage`, `Pop`, and `useReduceMotion`; they follow the built-in `Animated` API and respect the system reduce-motion setting.
+- Shared primitives are `Float`, `FadeSlideIn`, `AnimatedStage`, `AnimatedProgressFill`, `Pop`, and `useReduceMotion`; they follow the built-in `Animated` API and respect the system reduce-motion setting.
 - The app keeps motion subtle: small transitions, lightweight screen-to-screen fades/slides, and limited levitation on hero elements only.
 - `Float` is intentionally used sparingly; avoid floating items inside large scroll lists or frequently reused list rows.
+- Keep stage wrappers mounted while course and Learning Hub state changes; use `useReduceMotion` for navigation and press feedback, and limit list entrances to the first visible items.
 
 ## Expo, web, and project commands
 

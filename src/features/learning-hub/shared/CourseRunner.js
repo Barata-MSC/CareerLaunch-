@@ -77,14 +77,19 @@ export default function CourseRunner({ course, navigation }) {
 
   const nextLesson = () => {
     if (selectedLesson < lessons.length - 1) {
+      setStageDirection(1);
       setSelectedLesson(selectedLesson + 1);
     } else {
+      setStageDirection(1);
       setScreen('lessonList');
     }
   };
 
   const previousLesson = () => {
-    if (selectedLesson > 0) setSelectedLesson(selectedLesson - 1);
+    if (selectedLesson > 0) {
+      setStageDirection(-1);
+      setSelectedLesson(selectedLesson - 1);
+    }
   };
 
   const handleToggleLesson = async (lessonId) => {
@@ -109,6 +114,7 @@ export default function CourseRunner({ course, navigation }) {
   };
 
   const previousQuestion = () => {
+    setStageDirection(-1);
     if (questionIndex > 0) {
       const updatedAnswers = [...answers];
       if (selectedAnswer !== null) updatedAnswers[questionIndex] = selectedAnswer;
@@ -124,6 +130,7 @@ export default function CourseRunner({ course, navigation }) {
 
   const nextQuestion = () => {
     if (selectedAnswer === null) return;
+    setStageDirection(1);
 
     // Store the answer by position so going back and re-answering works
     const updatedAnswers = [...answers];
@@ -182,8 +189,11 @@ export default function CourseRunner({ course, navigation }) {
         </View>
       )}
 
-      {screen === 'lessons' && (
-        <AnimatedStage key="lessons" stageKey={screen} direction={stageDirection}>
+      <AnimatedStage
+        stageKey={screen === 'lesson' ? `${screen}:${selectedLesson}` : screen === 'quiz' ? `${screen}:${questionIndex}` : screen}
+        direction={stageDirection}
+      >
+        {screen === 'lessons' && (
           <LessonsScreen
             course={course}
             lessons={lessons}
@@ -194,11 +204,9 @@ export default function CourseRunner({ course, navigation }) {
               setScreen('quizIntro');
             }}
           />
-        </AnimatedStage>
-      )}
+        )}
 
-      {screen === 'lesson' && (
-        <AnimatedStage key="lesson" stageKey={screen} direction={stageDirection}>
+        {screen === 'lesson' && (
           <LessonScreen
             course={course}
             lessons={lessons}
@@ -208,11 +216,9 @@ export default function CourseRunner({ course, navigation }) {
             onNext={nextLesson}
             onToggleComplete={handleToggleLesson}
           />
-        </AnimatedStage>
-      )}
+        )}
 
-      {screen === 'lessonList' && (
-        <AnimatedStage key="lessonList" stageKey={screen} direction={stageDirection}>
+        {screen === 'lessonList' && (
           <LessonListScreen
             course={course}
             lessons={lessons}
@@ -223,17 +229,13 @@ export default function CourseRunner({ course, navigation }) {
               setScreen('quizIntro');
             }}
           />
-        </AnimatedStage>
-      )}
+        )}
 
-      {screen === 'quizIntro' && (
-        <AnimatedStage key="quizIntro" stageKey={screen} direction={stageDirection}>
+        {screen === 'quizIntro' && (
           <QuizIntroScreen course={quizCourse} onBack={handleBack} onStart={startQuiz} />
-        </AnimatedStage>
-      )}
+        )}
 
-      {screen === 'quiz' && (
-        <AnimatedStage key="quiz" stageKey={screen} direction={stageDirection}>
+        {screen === 'quiz' && (
           <QuizScreen
             course={quizCourse}
             questionIndex={questionIndex}
@@ -243,11 +245,9 @@ export default function CourseRunner({ course, navigation }) {
             onNext={nextQuestion}
             onBack={handleBack}
           />
-        </AnimatedStage>
-      )}
+        )}
 
-      {screen === 'result' && (
-        <AnimatedStage key="result" stageKey={screen} direction={stageDirection}>
+        {screen === 'result' && (
           <ResultScreen
             course={{ ...quizCourse, lessons }}
             answers={answers}
@@ -261,8 +261,8 @@ export default function CourseRunner({ course, navigation }) {
             }}
             onRetake={startQuiz}
           />
-        </AnimatedStage>
-      )}
+        )}
+      </AnimatedStage>
     </SafeAreaView>
   );
 }

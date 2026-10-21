@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import useReduceMotion from '@components/motion/useReduceMotion';
 
 // Import screens from the feature barrel.
 import { DashboardScreen, JobFinderScreen, LearningHubScreen, ProfileScreen } from '@features';
@@ -18,10 +19,13 @@ const PURPLE = '#5B21F5';
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
+  const reducedMotion = useReduceMotion();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        animation: reducedMotion ? 'none' : 'fade',
         tabBarShowLabel: false,
         tabBarActiveTintColor: PURPLE,
         tabBarInactiveTintColor: '#B5B5B9',

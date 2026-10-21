@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet } from 'react-native';
 
 import { playSound } from '../utils/sounds';
+import useReduceMotion from './motion/useReduceMotion';
 
 // Styles that position/size the component within its parent. These must live
 // on the outer wrapper, otherwise percentages and alignSelf resolve against a
@@ -38,6 +39,7 @@ export default function AppPressable({
   ...props
 }) {
   const scale = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReduceMotion();
 
   const resolveStyle = (state) => (typeof style === 'function' ? style(state) : style);
   const { outer } = splitStyle(resolveStyle({ pressed: false }));
@@ -53,7 +55,7 @@ export default function AppPressable({
 
   const animateToPress = useCallback(
     (pressed) => {
-      if (!animatePress || disabled) {
+      if (!animatePress || disabled || reducedMotion) {
         return;
       }
 
@@ -64,7 +66,7 @@ export default function AppPressable({
         useNativeDriver: Platform.OS !== 'web',
       }).start();
     },
-    [animatePress, disabled, scale],
+    [animatePress, disabled, reducedMotion, scale],
   );
 
   const handlePressIn = useCallback(

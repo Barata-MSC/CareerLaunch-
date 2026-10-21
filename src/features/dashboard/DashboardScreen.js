@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Animated,
   ScrollView,
   Text,
   View,
@@ -15,6 +14,8 @@ import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
 import AppPressable from '@components/AppPressable';
 import Float from '@components/motion/Float';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import AnimatedProgressFill from '@components/motion/AnimatedProgressFill';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -98,7 +99,7 @@ export default function DashboardScreen({ navigation }) {
               {Math.round(profileProgress * 100)}% complete
             </Text>
             <View style={styles.progressTrack}>
-              <AnimatedProgressBar progress={profileProgress * 100} style={styles.progressFill} />
+              <AnimatedProgressFill progress={profileProgress * 100} style={styles.progressFill} />
             </View>
           </View>
           <Float amplitude={4} duration={2600} phaseOffset={200}>
@@ -135,9 +136,8 @@ export default function DashboardScreen({ navigation }) {
               </View>
             );
 
-            return (
+            const actionButton = (
               <AppPressable
-                key={action.id}
                 style={styles.quickActionWrap}
                 onPressIn={() => setPressedId(action.id)}
                 onPressOut={() => setPressedId(null)}
@@ -152,6 +152,16 @@ export default function DashboardScreen({ navigation }) {
                 )}
                 <Text style={styles.quickActionLabel}>{action.label}</Text>
               </AppPressable>
+            );
+
+            return (
+              <FadeSlideIn
+                key={action.id}
+                style={styles.quickActionEntrance}
+                delay={index * 65}
+              >
+                {actionButton}
+              </FadeSlideIn>
             );
           })}
         </View>
@@ -200,34 +210,6 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
-function AnimatedProgressBar({ progress, style }) {
-  const animatedWidth = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    Animated.timing(animatedWidth, {
-      toValue: Math.min(Math.max(progress, 0), 100),
-      duration: 220,
-      useNativeDriver: false,
-    }).start();
-  }, [animatedWidth, progress]);
-
-  return (
-    <View style={[style, { width: '100%' }]}>
-      <Animated.View
-        style={{
-          height: '100%',
-          width: animatedWidth.interpolate({
-            inputRange: [0, 100],
-            outputRange: ['0%', '100%'],
-          }),
-          backgroundColor: '#6C4CE0',
-          borderRadius: 3,
-        }}
-      />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   scrollContent: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 },
@@ -269,9 +251,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 6,
     marginBottom: 28,
   },
-  quickActionWrap: { alignItems: 'center', justifyContent: 'center', width: '25%', paddingHorizontal: 2 },
+  quickActionEntrance: { width: 68, alignItems: 'center' },
+  quickActionWrap: { alignItems: 'center', justifyContent: 'center', width: '100%' },
   quickActionTile: {
     width: 68,
     height: 68,
