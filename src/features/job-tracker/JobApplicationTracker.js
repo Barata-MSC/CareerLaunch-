@@ -1,12 +1,5 @@
 import AppPressable from '@components/AppPressable';
-import googleIcon from '../../assets/google.png';
-import microsoftIcon from '../../assets/microsoft.png';
-import spotifyIcon from '../../assets/Spotify.png';
-import canvaIcon from '../../assets/canva.png';
-import deloitteIcon from '../../assets/deloitte.png';
-import globeIcon from '../../assets/globe.png';
-
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   View,
@@ -20,9 +13,10 @@ import {
   StatusBar,
   Platform,
   Image,
+  ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { useApplications, STATUSES } from '../../context/ApplicationsContext';
 import AccountGate from '../../components/AccountGate';
 
@@ -103,10 +97,32 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
 }
 
 function JobApplicationTrackerContent({ navigation }) {
-  const { applications, updateStatus } = useApplications();
+  const {
+    applications,
+    updateStatus,
+    updateNotes,
+    removeApplication,
+    loadStatus,
+    loadError,
+    mutationError,
+    refresh,
+  } = useApplications();
 
   const [tab, setTab] = useState('All');
   const [selected, setSelected] = useState(null);
+  const [notesDraft, setNotesDraft] = useState('');
+  const [notesSaving, setNotesSaving] = useState(false);
+
+  useEffect(() => {
+    setNotesDraft(selected?.notes || '');
+  }, [selected?.id]);
+
+  useEffect(() => {
+    if (!navigation) return undefined;
+    return navigation.addListener('focus', () => {
+      if (loadStatus === 'ready' || loadStatus === 'error') refresh();
+    });
+  }, [loadStatus, navigation, refresh]);
 
   // Application counts
   const counts = useMemo(() => {
@@ -154,6 +170,53 @@ function JobApplicationTrackerContent({ navigation }) {
       navigation.goBack();
     }
   };
+
+  const handleRemove = (application) => {
+    const confirm = async () => {
+      const removed = await removeApplication(application.id);
+      if (removed) setSelected(null);
+    };
+    const message = `Remove ${application.job.title} from your tracker?`;
+
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(message)) confirm();
+      return;
+    }
+    Alert.alert('Remove application?', message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: confirm },
+    ]);
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selected || notesSaving || notesDraft === (selected.notes || '')) return;
+    setNotesSaving(true);
+    const saved = await updateNotes(selected.id, notesDraft);
+    if (saved) {
+      setSelected((previous) => previous && { ...previous, notes: notesDraft });
+    }
+    setNotesSaving(false);
+  };
+
+  if (loadStatus === 'error') {
+    return (
+      <SafeAreaView style={[styles.safe, styles.stateContainer]}>
+        <Text style={styles.error}>{loadError}</Text>
+        <AppPressable style={styles.retryBtn} onPress={refresh}>
+          <Text style={styles.retryBtnText}>Retry</Text>
+        </AppPressable>
+      </SafeAreaView>
+    );
+  }
+
+  if (loadStatus !== 'ready') {
+    return (
+      <SafeAreaView style={[styles.safe, styles.stateContainer]}>
+        <ActivityIndicator size="large" color={PURPLE} />
+        <Text style={styles.loadingText}>Loading your applications…</Text>
+      </SafeAreaView>
+    );
+  }
 
   // Application card
   const renderCard = ({ item }) => {
@@ -229,7 +292,7 @@ function JobApplicationTrackerContent({ navigation }) {
       {/* MAIN APPLICATION LIST */}
       <FlatList
         data={filtered}
-        keyExtractor={(item) => item.job.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderCard}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.listContent}
@@ -294,11 +357,13 @@ function JobApplicationTrackerContent({ navigation }) {
             {/* Small gap below tabs */}
             <View style={styles.tabsBottomSpace} />
 
+            {mutationError ? <Text style={styles.error}>{mutationError}</Text> : null}
+
             {/* EMPTY STATE */}
             {filtered.length === 0 && (
               <Text style={styles.empty}>
                 {applications.length === 0
-                  ? 'You have not applied to any jobs yet. Find one in Job Search and tap Apply.'
+                  ? 'You have not tracked any jobs yet. Find one in Job Search and tap Track.'
                   : 'No applications with this status yet.'}
               </Text>
             )}
@@ -308,7 +373,7 @@ function JobApplicationTrackerContent({ navigation }) {
 
       {/* STATUS UPDATE / DETAILS MODAL */}
       <Modal
-        visible={!!selected}
+        visible={!!selected && applications.some((application) => application.id === selected.id)}
         transparent
         animationType="fade"
         onRequestClose={() => setSelected(null)}
@@ -375,20 +440,13 @@ function JobApplicationTrackerContent({ navigation }) {
                             backgroundColor: style.bg,
                           },
                         ]}
-                        onPress={() => {
-                          updateStatus(
-                            selected.job.id,
-                            s
-                          );
-
-                          setSelected((prev) =>
-                            prev
-                              ? {
-                                ...prev,
-                                status: s,
-                              }
-                              : prev
-                          );
+                        onPress={async () => {
+                          const saved = await updateStatus(selected.id, s);
+                          if (saved) {
+                            setSelected((previous) =>
+                              previous ? { ...previous, status: s } : previous,
+                            );
+                          }
                         }}
                       >
                         <Text
@@ -406,6 +464,28 @@ function JobApplicationTrackerContent({ navigation }) {
                   })}
                 </View>
 
+                <Text style={styles.modalSectionTitle}>Notes</Text>
+                <TextInput
+                  style={styles.notesInput}
+                  value={notesDraft}
+                  onChangeText={setNotesDraft}
+                  placeholder="Add a private note about this application"
+                  placeholderTextColor="#9CA3AF"
+                  multiline
+                  maxLength={2000}
+                />
+                <AppPressable
+                  style={styles.notesSaveBtn}
+                  disabled={notesSaving || notesDraft === (selected.notes || '')}
+                  onPress={handleSaveNotes}
+                >
+                  <Text style={styles.notesSaveText}>
+                    {notesSaving ? 'Saving notes…' : 'Save notes'}
+                  </Text>
+                </AppPressable>
+
+                {mutationError ? <Text style={styles.error}>{mutationError}</Text> : null}
+
                 {/* Application Link */}
                 {!!selected.job.link && (
                   <AppPressable
@@ -419,6 +499,13 @@ function JobApplicationTrackerContent({ navigation }) {
                     </Text>
                   </AppPressable>
                 )}
+
+                <AppPressable
+                  style={styles.removeBtn}
+                  onPress={() => handleRemove(selected)}
+                >
+                  <Text style={styles.removeBtnText}>Remove from tracker</Text>
+                </AppPressable>
 
                 {/* Close */}
                 <AppPressable
@@ -434,6 +521,7 @@ function JobApplicationTrackerContent({ navigation }) {
           </View>
         </View>
       </Modal>
+
     </SafeAreaView>
   );
 }
@@ -459,6 +547,37 @@ const styles = StyleSheet.create({
       Platform.OS === 'android'
         ? StatusBar.currentHeight
         : 0,
+  },
+  stateContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  loadingText: {
+    color: '#4B5563',
+    fontSize: 14,
+    marginTop: 12,
+    textAlign: 'center',
+  },
+  error: {
+    color: '#B42318',
+    fontSize: 13,
+    lineHeight: 19,
+    marginHorizontal: 16,
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    backgroundColor: PURPLE,
+    borderRadius: 10,
+    paddingHorizontal: 22,
+    paddingVertical: 11,
+    marginTop: 12,
+  },
+  retryBtnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 
   // Main FlatList
@@ -635,6 +754,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: '#111827',
+  },
+  notesInput: {
+    minHeight: 72,
+    maxHeight: 120,
+    borderColor: '#D1D5DB',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: '#111827',
+    textAlignVertical: 'top',
+    fontSize: 13,
+  },
+  notesSaveBtn: {
+    alignSelf: 'flex-end',
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#EDE9FE',
+  },
+  notesSaveText: {
+    color: PURPLE,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  removeBtn: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginTop: 4,
+  },
+  removeBtnText: {
+    color: '#B91C1C',
+    fontSize: 13,
+    fontWeight: '600',
   },
 
   // Status Chips

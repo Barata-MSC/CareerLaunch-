@@ -24,6 +24,7 @@ import {
   SkillsScreen,
 } from '@features/resume-builder';
 import AccountGate from '../components/AccountGate';
+import ResumeDataGate from '../features/resume-builder/ResumeDataGate';
 import MainTabs from '@features/resume-builder/MainTabs';
 import { COURSE_ROUTES } from '../features/learning-hub/careers/registry';
 
@@ -37,7 +38,9 @@ function withResumeAccountGate(Screen) {
         description="Build and preview your resume with confidence. Complete your account to unlock the Resume Builder and keep your work saved."
         navigation={props.navigation}
       >
-        <Screen {...props} />
+        <ResumeDataGate>
+          <Screen {...props} />
+        </ResumeDataGate>
       </AccountGate>
     );
   }
