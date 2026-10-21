@@ -40,7 +40,7 @@ export function buildCyberLessons(courseId) {
     title,
     subtitle: 'Beginner concept and safe practice',
     contentTitle: 'Key idea',
-    description: `${index === 0 ? `Prerequisite: ${COURSE_PREREQUISITES[courseId]} ` : ''}${objective} For example, ${example} This course is defensive and educational. Work only within explicit authorization; unauthorized access is illegal and can harm people and organizations. Do not investigate live systems or other people?s accounts as part of this lesson.`,
+    description: `${index === 0 ? `Prerequisite: ${COURSE_PREREQUISITES[courseId]} ` : ''}${objective} For example, ${example} This course is defensive and educational. Work only within explicit authorization; unauthorized access is illegal and can harm people and organizations. Do not investigate live systems or other people’s accounts as part of this lesson.`,
     sections: [
       { heading: 'Learning objective', text: objective },
       { heading: 'Worked example', text: example },
@@ -59,7 +59,7 @@ export function buildCyberLessons(courseId) {
       ? [
           {
             type: 'quickCheck',
-            question: `In ?${title},? what is the safest beginner approach?`,
+            question: `In “${title},” what is the safest beginner approach?`,
             options: buildAnswerChoices(objective, index),
             correct: index % 4,
             hint: 'Choose the option that follows the lesson objective and stays within authorization.',
@@ -76,7 +76,7 @@ export function buildCyberQuestions(courseId) {
 
   return definition.lessons.map(([title, objective], index) => ({
     lessonId: `${courseId.replace(/^cyber-/, '')}-${index + 1}`,
-    question: `In ${definition.title}, what should a beginner learn from ?${title}??`,
+    question: `In ${definition.title}, what should a beginner learn from “${title}”?`,
     answers: buildAnswerChoices(objective, index),
     correct: index % 4,
     explanation: `${objective} This is a conceptual learning objective, not authorization to inspect or change a real system.`,

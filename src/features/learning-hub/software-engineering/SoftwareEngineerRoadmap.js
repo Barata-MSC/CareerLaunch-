@@ -1,5 +1,5 @@
 import AppPressable from '@components/AppPressable';
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
-import { COURSES, TRACKS } from '../careers/registry';
+import { ALL_COURSES, TRACKS } from '../careers/registry';
 import { PURPLE, GREEN } from '../shared/styles';
 import { playSound } from '../../../utils/sounds';
 
@@ -59,24 +58,39 @@ function StepIndicator({ status, isLast }) {
 }
 
 export default function CareerRoadmapScreen({ navigation, route }) {
-  const availableTrackNames =
-    route?.params?.careerTrackIds?.filter((trackId) => TRACKS[trackId]) || TRACK_NAMES;
-  // If a valid track name is passed in via navigation params, start there.
-  // Otherwise default to the first track in the TRACKS object.
+  const requestedTrackNames = Array.isArray(route?.params?.careerTrackIds)
+    ? route.params.careerTrackIds.filter((trackName) =>
+      Object.prototype.hasOwnProperty.call(TRACKS, trackName),
+    )
+    : Array.isArray(route?.params?.trackIds)
+      ? route.params.trackIds.filter((trackName) =>
+        Object.prototype.hasOwnProperty.call(TRACKS, trackName),
+      )
+      : [];
+  const trackNames = requestedTrackNames.length
+    ? requestedTrackNames
+    : TRACK_NAMES;
+  const trackNamesKey = trackNames.join('|');
   const initialTrack =
-    route?.params?.goal && availableTrackNames.includes(route.params.goal)
+    route?.params?.goal && trackNames.includes(route.params.goal)
       ? route.params.goal
-      : availableTrackNames[0];
+      : trackNames[0] || TRACK_NAMES[0];
 
   const [selectedTrack, setSelectedTrack] = useState(initialTrack);
   const selectedTrackRef = useRef(selectedTrack);
   selectedTrackRef.current = selectedTrack;
+  const trackNamesRef = useRef(trackNames);
+  trackNamesRef.current = trackNames;
+  useEffect(() => {
+    setSelectedTrack(initialTrack);
+    selectedTrackRef.current = initialTrack;
+  }, [initialTrack, trackNamesKey]);
   // Which step's detail panel is currently open (null = closed)
   const [selectedStep, setSelectedStep] = useState(null);
 
   // Saved progress for every course. The roadmap stays mounted behind the course
   // screens, so reload whenever it comes back into focus (including the first time).
-  const { progressByCourseId, refresh } = useAllCoursesProgress(COURSES);
+  const { progressByCourseId, refresh } = useAllCoursesProgress(ALL_COURSES);
 
   useFocusEffect(
     useCallback(() => {
@@ -104,6 +118,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   };
 
   const goToTrack = (direction) => {
+    const availableTrackNames = trackNamesRef.current;
     const currentIndex = availableTrackNames.indexOf(selectedTrackRef.current);
     const nextIndex =
       direction === 'next'
@@ -171,7 +186,7 @@ export default function CareerRoadmapScreen({ navigation, route }) {
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.chipRow}
         >
-          {availableTrackNames.map((trackName) => {
+          {trackNames.map((trackName) => {
             const active = trackName === selectedTrack;
             return (
               <AppPressable

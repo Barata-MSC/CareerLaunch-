@@ -664,5 +664,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
-  guestCreateButton: { width: '72%', maxWidth: 280, alignSelf: 'center', marginTop: 18 },
+  guestCreateButton: { alignSelf: 'stretch', marginTop: 18 },
 });

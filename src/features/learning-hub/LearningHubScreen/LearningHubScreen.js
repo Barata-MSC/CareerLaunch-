@@ -1,5 +1,5 @@
 // Learning Hub entrance. Same look as JobFinderScreen.
-//   view 'tracks'  -> the 3 tracks
+//   view 'tracks'  -> the selected career's registered tracks
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
@@ -44,8 +44,18 @@ const TRACK_META = {
     color: '#F0637D',
     blurb: 'Design clear, friendly experiences that people enjoy using.',
   },
+  'teacher-elementary': {
+    icon: '📚',
+    color: '#F59E0B',
+    blurb: 'Build a foundation for teaching young learners.',
+  },
+  'teacher-secondary': {
+    icon: '📚',
+    color: '#F59E0B',
+    blurb: 'Build skills for teaching adolescents in Junior and Senior High School.',
+  },
 };
-const FALLBACK_META = { icon: '📚', color: PURPLE };
+const FALLBACK_META = { icon: '📚', color: PURPLE, blurb: '' };
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -299,7 +309,7 @@ export default function LearningHubScreen({ navigation }) {
         ) : (
           careerTracks.map((track) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
-            const blurb = meta.blurb || track.subtitle;
+            const blurb = track.subtitle || meta.blurb;
             const comingSoon = !track.courseCount;
 
             return (
@@ -316,7 +326,7 @@ export default function LearningHubScreen({ navigation }) {
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.title}</Text>
+                  <Text style={styles.cardTitle}>{track.title || track.name}</Text>
                   <Text style={styles.meta}>
                     {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
                   </Text>
@@ -360,7 +370,7 @@ export default function LearningHubScreen({ navigation }) {
           <Text style={styles.cardTitle}>{item.title}</Text>
           <Text style={styles.meta}>{lessonCount} lessons</Text>
           <Text style={styles.desc} numberOfLines={2}>
-            {item.description}
+            {selectedCareerId === 'teacher' ? item.course.subtitle : item.description}
           </Text>
         </View>
 

@@ -1,6 +1,6 @@
 # Career Spec: Teacher
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`, so run once with `run_mode: plan`, have a teacher or education student review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`, so it remains `coming-soon` until the project owner confirms team review. The project owner confirmed team review and approved Teacher availability on 2026-10-21.
 
 ```yaml
 career:
@@ -9,7 +9,7 @@ career:
   learner_level: senior high school and college students considering teaching, plus education students
   philippines_context: true
   review_required: true
-  run_mode: plan
+  run_mode: build
 
 tracks:
   - id: teacher-elementary

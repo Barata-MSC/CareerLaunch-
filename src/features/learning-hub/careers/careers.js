@@ -31,8 +31,8 @@ export const CAREERS = [
     subtitle: 'Guide learning, support growth, and shape classroom experiences.',
     icon: '📚',
     color: '#F59E0B',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['teacher-elementary', 'teacher-secondary'],
     overview:
       'Teaching blends subject knowledge, communication, and support to help learners build skills and confidence in a classroom or training setting.',
     skillsPreview: ['Communication', 'Planning', 'Mentorship'],

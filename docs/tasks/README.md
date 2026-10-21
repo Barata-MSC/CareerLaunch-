@@ -22,7 +22,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `00-careers-layer.md` | Careers screen above the tracks | Ready |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
 | `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Ready (needs audio files first) |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity and Lawyer are built, validated, and available. Teacher, Nursing, Doctor, and Marine specs remain; run regulated careers in plan mode first. |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, and Lawyer are built, registered, and available. Nursing, Doctor, and Marine specs remain; run regulated careers in plan mode first. |
 | `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Ready |
 | `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked until the coverage test passes |
 | `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Ready |
@@ -71,7 +71,7 @@ The team deploys functions with the Supabase CLI. These notes come from how the 
 - **Migration history.** The existing SQL files were applied by hand in the SQL editor, so the CLI has no record of them, and some file names have no timestamp prefix (for example `accounts_schema_updated.sql`). As far as I know, running `supabase db push` now could try to re-apply old files or skip the ones without a timestamp. Until the history is reconciled (for example with `supabase migration repair`), apply each new migration by pasting it into the SQL editor, one at a time, and run the RLS tests right away. The project is a single production project.
 - **Secrets and deploy.** `supabase secrets set NAME=value` for the secrets named in each brief, and `supabase functions deploy <name>`. Never commit a secret.
 - **Local testing.** `supabase functions serve` generally needs Docker. If nobody has it, the "serve locally" validation steps are reported as not run.
-q
+
 ## Rules that apply to every brief
 
 - Never put a secret in code, logs, docs, or an `EXPO_PUBLIC_` variable.
