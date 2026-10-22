@@ -1,5 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import Pop from '@components/motion/Pop';
+import PressScale from '@components/motion/PressScale';
 import React, { useState } from 'react';
 import {
     View,
@@ -15,6 +18,7 @@ import { useResume } from './ResumeContext';
 import { calculateResumeScore, getResumeSuggestions, getScoreBreakdown } from './resumeScore';
 import { formatPhone } from './validators';
 import { downloadResumePdf } from './resumePdf';
+import { ResumeProgressBar, ResumeScoreCount } from './ResumeMotion';
  
 const PURPLE = '#5B21F5';
  
@@ -60,37 +64,50 @@ export default function ResumePreviewScreen({ navigation, route }) {
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {mode === 'test' ? (
                     <>
+                    <FadeSlideIn>
                     <View style={styles.scoreContainer}>
                         <View style={styles.scoreHeaderRow}>
                             <Text style={styles.scoreTitle}>AI Resume Strength Score</Text>
-                            <Text style={styles.scoreNumber}>{score}/100</Text>
+                            <Pop value={score >= 70} playOnMount>
+                                <View style={styles.scoreNumberRow}>
+                                    <ResumeScoreCount value={score} style={styles.scoreNumber} />
+                                    <Text style={styles.scoreNumber}>/100</Text>
+                                </View>
+                            </Pop>
                         </View>
-                        <View style={styles.scoreTrack}>
-                            <View style={[styles.scoreFill, { width: `${score}%` }]} />
-                        </View>
+                        <ResumeProgressBar
+                            progress={score / 100}
+                            trackStyle={styles.scoreTrack}
+                            fillStyle={styles.scoreFill}
+                        />
                         <Text style={styles.scoreHint}>
                             {score < 70
                                 ? '💡 Tip: Add more detailed descriptions or portfolio items to stand out to employers.'
                                 : '✅ Awesome! Your resume looks robust and well-optimized for application tracking systems.'}
                         </Text>
  
-                        <View style={styles.suggestionsBox}>
-                            <Text style={styles.suggestionsTitle}>Suggestions</Text>
-                            {suggestions.map((tip, index) => (
-                                <Text key={index} style={styles.suggestionItem}>• {tip}</Text>
-                            ))}
-                        </View>
+                        <FadeSlideIn delay={100}>
+                            <View style={styles.suggestionsBox}>
+                                <Text style={styles.suggestionsTitle}>Suggestions</Text>
+                                {suggestions.map((tip, index) => (
+                                    <Text key={index} style={styles.suggestionItem}>• {tip}</Text>
+                                ))}
+                            </View>
+                        </FadeSlideIn>
                     </View>
- 
+                    </FadeSlideIn>
+
                     {/* Score breakdown: fills the screen and shows where points come from */}
+                    <FadeSlideIn delay={100}>
                     <View style={styles.scoreContainer}>
                         <Text style={styles.breakdownTitle}>Score Breakdown</Text>
                         <Text style={styles.breakdownSubtitle}>Tap a section to improve it.</Text>
-                        {breakdown.map((item) => {
+                        {breakdown.map((item, index) => {
                             const full = item.earned >= item.max;
                             return (
+                                <FadeSlideIn key={item.key} delay={150 + Math.min(index * 35, 250)}>
+                                <PressScale>
                                 <AppPressable
-                                    key={item.key}
                                     style={styles.breakdownRow}
                                     activeOpacity={0.7}
                                     onPress={() => navigation?.navigate(item.key)}
@@ -103,27 +120,31 @@ export default function ResumePreviewScreen({ navigation, route }) {
                                             {item.earned}/{item.max}
                                         </Text>
                                     </View>
-                                    <View style={styles.breakdownTrack}>
-                                        <View
-                                            style={[
-                                                styles.breakdownFill,
-                                                { width: `${(item.earned / item.max) * 100}%` },
-                                            ]}
-                                        />
-                                    </View>
+                                    <ResumeProgressBar
+                                        progress={item.earned / item.max}
+                                        trackStyle={styles.breakdownTrack}
+                                        fillStyle={styles.breakdownFill}
+                                    />
                                     {item.tip ? <Text style={styles.breakdownTip}>{item.tip}</Text> : null}
                                 </AppPressable>
+                                </PressScale>
+                                </FadeSlideIn>
                             );
                         })}
                     </View>
- 
-                    <AppPressable
-                        style={styles.previewButton}
-                        activeOpacity={0.85}
-                        onPress={() => navigation?.setParams({ mode: 'generate' })}
-                    >
-                        <Text style={styles.previewButtonText}>View Resume Preview</Text>
-                    </AppPressable>
+                    </FadeSlideIn>
+
+                    <FadeSlideIn delay={350}>
+                        <PressScale>
+                            <AppPressable
+                                style={styles.previewButton}
+                                activeOpacity={0.85}
+                                onPress={() => navigation?.setParams({ mode: 'generate' })}
+                            >
+                                <Text style={styles.previewButtonText}>View Resume Preview</Text>
+                            </AppPressable>
+                        </PressScale>
+                    </FadeSlideIn>
                     </>
                 ) : (
                     <>
@@ -279,6 +300,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     breakdownFill: {
+        width: '100%',
         height: '100%',
         borderRadius: 3,
         backgroundColor: PURPLE,
@@ -366,6 +388,9 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         color: PURPLE,
     },
+    scoreNumberRow: {
+        flexDirection: 'row',
+    },
     scoreTrack: {
         height: 8,
         borderRadius: 4,
@@ -374,6 +399,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     scoreFill: {
+        width: '100%',
         height: '100%',
         borderRadius: 4,
         backgroundColor: PURPLE,

@@ -1,6 +1,9 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
-import React, { useEffect, useMemo, useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import Pop from '@components/motion/Pop';
+import PressScale from '@components/motion/PressScale';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,6 +20,7 @@ import {
 } from './validators';
 import AccountGate from '../../components/AccountGate';
 import ResumeDataGate from './ResumeDataGate';
+import { ResumeProgressBar } from './ResumeMotion';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -38,6 +42,8 @@ function isSectionDone(section, resumeData) {
 function ResumeBuilderContent({ navigation }) {
   const { resumeData, saveStatus, saveNow, deleteResume, deleting } = useResume();
   const [deleteError, setDeleteError] = useState('');
+  const generateEmphasisPlayed = useRef(false);
+  const [emphasizeGenerate, setEmphasizeGenerate] = useState(false);
 
   useEffect(() => {
     if (!navigation) return undefined;
@@ -52,6 +58,12 @@ function ResumeBuilderContent({ navigation }) {
   // Generating unlocks once every required section is filled in
   const missingRequired = SECTIONS.filter((s) => s.required && !isSectionDone(s, resumeData));
   const canGenerate = areRequiredResumeSectionsComplete(resumeData);
+  useEffect(() => {
+    if (canGenerate && !generateEmphasisPlayed.current) {
+      generateEmphasisPlayed.current = true;
+      setEmphasizeGenerate(true);
+    }
+  }, [canGenerate]);
   const hasResumeContent =
     Object.values(resumeData.personalInfo).some((value) => typeof value === 'string' && value.trim()) ||
     ['education', 'skills', 'experience', 'certificates', 'projects'].some(
@@ -104,9 +116,11 @@ function ResumeBuilderContent({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.privacyNote}>
-          Your resume is saved to your account and can be deleted at any time. Profile photos are not saved yet.
-        </Text>
+        <FadeSlideIn delay={0}>
+          <Text style={styles.privacyNote}>
+            Your resume is saved to your account and can be deleted at any time. Profile photos are not saved yet.
+          </Text>
+        </FadeSlideIn>
         {(saveStatus === 'pending' || saveStatus === 'saving') && (
           <Text accessibilityLiveRegion="polite" style={styles.saveStatus}>Saving…</Text>
         )}
@@ -127,52 +141,70 @@ function ResumeBuilderContent({ navigation }) {
           </Text>
         )}
 
-        <Text style={styles.progressLabel}>Resume progress</Text>
-        <Text style={styles.progressPercent}>{progress}% complete</Text>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${progress}%` }]} />
-        </View>
+        <FadeSlideIn delay={50}>
+          <View>
+            <Text style={styles.progressLabel}>Resume progress</Text>
+            <Text style={styles.progressPercent}>{progress}% complete</Text>
+            <ResumeProgressBar
+              progress={progress / 100}
+              trackStyle={styles.progressTrack}
+              fillStyle={styles.progressFill}
+            />
+          </View>
+        </FadeSlideIn>
 
         <View style={styles.sectionList}>
-          {SECTIONS.map((section) => (
-            <AppPressable
-              key={section.key}
-              style={styles.sectionRow}
-              activeOpacity={0.7}
-              onPress={() => navigation?.navigate(section.key)}
-            >
-              <View style={styles.sectionRowLeft}>
-                <View
-                  style={[
-                    styles.statusDot,
-                    sectionStatus(section) === 'done' && styles.statusDotDone,
-                  ]}
-                />
-                <Text style={styles.sectionLabel}>{section.label}</Text>
-              </View>
-              <View style={styles.sectionRowRight}>
-                <Text
-                  style={[
-                    styles.badge,
-                    section.required && sectionStatus(section) === 'empty' && styles.badgeRequiredEmpty,
-                  ]}
-                >
-                  {section.required ? 'Required' : 'Optional'}
-                </Text>
-                <Text style={styles.chevron}>›</Text>
-              </View>
-            </AppPressable>
-          ))}
+          {SECTIONS.map((section, index) => {
+            const isDone = sectionStatus(section) === 'done';
+            return (
+              <FadeSlideIn key={section.key} delay={100 + index * 35}>
+                <PressScale>
+                  <AppPressable
+                    style={styles.sectionRow}
+                    activeOpacity={0.7}
+                    onPress={() => navigation?.navigate(section.key)}
+                  >
+                    <View style={styles.sectionRowLeft}>
+                      <Pop value={isDone}>
+                        <View
+                          style={[
+                            styles.statusDot,
+                            isDone && styles.statusDotDone,
+                          ]}
+                        />
+                      </Pop>
+                      <Text style={styles.sectionLabel}>{section.label}</Text>
+                    </View>
+                    <View style={styles.sectionRowRight}>
+                      <Text
+                        style={[
+                          styles.badge,
+                          section.required && !isDone && styles.badgeRequiredEmpty,
+                        ]}
+                      >
+                        {section.required ? 'Required' : 'Optional'}
+                      </Text>
+                      <Text style={styles.chevron}>›</Text>
+                    </View>
+                  </AppPressable>
+                </PressScale>
+              </FadeSlideIn>
+            );
+          })}
         </View>
 
-        <AppPressable
-          style={[styles.generateButton, !canGenerate && styles.generateButtonDisabled]}
-          activeOpacity={0.85}
-          disabled={!canGenerate}
-          onPress={() => navigation?.navigate('ResumePreview', { mode: 'generate' })}
-        >
-          <Text style={styles.generateButtonText}>Generate Resume</Text>
-        </AppPressable>
+        <Pop value={emphasizeGenerate}>
+          <PressScale disabled={!canGenerate}>
+            <AppPressable
+              style={[styles.generateButton, !canGenerate && styles.generateButtonDisabled]}
+              activeOpacity={0.85}
+              disabled={!canGenerate}
+              onPress={() => navigation?.navigate('ResumePreview', { mode: 'generate' })}
+            >
+              <Text style={styles.generateButtonText}>Generate Resume</Text>
+            </AppPressable>
+          </PressScale>
+        </Pop>
 
         {!canGenerate && (
           <Text style={styles.hintText}>
@@ -180,9 +212,11 @@ function ResumeBuilderContent({ navigation }) {
           </Text>
         )}
 
-        <AppPressable onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
-          <Text style={styles.testLink}>Test Resume here</Text>
-        </AppPressable>
+        <PressScale>
+          <AppPressable onPress={() => navigation?.navigate('ResumePreview', { mode: 'test' })}>
+            <Text style={styles.testLink}>Test Resume here</Text>
+          </AppPressable>
+        </PressScale>
 
         <AppPressable
           style={styles.deleteButton}
