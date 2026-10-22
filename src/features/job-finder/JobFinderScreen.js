@@ -6,8 +6,9 @@ import canvaIcon from '../../assets/canva.png';
 import deloitteIcon from '../../assets/deloitte.png';
 import globeIcon from '../../assets/globe.png';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   View,
   Text,
   TextInput,
@@ -23,6 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useProfile } from '../../context/ProfileContext';
 import AccountGate from '../../components/AccountGate';
+import { supabase } from '../../config/supabase';
 import { openExternalUrl } from '../../utils/openExternalUrl';
 
 const PURPLE = '#5B21D6';
@@ -40,7 +42,9 @@ const JOBS = [
     location: 'Makati, Metro Manila',
     salary: 'PHP 60,000 - 90,000 / month',
     description: 'Build and maintain scalable features for web products used by millions.',
-    source: 'Google Careers',
+    source: 'sample',
+    externalId: '1',
+    publisher: 'Google Careers',
     link: 'https://careers.google.com',
     color: '#EA4335',
   },
@@ -55,7 +59,9 @@ const JOBS = [
     location: 'Taguig, Metro Manila',
     salary: 'PHP 50,000 - 75,000 / month',
     description: 'Develop responsive websites and web apps using modern front-end tools.',
-    source: 'Microsoft Careers',
+    source: 'sample',
+    externalId: '2',
+    publisher: 'Microsoft Careers',
     link: 'https://careers.microsoft.com',
     color: '#00A4EF',
   },
@@ -70,7 +76,9 @@ const JOBS = [
     location: 'Remote (Philippines)',
     salary: null,
     description: 'Craft smooth, accessible user interfaces for the listening experience.',
-    source: 'Spotify Jobs',
+    source: 'sample',
+    externalId: '3',
+    publisher: 'Spotify Jobs',
     link: 'https://www.lifeatspotify.com',
     color: '#1DB954',
   },
@@ -85,7 +93,9 @@ const JOBS = [
     location: 'Remote',
     salary: 'PHP 35,000 - 55,000 / month',
     description: 'Create visual assets and brand materials for global campaigns.',
-    source: 'Canva Careers',
+    source: 'sample',
+    externalId: '4',
+    publisher: 'Canva Careers',
     link: 'https://www.canva.com/careers',
     color: '#7D2AE8',
   },
@@ -100,7 +110,9 @@ const JOBS = [
     location: 'Quezon City, Metro Manila',
     salary: 'PHP 30,000 - 45,000 / month',
     description: 'Prepare financial statements and support audit and tax engagements.',
-    source: 'Deloitte Careers',
+    source: 'sample',
+    externalId: '5',
+    publisher: 'Deloitte Careers',
     link: 'https://www.deloitte.com/careers',
     color: '#86BC25',
   },
@@ -115,7 +127,9 @@ const JOBS = [
     location: 'BGC, Taguig',
     salary: null,
     description: 'Assist with social media, content calendars, and campaign reporting.',
-    source: 'Globe Careers',
+    source: 'sample',
+    externalId: '6',
+    publisher: 'Globe Careers',
     link: 'https://www.globe.com.ph/about-us/careers',
     color: '#0072CE',
   },
@@ -153,7 +167,7 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
         { width: size, height: size, borderRadius: size / 4, backgroundColor: color },
       ]}
     >
-      <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company[0]}</Text>
+      <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company?.[0] || '?'}</Text>
     </View>
   );
 }
@@ -164,13 +178,81 @@ function JobFinderContent({ navigation }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [selectedJob, setSelectedJob] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [showingSamples, setShowingSamples] = useState(false);
+  const [refreshFailed, setRefreshFailed] = useState(false);
+  const [fetchedAt, setFetchedAt] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Shared with JobApplicationTracker
   const { applications, isJobTracked, addApplication } = useApplications();
 
+  useEffect(() => {
+    let active = true;
+
+    const setSampleFallback = () => {
+      if (!active) return;
+      const sampleJobs = category === 'All' ? JOBS : JOBS.filter((job) => job.category === category);
+      setJobs(sampleJobs);
+      setShowingSamples(true);
+      setRefreshFailed(false);
+      setFetchedAt(null);
+    };
+
+    const loadJobs = async () => {
+      setLoadingJobs(true);
+      setJobs([]);
+      setShowingSamples(false);
+      setRefreshFailed(false);
+      setFetchedAt(null);
+
+      try {
+        const { data, error } = await supabase.functions.invoke('job-search', {
+          body: { category },
+        });
+        if (error) throw error;
+        if (!Array.isArray(data?.jobs)) throw new Error('Invalid job-search response.');
+
+        if (data.jobs.length === 0 && data.quotaExhausted) {
+          setSampleFallback();
+          return;
+        }
+
+        const providerJobs = data.jobs.map((job) => ({
+          ...job,
+          id: String(job.externalId),
+          source: 'jsearch',
+          externalId: String(job.externalId),
+          category,
+          type: job.employmentType || 'Not specified',
+          link: job.applyUrl,
+          salary: null,
+          color: '#2563EB',
+          logo: null,
+        }));
+
+        if (!active) return;
+        setJobs(providerJobs);
+        setShowingSamples(false);
+        setRefreshFailed(Boolean(data.error));
+        setFetchedAt(data.fetchedAt || null);
+      } catch {
+        setSampleFallback();
+      } finally {
+        if (active) setLoadingJobs(false);
+      }
+    };
+
+    loadJobs();
+    return () => {
+      active = false;
+    };
+  }, [category, retryCount]);
+
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return JOBS.filter((job) => {
+    return jobs.filter((job) => {
       const matchesCategory = category === 'All' || job.category === category;
       const matchesQuery =
         !q ||
@@ -179,7 +261,17 @@ function JobFinderContent({ navigation }) {
         job.category.toLowerCase().includes(q);
       return matchesCategory && matchesQuery;
     });
-  }, [query, category]);
+  }, [jobs, query, category]);
+
+  const updatedLabel = () => {
+    if (!fetchedAt) return '';
+    const elapsedMinutes = Math.max(0, Math.floor((Date.now() - new Date(fetchedAt).getTime()) / 60000));
+    if (!Number.isFinite(elapsedMinutes) || elapsedMinutes < 1) return 'Updated just now';
+    if (elapsedMinutes < 60) return `Updated ${elapsedMinutes} min ago`;
+    const elapsedHours = Math.floor(elapsedMinutes / 60);
+    if (elapsedHours < 24) return `Updated ${elapsedHours} hr ago`;
+    return `Updated ${Math.floor(elapsedHours / 24)} days ago`;
+  };
 
   const handleBack = () => {
     if (view === 'detail') return setView('list');
@@ -257,8 +349,8 @@ function JobFinderContent({ navigation }) {
         <View style={styles.cardBody}>
           <Text style={styles.jobTitle}>{item.title}</Text>
           <Text style={styles.company}>{item.company}</Text>
-          <Text style={styles.meta}>
-            {item.arrangement} · {item.type}
+          <Text style={styles.meta} numberOfLines={1}>
+            {[item.location, item.type].filter(Boolean).join(' · ')}
           </Text>
           <Text style={styles.desc} numberOfLines={2}>
             {item.description}
@@ -307,13 +399,41 @@ function JobFinderContent({ navigation }) {
         </ScrollView>
       </View>
 
+      {loadingJobs ? null : showingSamples ? (
+        <View style={styles.sampleNotice}>
+          <Text style={styles.sampleNoticeText}>
+            Showing sample listings. Live listings are unavailable right now.
+          </Text>
+          <AppPressable onPress={() => setRetryCount((count) => count + 1)}>
+            <Text style={styles.retryText}>Retry</Text>
+          </AppPressable>
+        </View>
+      ) : (
+        <View style={styles.attribution}>
+          <Text style={styles.attributionText}>Listings from JSearch</Text>
+          {!!fetchedAt && <Text style={styles.updatedText}>{updatedLabel()}</Text>}
+          {refreshFailed && (
+            <AppPressable onPress={() => setRetryCount((count) => count + 1)}>
+              <Text style={styles.retryText}>Refresh failed · Retry</Text>
+            </AppPressable>
+          )}
+        </View>
+      )}
+
       <FlatList
         data={filteredJobs}
         keyExtractor={(item) => item.id}
         renderItem={renderJobCard}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          <Text style={styles.empty}>No jobs match your search. Try another keyword or category.</Text>
+          loadingJobs ? (
+            <View style={styles.loadingJobs}>
+              <ActivityIndicator size="small" color={PURPLE} />
+              <Text style={styles.empty}>Loading listings...</Text>
+            </View>
+          ) : (
+            <Text style={styles.empty}>No jobs match your search. Try another keyword or category.</Text>
+          )
         }
       />
 
@@ -333,9 +453,10 @@ function JobFinderContent({ navigation }) {
     const rows = [
       ['Company', job.company],
       ['Location', job.location],
-      ['Job type', `${job.arrangement} · ${job.type}`],
+      ['Employment type', job.type || 'Not specified'],
       ...(job.salary ? [['Salary', job.salary]] : []),
-      ['Source', job.source],
+      ['Source', job.publisher || (job.source === 'sample' ? 'Sample listing' : 'JSearch')],
+      ...(job.postedAt ? [['Posted', job.postedAt]] : []),
     ];
     return (
       <ScrollView contentContainerStyle={styles.detailContent}>
@@ -354,8 +475,8 @@ function JobFinderContent({ navigation }) {
         <Text style={styles.detailSectionTitle}>Description</Text>
         <Text style={styles.detailDesc}>{job.description}</Text>
 
-        <AppPressable onPress={() => openLink(job.link)}>
-          <Text style={styles.link}>{job.link}</Text>
+        <AppPressable onPress={() => openLink(job.link || job.applyUrl)}>
+          <Text style={styles.link}>{job.link || job.applyUrl}</Text>
         </AppPressable>
 
         <AppPressable
@@ -430,6 +551,28 @@ const styles = StyleSheet.create({
   chipTextActive: { color: '#fff', fontWeight: '600' },
 
   listContent: { paddingHorizontal: 16, paddingBottom: 12, flexGrow: 1 },
+  sampleNotice: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#FEF3C7',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  sampleNoticeText: { flex: 1, color: '#78350F', fontSize: 12, lineHeight: 17 },
+  retryText: { color: '#92400E', fontSize: 13, fontWeight: '700' },
+  attribution: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  attributionText: { color: '#4B5563', fontSize: 12, fontWeight: '600' },
+  updatedText: { color: '#6B7280', fontSize: 12 },
+  loadingJobs: { alignItems: 'center', marginTop: 40 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',

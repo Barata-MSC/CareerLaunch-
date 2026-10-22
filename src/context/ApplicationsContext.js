@@ -38,8 +38,8 @@ const SAMPLE_JOB_BRANDS = {
 
 function getJobIdentity(job) {
   return {
-    source: String(job.sourceType || job.provider || 'sample'),
-    externalJobId: String(job.externalJobId ?? job.id),
+    source: String(job.source || job.sourceType || job.provider || 'sample'),
+    externalJobId: String(job.externalId ?? job.externalJobId ?? job.id),
   };
 }
 
@@ -57,7 +57,7 @@ function getApplicationFieldError(job, source, externalJobId) {
     ['company', job.company ? String(job.company) : '', 200],
     ['location', job.location ? String(job.location) : '', 200],
     ['source', source, 100],
-    ['external job ID', externalJobId, 200],
+    ['external job ID', externalJobId, 512],
   ];
   const invalidField = fields.find(([, fieldValue, maxLength]) => fieldValue.length > maxLength);
 

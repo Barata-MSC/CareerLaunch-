@@ -2,17 +2,17 @@
 // It is NOT part of the app bundle. It checks whether the API returns usable
 // Philippine listings before you build the Job Finder on top of it.
 //
-// Usage (never commit your key; keep it in your shell, not in a file):
-//   JSEARCH_API_KEY=your_key node scripts/job-api-coverage-test.mjs --save
-//   JSEARCH_API_KEY=your_key node scripts/job-api-coverage-test.mjs --queries "nurse in Cebu, Philippines|teacher in Davao, Philippines"
+// PowerShell usage (enter the key at the prompt; never commit it or put it in a file):
+//   $env:JSEARCH_API_KEY = [System.Net.NetworkCredential]::new("", (Read-Host "JSearch API key" -AsSecureString)).Password
+//   node scripts/job-api-coverage-test.mjs --save
+//   Remove-Item Env:JSEARCH_API_KEY
 //   node scripts/job-api-coverage-test.mjs --dry-run
 //
 // Each query uses ONE request from your free quota (6 by default).
 // Requires Node 18+ (built-in fetch).
 //
-// Endpoint and field names below are the commonly documented JSearch ones, but
-// they were not verified against the live docs when this file was written.
-// If a field is missing in your results, check the provider docs and adjust.
+// GET /search-v2 and the response fields below were verified by the coverage run on 2026-10-22.
+// The older /search path is not the endpoint used by this test.
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 
