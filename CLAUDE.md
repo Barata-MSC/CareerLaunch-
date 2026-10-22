@@ -130,7 +130,7 @@ The checked-in package manifest is authoritative. The current stack is Expo SDK 
 - `npm run lint` — run ESLint.
 - `npm run validate:assessment` — validate assessment item counts, scoring, matching, career coverage, and route registration without a device.
 - `npm run validate:walkthrough` — validate walkthrough steps, preference decisions, and stored-value shape without a device.
-- `npm run validate:content` — validate Learning Hub content, including runtime-merged references and exact lesson-ID coverage for Teacher, Nursing, Doctor, Lawyer, Marine Deck, and Accountancy.
+- `npm run validate:content` — validate Learning Hub content, including runtime-merged references and exact lesson-ID coverage for Teacher, Nursing, Doctor, Lawyer, Marine Deck, Accountancy, and Civil Engineering.
 - `npm run check:links -- <career-id>` — perform an online, dev-only link check and write a report under `docs/tasks/progress/`.
 - `npx expo export -p web` — build the web bundle.
 - `npm run deploy` publishes to GitHub Pages; never run it unless deployment is explicitly requested.

@@ -17,6 +17,7 @@ import { getDoctorLessons } from '../doctor/courseLessons';
 import { getLawyerLessons } from '../lawyer/courseLessons';
 import { getMarineLessons } from '../marine/courseLessons';
 import { getAccountancyLessons } from '../accountancy/courseLessons';
+import { getCivilEngineeringLessons } from '../civil-engineering/courseLessons';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -49,7 +50,9 @@ export default function CourseRunner({ course, navigation }) {
                   ? getMarineLessons(course.lessons)
                   : course.id.startsWith('acct-')
                     ? getAccountancyLessons(course.lessons)
-                    : course.lessons,
+                    : course.id.startsWith('civ-')
+                      ? getCivilEngineeringLessons(course.lessons)
+                      : course.lessons,
         progress.completedLessonIds,
       ),
     [course.id, course.lessons, progress.completedLessonIds],

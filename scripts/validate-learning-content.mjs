@@ -47,6 +47,14 @@ const accountancyCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/accountancy/courseLessons.js',
 );
+const civilEngineeringLinksPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/civil-engineering/links.js',
+);
+const civilEngineeringCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/civil-engineering/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -112,6 +120,22 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'aicpa-cima.com',
     'coso.org',
     'sba.gov',
+  ],
+  'civil-engineering': [
+    'asce.org',
+    'nspe.org',
+    'nist.gov',
+    'khanacademy.org',
+    'fhwa.dot.gov',
+    'fema.gov',
+    'epa.gov',
+    'usgs.gov',
+    'noaa.gov',
+    'osha.gov',
+    'dpwh.gov.ph',
+    'ched.gov.ph',
+    'prc.gov.ph',
+    'pice.org.ph',
   ],
 };
 
@@ -262,6 +286,8 @@ function validateRegistry(registry, careers) {
   const { getMarineLessons } = loadSourceModule(marineCourseLessonsPath);
   const accountancyLinks = loadSourceModule(accountancyLinksPath).LESSON_LINKS;
   const { getAccountancyLessons } = loadSourceModule(accountancyCourseLessonsPath);
+  const civilEngineeringLinks = loadSourceModule(civilEngineeringLinksPath).LESSON_LINKS;
+  const { getCivilEngineeringLessons } = loadSourceModule(civilEngineeringCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -472,6 +498,31 @@ function validateRegistry(registry, careers) {
     `Accountancy runtime link coverage: ${accountancyLessonIds.size} lesson ids, ${Object.keys(accountancyLinks).length} link entries.`,
   );
 
+  const civilEngineeringLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('civ-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(civilEngineeringLinks).forEach((lessonId) => {
+    requireValue(
+      civilEngineeringLessonIds.has(lessonId),
+      `Civil Engineering lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  civilEngineeringLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(civilEngineeringLinks, lessonId),
+      `Civil Engineering lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(civilEngineeringLinks).length === civilEngineeringLessonIds.size,
+    `Civil Engineering lesson link count does not match real lesson ids: ${Object.keys(civilEngineeringLinks).length} entries for ${civilEngineeringLessonIds.size} lessons`,
+  );
+  console.log(
+    `Civil Engineering runtime link coverage: ${civilEngineeringLessonIds.size} lesson ids, ${Object.keys(civilEngineeringLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
     const referenceCareerId = courseId.startsWith('cyber-')
       ? 'cybersecurity'
@@ -487,6 +538,8 @@ function validateRegistry(registry, careers) {
                 ? 'marine'
                 : courseId.startsWith('acct-')
                   ? 'accountancy'
+                : courseId.startsWith('civ-')
+                  ? 'civil-engineering'
                 : null;
     const lessons = referenceCareerId === 'teacher'
       ? getTeacherLessons(course.lessons || [])
@@ -500,6 +553,8 @@ function validateRegistry(registry, careers) {
               ? getMarineLessons(course.lessons || [])
               : referenceCareerId === 'accountancy'
                 ? getAccountancyLessons(course.lessons || [])
+                : referenceCareerId === 'civil-engineering'
+                  ? getCivilEngineeringLessons(course.lessons || [])
               : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
@@ -537,7 +592,8 @@ function validateRegistry(registry, careers) {
           referenceCareerId === 'doctor' ||
           referenceCareerId === 'lawyer' ||
           referenceCareerId === 'marine' ||
-          referenceCareerId === 'accountancy'
+          referenceCareerId === 'accountancy' ||
+          referenceCareerId === 'civil-engineering'
         ) {
           requireValue(
             lesson.referencesHeading === 'Further reading',
