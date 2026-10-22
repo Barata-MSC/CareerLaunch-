@@ -82,10 +82,11 @@ export const CAREERS = [
     icon: '🚢',
     color: '#0EA5E9',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['mar-deck'],
     overview:
       'Marine careers cover work at sea, ship operations, and the engineering systems that keep vessels running safely and efficiently.',
     skillsPreview: ['Safety', 'Teamwork', 'Technical awareness'],
+    educationalNote: 'Educational orientation, not professional or safety training.',
   },
   {
     id: 'accountancy',
