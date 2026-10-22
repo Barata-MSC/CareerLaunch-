@@ -29,6 +29,11 @@ const doctorCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/doctor/courseLessons.js',
 );
+const lawyerLinksPath = path.join(projectRoot, 'src/features/learning-hub/lawyer/links.js');
+const lawyerCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/lawyer/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -67,6 +72,15 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'cdc.gov',
     'prc.gov.ph',
     'ched.gov.ph',
+  ],
+  lawyer: [
+    'lawphil.net',
+    'ibp.ph',
+    'law.upd.edu.ph',
+    'privacy.gov.ph',
+    'officialgazette.gov.ph',
+    'congress.gov.ph',
+    'senate.gov.ph',
   ],
 };
 
@@ -211,6 +225,8 @@ function validateRegistry(registry, careers) {
   const { getNursingLessons } = loadSourceModule(nursingCourseLessonsPath);
   const doctorLinks = loadSourceModule(doctorLinksPath).LESSON_LINKS;
   const { getDoctorLessons } = loadSourceModule(doctorCourseLessonsPath);
+  const lawyerLinks = loadSourceModule(lawyerLinksPath).LESSON_LINKS;
+  const { getLawyerLessons } = loadSourceModule(lawyerCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -346,6 +362,31 @@ function validateRegistry(registry, careers) {
     `Doctor runtime link coverage: ${doctorLessonIds.size} lesson ids, ${Object.keys(doctorLinks).length} link entries.`,
   );
 
+  const lawyerLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('law-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(lawyerLinks).forEach((lessonId) => {
+    requireValue(
+      lawyerLessonIds.has(lessonId),
+      `Lawyer lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  lawyerLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(lawyerLinks, lessonId),
+      `Lawyer lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(lawyerLinks).length === lawyerLessonIds.size,
+    `Lawyer lesson link count does not match real lesson ids: ${Object.keys(lawyerLinks).length} entries for ${lawyerLessonIds.size} lessons`,
+  );
+  console.log(
+    `Lawyer runtime link coverage: ${lawyerLessonIds.size} lesson ids, ${Object.keys(lawyerLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
     const referenceCareerId = courseId.startsWith('cyber-')
       ? 'cybersecurity'
@@ -355,6 +396,8 @@ function validateRegistry(registry, careers) {
           ? 'nursing'
           : courseId.startsWith('med-')
             ? 'doctor'
+            : courseId.startsWith('law-')
+              ? 'lawyer'
             : null;
     const lessons = referenceCareerId === 'teacher'
       ? getTeacherLessons(course.lessons || [])
@@ -362,7 +405,9 @@ function validateRegistry(registry, careers) {
         ? getNursingLessons(course.lessons || [])
         : referenceCareerId === 'doctor'
           ? getDoctorLessons(course.lessons || [])
-          : course.lessons || [];
+          : referenceCareerId === 'lawyer'
+            ? getLawyerLessons(course.lessons || [])
+            : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
     const questionTexts = new Set();
@@ -393,7 +438,12 @@ function validateRegistry(registry, careers) {
           references.length > 0,
           `Course ${courseId}, lesson ${lesson.id} has no references`,
         );
-        if (referenceCareerId === 'teacher' || referenceCareerId === 'nursing' || referenceCareerId === 'doctor') {
+        if (
+          referenceCareerId === 'teacher' ||
+          referenceCareerId === 'nursing' ||
+          referenceCareerId === 'doctor' ||
+          referenceCareerId === 'lawyer'
+        ) {
           requireValue(
             lesson.referencesHeading === 'Further reading',
             `Course ${courseId}, lesson ${lesson.id} has no Further reading heading`,
