@@ -147,6 +147,8 @@ src/features/learning-hub/
     tracks.js                       Deck Officer course order
     REVIEW_NOTES.md                 Maritime expert review checklist; review pending
     data/deckCourses.js             Authored Deck lesson, activity, and quiz data
+    links.js                        Further-reading sources keyed by Deck lesson ID
+    courseLessons.js                Runtime reference merger for Marine Deck lessons
     mar-<course-id>-course/
       course.js                     Course config
       <CourseName>Course.js         Thin screen wrapper around CourseRunner
@@ -188,7 +190,9 @@ Career lesson links live beside each career's content in `links.js`, keyed by st
 
 Only add URLs that genuinely cover the lesson topic. Do not imply the lesson was copied from or authored using the linked source. Do not guess URLs, dates, authors, or video IDs; use a publisher topic landing page if a specific page cannot be confirmed and record any remaining uncertainty as `// VERIFY:`. Videos are optional and should only be included from supplied, verified YouTube details.
 
-Teacher, Nursing, Doctor, and Lawyer references are merged by their per-career `courseLessons.js` helper at the `CourseRunner` lesson-loading point, so the lessons passed to `LessonScreen` contain the linked references. Doctor remains `coming-soon`; Lawyer is available while expert review sign-off remains incomplete. `npm run validate:content` checks reference domains and shape for Cybersecurity, Teacher, Nursing, Doctor, and Lawyer; for Teacher, Nursing, Doctor, and Lawyer it also verifies the actual runtime merge and exact lesson-ID coverage. It warns when a source URL is used in more than three lessons in one course. `npm run check:links -- <career-id>` checks a career's public URLs and supplied video titles online and writes a report to `docs/tasks/progress/link-check-<career-id>.md`. HTTP 403, HTTP 429, and request timeouts are reported as unverified for manual checking, not as failures. Link checking requires internet access; it verifies availability and video titles, not topical suitability, which still needs a human spot-check.
+Teacher, Nursing, Doctor, Lawyer, and Marine references are merged by their per-career `courseLessons.js` helper at the `CourseRunner` lesson-loading point, so the lessons passed to `LessonScreen` contain the linked references. The validator checks runtime merging and exact link-key coverage for these careers. Marine references cover the seven registered Deck courses only; the planned Engine track remains unregistered and Marine remains `coming-soon` pending maritime expert review. Doctor remains `coming-soon`; Lawyer is available while expert review sign-off remains incomplete.
+
+`npm run validate:content` checks reference shape, allowed domains, runtime merging, and exact lesson-ID coverage for Teacher, Nursing, Doctor, Lawyer, and Marine. It also warns when a source URL is used in more than three lessons in one course. `npm run check:links -- <career-id>` checks current URL reachability and supplied video titles, then writes a report to `docs/tasks/progress/link-check-<career-id>.md`. HTTP 403, HTTP 429, and request timeouts are reported as unverified for manual checking, not as failures. Link checking requires internet access and does not replace a human review of topic suitability.
 
 ## Careers data contract
 
