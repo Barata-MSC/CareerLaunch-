@@ -41,7 +41,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 | `career-assessment/` | Local-first RIASEC interest assessment, career matching, result worksheet, and optional account persistence. |
 | `onboarding/` | Short post-login walkthrough with a per-user local preference and Profile replay. |
 | `dashboard/` | Main dashboard experience. |
-| `interview-coach/` | Common interview questions, typed answers with local heuristic feedback, simulated voice feedback, and a session summary. |
+| `interview-coach/` | Common interview questions, typed or speech-to-text answers, AI evaluation with local fallback, and a session summary. Voice input requires a supported native development build; Expo Go and web use typed answers. |
 | `job-finder/` | Job discovery and listing experience. |
 | `job-tracker/` | Job application tracking. |
 | `learning-hub/` | Career picker, shared career/track/course registry, course navigation, lessons, quizzes, and learning progress. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, and `lawyer/`. |
@@ -354,6 +354,16 @@ npx expo start --tunnel
 ```
 
 Tunnel mode can be slower and may require additional setup depending on your network and Expo tooling. Prefer the standard local connection when it works.
+
+### Testing voice input
+
+Interview Coach voice input uses `expo-speech-recognition` and requires a native development build; Expo Go and the web preview do not provide this native module. After installing dependencies or changing the plugin configuration, build and install the app with:
+
+```powershell
+npx expo run:android
+```
+
+Use `npx expo run:ios` on a Mac with Xcode for iOS. The first microphone tap requests permission. Speech is converted to editable text by the device's speech service; audio handling depends on the device and its settings. Only the transcript is submitted to the app's AI feedback service. Speech recognition availability and results vary by device and settings.
 
 ## Code Quality and Troubleshooting
 
