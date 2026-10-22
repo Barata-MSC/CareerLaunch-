@@ -2,7 +2,7 @@
 
 Career: Lawyer  
 Status: `available`  
-Review: owner approval received; sign-off details are recorded as placeholders in `lawyer/REVIEW_NOTES.md`.
+Review: owner approval for availability was received; expert review sign-off is still incomplete, and reviewer details remain placeholders in `lawyer/REVIEW_NOTES.md`.
 
 ## Summary
 

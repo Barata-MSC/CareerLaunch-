@@ -32,7 +32,7 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Teacher | Available | Elementary Teacher (8 courses); Secondary Teacher (7 courses) |
 | Nursing | Available (team reviewed) | Nursing Student Path (8 courses) |
 | Doctor | Coming soon | None |
-| Lawyer | Available | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
+| Lawyer | Available in the app; expert review sign-off is still incomplete | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
 | Marine (Seafarer / Marine Engineering) | Coming soon | None |
 | Accountancy | Coming soon | None |
 | Civil Engineering | Coming soon | None |

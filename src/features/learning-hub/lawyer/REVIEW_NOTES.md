@@ -1,6 +1,6 @@
 # Lawyer career expert review notes
 
-Status: approved by the owner; sign-off details to be recorded.
+Status: Available in the app; expert review sign-off is still incomplete.
 
 The Lawyer career is available in the Learning Hub. All lessons are introductory career orientation, not legal advice or instruction for a real matter.
 
