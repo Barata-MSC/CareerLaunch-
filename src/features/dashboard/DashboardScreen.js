@@ -14,6 +14,7 @@ import { usePractice } from '../../context/PracticeContext';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
+import { supabase } from '@config/supabase';
 import AppPressable from '@components/AppPressable';
 import { WalkthroughModal, useWalkthrough } from '@features/onboarding';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
@@ -21,8 +22,14 @@ import Float from '@components/motion/Float';
 import Pop from '@components/motion/Pop';
 import { distances, durations, springs } from '@components/motion/motionTokens';
 import useReduceMotion from '@components/motion/useReduceMotion';
+import DAILY_TIPS from './data/dailyTips';
+import {
+  getNextDailyTipIndex,
+  getSessionTipCacheKey,
+} from './utils/dailyTip';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
+let cachedSessionTip = null;
 
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '💼', color: '#6C4CE0' },
@@ -135,6 +142,52 @@ export default function DashboardScreen({ navigation, route }) {
   const userId = session?.user?.id;
   const dashboardReady = Boolean(userId && !profileLoading && profile?.id === userId);
   const walkthrough = useWalkthrough(userId, dashboardReady);
+  const sessionCacheKey = getSessionTipCacheKey(session);
+  const [dailyTip, setDailyTip] = useState(
+    cachedSessionTip?.key === sessionCacheKey
+      ? cachedSessionTip.tip
+      : DAILY_TIPS[0],
+  );
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') cachedSessionTip = null;
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!userId || !sessionCacheKey) {
+      setDailyTip(null);
+      return undefined;
+    }
+
+    let isActive = true;
+    if (cachedSessionTip?.key === sessionCacheKey) {
+      setDailyTip(cachedSessionTip.tip || DAILY_TIPS[0]);
+      cachedSessionTip.promise.then((tip) => {
+        if (isActive) setDailyTip(tip);
+      });
+    } else {
+      const entry = { key: sessionCacheKey, tip: null, promise: null };
+      entry.promise = getNextDailyTipIndex(userId, DAILY_TIPS.length).then((index) => {
+        const tip = DAILY_TIPS[index] || DAILY_TIPS[0];
+        entry.tip = tip;
+        return tip;
+      });
+      cachedSessionTip = entry;
+      entry.promise.then((tip) => {
+        if (isActive) setDailyTip(tip);
+      });
+    }
+
+    return () => {
+      isActive = false;
+    };
+  }, [sessionCacheKey, userId]);
 
   useEffect(() => {
     if (!route?.params?.replayWalkthrough || !walkthrough.ready) return;
@@ -256,7 +309,14 @@ export default function DashboardScreen({ navigation, route }) {
         <FadeSlideIn delay={260}>
           <View style={styles.tipCard}>
             <Text style={styles.tipTitle}>Daily tip</Text>
-            <Text style={styles.tipBody}>{'Small steps today,\nbig opportunities tomorrow.'}</Text>
+            <Text
+              style={styles.tipBody}
+              accessible
+              accessibilityRole="text"
+              accessibilityLabel={dailyTip || DAILY_TIPS[0]}
+            >
+              {dailyTip || DAILY_TIPS[0]}
+            </Text>
           </View>
         </FadeSlideIn>
 

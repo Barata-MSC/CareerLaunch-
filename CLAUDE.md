@@ -202,3 +202,7 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - Keep diffs focused and review them before finishing. Avoid generated outputs such as `dist/`, caches, or local environment files in source changes.
 - Never commit `.env`, credentials, user data, or generated build artifacts.
 - The team workflow targets pull requests into `main`; follow `GIT_WORKFLOW.md` when asked to create or prepare a branch or pull request.
+
+## Dashboard daily tip
+
+The 31 ordered tip strings live in `src/features/dashboard/data/dailyTips.js`. `src/features/dashboard/utils/dailyTip.js` keeps a persisted shuffle bag per Supabase user ID under `careerlaunch:daily-tip:v1:<user-id>`; each tip is used once per bag, and the next bag is reshuffled so its first tip differs from the previous bag's last tip. The Dashboard treats each Supabase `session_id` as a login session: navigation and token refresh keep the same cached tip, sign-out clears the in-memory selection, and a fresh app launch or a new sign-in advances the bag. Guest and registered accounts use their own user IDs, and upgrading a guest retains its user ID and rotation.
