@@ -19,6 +19,11 @@ const teacherCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/teacher/courseLessons.js',
 );
+const nursingLinksPath = path.join(projectRoot, 'src/features/learning-hub/nursing/links.js');
+const nursingCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/nursing/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -38,6 +43,15 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'privacy.gov.ph',
   ],
   teacher: ['deped.gov.ph', 'ched.gov.ph', 'prc.gov.ph', 'unesco.org', 'edutopia.org'],
+  nursing: [
+    'openstax.org',
+    'who.int',
+    'cdc.gov',
+    'nursingworld.org',
+    'ana.org',
+    'prc.gov.ph',
+    'ched.gov.ph',
+  ],
 };
 
 const ReactMock = {
@@ -177,6 +191,8 @@ function validateRegistry(registry, careers) {
   const staticRoutes = collectStaticStackRouteNames(fs.readFileSync(navigatorPath, 'utf8'));
   const teacherLinks = loadSourceModule(teacherLinksPath).LESSON_LINKS;
   const { getTeacherLessons } = loadSourceModule(teacherCourseLessonsPath);
+  const nursingLinks = loadSourceModule(nursingLinksPath).LESSON_LINKS;
+  const { getNursingLessons } = loadSourceModule(nursingCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -262,15 +278,44 @@ function validateRegistry(registry, careers) {
     `Teacher runtime link coverage: ${teacherLessonIds.size} lesson ids, ${Object.keys(teacherLinks).length} link entries.`,
   );
 
+  const nursingLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('nurs-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(nursingLinks).forEach((lessonId) => {
+    requireValue(
+      nursingLessonIds.has(lessonId),
+      `Nursing lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  nursingLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(nursingLinks, lessonId),
+      `Nursing lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(nursingLinks).length === nursingLessonIds.size,
+    `Nursing lesson link count does not match real lesson ids: ${Object.keys(nursingLinks).length} entries for ${nursingLessonIds.size} lessons`,
+  );
+  console.log(
+    `Nursing runtime link coverage: ${nursingLessonIds.size} lesson ids, ${Object.keys(nursingLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
     const referenceCareerId = courseId.startsWith('cyber-')
       ? 'cybersecurity'
       : courseId.startsWith('teach-')
         ? 'teacher'
-        : null;
+        : courseId.startsWith('nurs-')
+          ? 'nursing'
+          : null;
     const lessons = referenceCareerId === 'teacher'
       ? getTeacherLessons(course.lessons || [])
-      : course.lessons || [];
+      : referenceCareerId === 'nursing'
+        ? getNursingLessons(course.lessons || [])
+        : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
     const questionTexts = new Set();
@@ -301,7 +346,7 @@ function validateRegistry(registry, careers) {
           references.length > 0,
           `Course ${courseId}, lesson ${lesson.id} has no references`,
         );
-        if (referenceCareerId === 'teacher') {
+        if (referenceCareerId === 'teacher' || referenceCareerId === 'nursing') {
           requireValue(
             lesson.referencesHeading === 'Further reading',
             `Course ${courseId}, lesson ${lesson.id} has no Further reading heading`,

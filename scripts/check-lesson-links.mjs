@@ -10,6 +10,10 @@ const commonJsPlugin = require('@babel/plugin-transform-modules-commonjs');
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const registryPath = path.join(projectRoot, 'src/features/learning-hub/careers/registry.js');
+const nursingCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/nursing/courseLessons.js',
+);
 const moduleCache = new Map();
 const nullComponent = () => null;
 const ReactMock = {
@@ -188,9 +192,15 @@ async function run() {
       track.steps?.some((step) => step.course?.id === course.id),
     ))
     .map(({ course }) => course);
+  const coursesWithRuntimeLessons = careerId === 'nursing'
+    ? courses.map((course) => ({
+      ...course,
+      lessons: loadSourceModule(nursingCourseLessonsPath).getNursingLessons(course.lessons || []),
+    }))
+    : courses;
   const references = new Set();
   const videos = new Map();
-  courses.forEach((course) => (course.lessons || []).forEach((lesson) => {
+  coursesWithRuntimeLessons.forEach((course) => (course.lessons || []).forEach((lesson) => {
     (lesson.references || []).forEach((reference) => references.add(reference.url));
     if (lesson.video?.id) videos.set(lesson.video.id, lesson.video);
   }));

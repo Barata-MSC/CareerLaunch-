@@ -12,6 +12,7 @@ import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
 import { playSound } from '../../../utils/sounds';
 import { getTeacherLessons } from '../teacher/courseLessons';
+import { getNursingLessons } from '../nursing/courseLessons';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -34,7 +35,9 @@ export default function CourseRunner({ course, navigation }) {
       withStatus(
         course.id.startsWith('teach-')
           ? getTeacherLessons(course.lessons)
-          : course.lessons,
+          : course.id.startsWith('nurs-')
+            ? getNursingLessons(course.lessons)
+            : course.lessons,
         progress.completedLessonIds,
       ),
     [course.id, course.lessons, progress.completedLessonIds],
