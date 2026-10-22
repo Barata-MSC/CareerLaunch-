@@ -10,6 +10,7 @@ The project brings several career-development tools together in one application:
 
 - [Project Goals](#project-goals)
 - [Feature Modules](#feature-modules)
+- [Learning Hub and Implemented Workstreams](#learning-hub-and-implemented-workstreams)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
@@ -41,11 +42,47 @@ The current `src/features/` tree contains the following feature areas. Their exa
 | `interview-coach/` | AI interview preparation experience. |
 | `job-finder/` | Job discovery and listing experience. |
 | `job-tracker/` | Job application tracking. |
-| `learning-hub/` | Learning screens, course navigation, lessons, quizzes, and progress-related code. The visible source structure includes shared learning components and a `software-engineering/` area. |
+| `learning-hub/` | Career picker, shared career/track/course registry, course navigation, lessons, quizzes, and learning progress. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, and `lawyer/`. |
 | `profile/` | User profile experience. |
 | `resume-builder/` | Resume creation and related screens. |
 
 These modules are organized under `src/features/`, rather than being collected in a single root-level `screens/` folder. Shared components, contexts, configuration, and navigation remain outside the feature folders where appropriate.
+
+## Learning Hub and Implemented Workstreams
+
+The Learning Hub now has a career-first flow: learners choose a career, select one of its tracks, and open courses through the shared registry. The shared screens, course runner, and progress logic are reused across career content. Career and track durations are estimates, and completion state is derived from lesson and quiz progress.
+
+### Career content built with brief 03
+
+| Career | Tracks and course counts | Courses | Lessons | Quiz-bank questions | Current status |
+|---|---|---:|---:|---:|---|
+| Cybersecurity | Security Analyst (8); Security Governance and Compliance (6) | 14 | 140 | 140 | Available; introductory, defensive content. |
+| Teacher | Elementary Teacher (8); Secondary Teacher (7) | 15 | 150 | 150 | Available following project-owner/team review sign-off. |
+| Nursing | Nursing Student Path (8) | 8 | 80 | 80 | Available following team review, as recorded in the project checkpoint. |
+| Lawyer | Lawyer Path (8); Paralegal and Legal Support (6) | 14 | 140 | 140 | Available in the app; see the review-status note below. |
+| **Added by brief 03** | **7 tracks** | **51** | **510** | **510** | **Four career folders are registered.** |
+
+Each listed course has 10 lessons and a 10-question quiz bank; a course quiz attempt uses 10 questions. The complete shared registry currently validates 10 tracks and 68 courses across the seeded career catalog, including the existing Software Engineering content. Software Engineering's UI/UX roadmap still has steps without course content; those steps remain detail-only rather than complete courses.
+
+**Review and availability caveats:** Lawyer is marked `available` in the career data, and its checkpoint records owner approval. However, the review notes still contain an incomplete sign-off and a checklist that says subject-expert confirmation should happen before availability. Do not describe Lawyer as independently expert-reviewed until that discrepancy is resolved. Teacher and Nursing checkpoints record team review/approval, but some reviewer-name/date fields remain placeholders. Nursing content is educational orientation, not clinical training; Lawyer content is introductory career orientation, not legal advice. Cybersecurity content is conceptual and defensive, not operational attack guidance.
+
+The Doctor and Marine specs remain unbuilt; both careers remain unavailable. Accountancy, Civil Engineering, and Hospitality & Tourism do not yet have career-content specs. See [`docs/tasks/progress/`](docs/tasks/progress/) for the build checkpoints and [`src/features/learning-hub/README.md`](src/features/learning-hub/README.md) for the course data contract and pathway details.
+
+### Other implemented briefs
+
+| Brief | Implemented behavior | Still needs human action or verification |
+|---|---|---|
+| `00-careers-layer.md` | Career picker and shared career/track/course registry provide the layer used by the career pathways. | Exercise career-to-track-to-course navigation on target devices. |
+| `02-sfx.md` | Shared `AppPressable` and sound utility provide tap, lesson-complete, and quiz-pass cues; the Profile setting stores the enabled preference. | Verify the source/license for each sound before redistribution; [`src/assets/sounds/CREDITS.md`](src/assets/sounds/CREDITS.md) explicitly says the original source/license is not recorded. Test playback by ear on native and web. |
+| `04-guest-gating.md` | `useAccountTier`, `AccountGate`, and the shared `requireFullAccount` Edge Function helper support gating full-account features. | Human-test guest and upgraded-account flows. Server-side enforcement depends on each Edge Function using the helper. |
+| `06-job-tracker-persistence.md` | Application Tracker reads/writes per-user snapshots through Supabase; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021232700_job_applications.sql` and validate two-user RLS, offline rollback, and persistence against the live project. |
+| `09-resume-persistence.md` | Resume Builder loads and autosaves one resume per user, supports retry and deletion, and keeps derived completeness feedback out of storage; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021230700_resumes.sql` and validate RLS, account switching, offline retries, and deletion against the live project. Profile photos remain in memory only. |
+
+The two migrations are checked-in proposals; this repository cannot establish whether they have been applied to the connected Supabase project. Until the human database and RLS checks are complete, describe these features as implemented in the client with persistence contingent on migration setup—not as verified live persistence.
+
+### Validation snapshot
+
+On 2026-10-22, `npm run validate:content` passed for the registered Learning Hub content: 10 careers, 10 tracks, and 68 courses. It reported one answer-index skew warning: 60% of correct answers in the existing `data-visualization` course use the same answer index. No automated app test script is configured. This validation does not replace lint/build checks, manual device testing, expert content review, or live Supabase/RLS testing.
 
 ## Technology Stack
 
@@ -98,8 +135,13 @@ CareerLaunch-/
 │   │   ├── job-finder/
 │   │   ├── job-tracker/
 │   │   ├── learning-hub/
+│   │   │   ├── careers/            # Shared career screens, metadata, and registry
 │   │   │   ├── shared/             # Shared learning screens, components, and progress utilities
-│   │   │   └── software-engineering/
+│   │   │   ├── software-engineering/
+│   │   │   ├── cybersecurity/
+│   │   │   ├── teacher/
+│   │   │   ├── nursing/
+│   │   │   └── lawyer/
 │   │   ├── profile/
 │   │   └── resume-builder/
 │   └── navigation/                # Navigation configuration

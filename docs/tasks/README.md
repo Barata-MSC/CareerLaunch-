@@ -19,16 +19,18 @@ This file is only an index for the briefs. It does not replace the project's roo
 
 | Brief | Workstream | Status |
 |---|---|---|
-| `00-careers-layer.md` | Careers screen above the tracks | Ready |
+| `00-careers-layer.md` | Careers screen above the tracks | Implemented; career picker and shared registry are in use. |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
-| `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Ready (needs audio files first) |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, Nursing, and Lawyer are built, registered, and available. Doctor and Marine specs remain; run regulated careers in plan mode first. |
-| `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Ready |
+| `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Implemented; source/license verification and human audio checks remain. |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, Nursing, and Lawyer are built and registered. All four are currently available; resolve the incomplete Lawyer expert-review sign-off before describing it as expert-reviewed. Doctor and Marine specs remain unbuilt. |
+| `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Implemented; guest/upgraded-account flow and server enforcement still need human verification. |
 | `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked until the coverage test passes |
-| `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Ready |
+| `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain. |
 | `07-ai-coach.md` | AI evaluation of typed interview answers | Ready (needs an AI key and a privacy decision) |
 | `08-voice-interview-coach.md` | Speech-to-text input for the Interview Coach (needs a development build) | Run after 07 (needs one new dependency approved) |
-| `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Ready (run after 04) |
+| `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain (run after 04). |
+
+Briefs 06 and 09 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
 Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & Tourism content (their specs do not exist yet), and exporting the resume to a file.
 
