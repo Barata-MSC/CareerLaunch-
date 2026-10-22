@@ -202,20 +202,6 @@ const evaluateWithProvider = async (question: string, answer: string) => {
   throw lastError ?? new Error('provider_unavailable');
 };
 
-const TEST_CASES: Record<string, string> = {
-  empty: "",
-  prose: "Sorry, I can't help with that.",
-  fenced: '
-json\n{"score":7,"feedback":"ok"}\n
-',
-  truncated: '{"score": 7, "feedb',
-  wrong_type: '{"score":"seven","feedback":123}',
-  out_of_range: '{"score":99,"feedback":"great"}',
-  missing_fields: '{"score":7}',
-};
-const testCase = Deno.env.get("AI_TEST_CASE");
-const raw = testCase ? TEST_CASES[testCase]
-                     : await callProvider(prompt);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {

@@ -34,7 +34,7 @@ let cachedSessionTip = null;
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '💼', color: '#6C4CE0' },
   { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
-  { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
+  { id: '3', label: 'Interview Coach', icon: '🤖', color: '#33C46A' },
   { id: '4', label: 'Learning Hub', icon: '📖', color: '#F0637D' },
 ];
 
@@ -207,7 +207,7 @@ export default function DashboardScreen({ navigation, route }) {
       navigation.navigate('LearningHub');
     } else if (action.label === 'Job Finder') {
       navigation.navigate('JobFinder');
-    } else if (action.label === 'AI Coach') {
+    } else if (action.label === 'Interview Coach') {
       navigation.navigate('AIInterviewCoach');
     } else if (action.label === 'Resume Editor') {
       navigation.navigate('ResumeBuilder');
@@ -293,7 +293,7 @@ export default function DashboardScreen({ navigation, route }) {
                     <Float phaseOffset={index * 500}>
                       <Text style={styles.quickActionIcon}>{action.icon}</Text>
                     </Float>
-                    {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
+                    {isGuest && ['Resume Editor', 'Job Finder', 'Interview Coach'].includes(action.label) ? (
                       <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
                         <Text style={styles.lockBadgeText}>🔒</Text>
                       </View>

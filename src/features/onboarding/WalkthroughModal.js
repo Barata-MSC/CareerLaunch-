@@ -200,7 +200,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   secondaryText: { color: '#4A1DD0', fontSize: 15, fontWeight: '700' },
-  skipButton: { minHeight: 44, minWidth: 64, justifyContent: 'center', marginTop: 6 },
+  skipButton: {
+    width: '100%',
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
   skipText: { color: '#5B6473', fontSize: 14, fontWeight: '600' },
   error: {
     width: '100%',
