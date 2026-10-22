@@ -139,6 +139,12 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - The global preference is stored in AsyncStorage under `careerlaunch:sound-enabled` and is controlled from Profile settings.
 - Sound assets live in `src/assets/sounds/`; source and license notes belong in `src/assets/sounds/CREDITS.md`.
 
+### Motion
+
+- Reusable motion tokens and primitives live in `src/components/motion/`: `motionTokens.js`, `useReduceMotion`, `FadeSlideIn`, `Float`, and `Pop`.
+- Respect the system reduce-motion setting: disable floating and sliding, and use only a short fade or no animation.
+- Use `Float` sparingly on a few hero elements; never float items in scrolling lists. Only the Dashboard uses motion so far.
+
 ## Expo, web, and project commands
 
 - Before changing Expo APIs, configuration, or native modules, read the exact Expo SDK 57 documentation linked by `AGENTS.md`. Do not apply instructions from a different SDK version without checking compatibility.

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Animated,
+  Platform,
   ScrollView,
   Text,
   View,
@@ -13,6 +15,11 @@ import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
 import AppPressable from '@components/AppPressable';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import Float from '@components/motion/Float';
+import Pop from '@components/motion/Pop';
+import { distances, durations, springs } from '@components/motion/motionTokens';
+import useReduceMotion from '@components/motion/useReduceMotion';
 
 const AVATAR_PLACEHOLDER = require('@assets/icon-profile.png');
 
@@ -37,6 +44,86 @@ const CAREER_CHECKLIST = [
   { label: 'Practice interview questions', route: 'AIInterviewCoach', key: 'practice' },
   { label: 'Explore career opportunities', route: 'JobFinder', key: 'applications' },
 ];
+
+const useNativeDriver = Platform.OS !== 'web';
+
+function DashboardPressable({
+  children,
+  contentStyle,
+  onPressIn,
+  onPressOut,
+  ...props
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const reduceMotion = useReduceMotion();
+
+  const animateScale = (toValue) => {
+    scale.stopAnimation();
+    if (reduceMotion) {
+      scale.setValue(1);
+      return;
+    }
+
+    Animated.spring(scale, {
+      toValue,
+      ...springs.press,
+      useNativeDriver,
+    }).start();
+  };
+
+  return (
+    <AppPressable
+      {...props}
+      onPressIn={(event) => {
+        animateScale(distances.pressScale);
+        onPressIn?.(event);
+      }}
+      onPressOut={(event) => {
+        animateScale(1);
+        onPressOut?.(event);
+      }}
+    >
+      <Animated.View style={[contentStyle, { transform: [{ scale }] }]}>
+        {children}
+      </Animated.View>
+    </AppPressable>
+  );
+}
+
+function AnimatedProgressFill({ progress }) {
+  const animatedProgress = useRef(new Animated.Value(progress)).current;
+  const [trackWidth, setTrackWidth] = useState(0);
+  const fillOffset = animatedProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-trackWidth / 2, 0],
+  });
+
+  useEffect(() => {
+    const animation = Animated.timing(animatedProgress, {
+      toValue: progress,
+      duration: durations.progress,
+      useNativeDriver,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [animatedProgress, progress]);
+
+  return (
+    <View
+      style={styles.progressTrack}
+      onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+    >
+      <Animated.View
+        style={[
+          styles.progressFill,
+          {
+            transform: [{ translateX: fillOffset }, { scaleX: animatedProgress }],
+          },
+        ]}
+      />
+    </View>
+  );
+}
 
 export default function DashboardScreen({ navigation }) {
   const [pressedId, setPressedId] = useState(null);
@@ -82,106 +169,131 @@ export default function DashboardScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.greeting}>Hello, {displayName}!👋</Text>
+        <FadeSlideIn delay={0}>
+          <Text style={styles.greeting}>Hello, {displayName}!👋</Text>
+        </FadeSlideIn>
 
-        <AppPressable
-          style={styles.profileCard}
-          onPress={() => {
-            navigation.navigate('Profile');
-          }}
-        >
-          <View style={styles.profileTextWrap}>
-            <Text style={styles.profileTitle}>Complete your profile</Text>
-            <Text style={styles.profileSubtitle}>
-              {Math.round(profileProgress * 100)}% complete
-            </Text>
-            <View style={styles.progressTrack}>
-              <View
-                style={[styles.progressFill, { width: `${profileProgress * 100}%` }]}
-              />
+        <FadeSlideIn delay={45}>
+          <DashboardPressable
+            style={styles.profileCard}
+            contentStyle={styles.profileCardContents}
+            onPress={() => {
+              navigation.navigate('Profile');
+            }}
+          >
+            <View style={styles.profileTextWrap}>
+              <Text style={styles.profileTitle}>Complete your profile</Text>
+              <Text style={styles.profileSubtitle}>
+                {Math.round(profileProgress * 100)}% complete
+              </Text>
+              <AnimatedProgressFill progress={profileProgress} />
             </View>
-          </View>
-          <Image
-            source={
-              profile?.avatar_url
-                ? { uri: profile.avatar_url }
-                : AVATAR_PLACEHOLDER
-            }
-            style={styles.avatar}
-          />
-        </AppPressable>
+            <Float phaseOffset={0}>
+              <Image
+                source={
+                  profile?.avatar_url
+                    ? { uri: profile.avatar_url }
+                    : AVATAR_PLACEHOLDER
+                }
+                style={styles.avatar}
+              />
+            </Float>
+          </DashboardPressable>
+        </FadeSlideIn>
 
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <FadeSlideIn delay={90}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+        </FadeSlideIn>
         <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => {
+          {QUICK_ACTIONS.map((action, index) => {
             const isPressed = pressedId === action.id;
             return (
-              <AppPressable
+              <FadeSlideIn
                 key={action.id}
-                style={styles.quickActionWrap}
-                onPressIn={() => setPressedId(action.id)}
-                onPressOut={() => setPressedId(null)}
-                onPress={() => handleQuickAction(action)}
+                delay={120 + index * 35}
+                style={styles.quickActionEntrance}
               >
-                <View
-                  style={[
-                    styles.quickActionTile,
-                    { backgroundColor: action.color },
-                    isPressed && styles.quickActionTileActive,
-                  ]}
+                <DashboardPressable
+                  style={styles.quickActionWrap}
+                  contentStyle={styles.quickActionContents}
+                  onPressIn={() => setPressedId(action.id)}
+                  onPressOut={() => setPressedId(null)}
+                  onPress={() => handleQuickAction(action)}
                 >
-                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                  {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
-                    <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
-                      <Text style={styles.lockBadgeText}>🔒</Text>
-                    </View>
-                  ) : null}
-                </View>
-                <Text style={styles.quickActionLabel}>{action.label}</Text>
-              </AppPressable>
-            );
-          })}
-        </View>
-
-        <View style={styles.tipCard}>
-          <Text style={styles.tipTitle}>Daily tip</Text>
-          <Text style={styles.tipBody}>{'Small steps today,\nbig opportunities tomorrow.'}</Text>
-        </View>
-
-        <View style={styles.checklistCard}>
-          <Text style={styles.checklistTitle}>Career Preparation</Text>
-          <Text style={styles.checklistSubtitle}>
-            Small steps to help you get career-ready.
-          </Text>
-          {CAREER_CHECKLIST.map((item, index) => {
-            const isComplete = isChecklistItemComplete(item);
-            return (
-              <AppPressable
-                key={item.label}
-                style={styles.checklistItem}
-                onPress={() => handleChecklistPress(item)}
-              >
-                <View
-                  style={[
-                    styles.checklistNumber,
-                    isComplete && styles.checklistNumberDone,
-                  ]}
-                >
-                  <Text
+                  <View
                     style={[
-                      styles.checklistNumberText,
-                      isComplete && styles.checklistNumberTextDone,
+                      styles.quickActionTile,
+                      { backgroundColor: action.color },
+                      isPressed && styles.quickActionTileActive,
                     ]}
                   >
-                    {isComplete ? '✓' : index + 1}
-                  </Text>
-                </View>
-                <Text style={styles.checklistItemText}>{item.label}</Text>
-                <Text style={styles.checklistChevron}>›</Text>
-              </AppPressable>
+                    {index < 3 ? (
+                      <Float phaseOffset={index * 500}>
+                        <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                      </Float>
+                    ) : (
+                      <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                    )}
+                    {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
+                      <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
+                        <Text style={styles.lockBadgeText}>🔒</Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  <Text style={styles.quickActionLabel}>{action.label}</Text>
+                </DashboardPressable>
+              </FadeSlideIn>
             );
           })}
         </View>
+
+        <FadeSlideIn delay={260}>
+          <View style={styles.tipCard}>
+            <Text style={styles.tipTitle}>Daily tip</Text>
+            <Text style={styles.tipBody}>{'Small steps today,\nbig opportunities tomorrow.'}</Text>
+          </View>
+        </FadeSlideIn>
+
+        <FadeSlideIn delay={300}>
+          <View style={styles.checklistCard}>
+            <Text style={styles.checklistTitle}>Career Preparation</Text>
+            <Text style={styles.checklistSubtitle}>
+              Small steps to help you get career-ready.
+            </Text>
+            {CAREER_CHECKLIST.map((item, index) => {
+              const isComplete = isChecklistItemComplete(item);
+              return (
+                <FadeSlideIn key={item.label} delay={350 + index * 12}>
+                  <DashboardPressable
+                    style={styles.checklistItem}
+                    contentStyle={styles.checklistItemContents}
+                    onPress={() => handleChecklistPress(item)}
+                  >
+                    <Pop value={isComplete}>
+                      <View
+                        style={[
+                          styles.checklistNumber,
+                          isComplete && styles.checklistNumberDone,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.checklistNumberText,
+                            isComplete && styles.checklistNumberTextDone,
+                          ]}
+                        >
+                          {isComplete ? '✓' : index + 1}
+                        </Text>
+                      </View>
+                    </Pop>
+                    <Text style={styles.checklistItemText}>{item.label}</Text>
+                    <Text style={styles.checklistChevron}>›</Text>
+                  </DashboardPressable>
+                </FadeSlideIn>
+              );
+            })}
+          </View>
+        </FadeSlideIn>
       </ScrollView>
     </SafeAreaView>
   );
@@ -198,14 +310,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: '#E5E5EA',
     borderRadius: 16,
     padding: 16,
     marginBottom: 28,
+  },
+  profileCardContents: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   profileTextWrap: { flex: 1, paddingRight: 12 },
   profileTitle: { fontSize: 15, fontWeight: '600', color: '#1C1C1E', marginBottom: 4 },
@@ -229,7 +343,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 28,
   },
-  quickActionWrap: { alignItems: 'center', width: '23%' },
+  quickActionEntrance: { width: '23%' },
+  quickActionWrap: { alignItems: 'center', width: '100%' },
+  quickActionContents: { alignItems: 'center', width: '100%' },
   quickActionTile: {
     width: '100%',
     aspectRatio: 1,
@@ -288,13 +404,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   checklistItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#F8F7FF',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
     marginBottom: 8,
+  },
+  checklistItemContents: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
   checklistNumber: {
     width: 28,
