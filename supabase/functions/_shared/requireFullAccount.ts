@@ -1,6 +1,9 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const corsHeaders = {
+// Keep this domain in sync with GUEST_EMAIL_DOMAIN in src/features/auth/guestAccount.js.
+const GUEST_EMAIL_DOMAIN = 'guest.careerlaunch.invalid';
+
+export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -13,8 +16,21 @@ const jsonResponse = (status: number, code: string, error: string) =>
   });
 
 const isGuestUser = (
-  user: { is_anonymous?: boolean; user_metadata?: { is_guest?: boolean } } | null | undefined,
-) => !!user && (!!user.is_anonymous || user.user_metadata?.is_guest === true);
+  user:
+    | {
+        app_metadata?: { is_guest?: boolean };
+        is_anonymous?: boolean;
+        user_metadata?: { is_guest?: boolean };
+        email?: string;
+      }
+    | null
+    | undefined,
+) =>
+  !!user &&
+  (user.app_metadata?.is_guest === true ||
+    user.is_anonymous === true ||
+    user.user_metadata?.is_guest === true ||
+    user.email?.trim().toLowerCase().endsWith(`@${GUEST_EMAIL_DOMAIN}`));
 
 export async function requireFullAccount(req: Request) {
   if (req.method === 'OPTIONS') {

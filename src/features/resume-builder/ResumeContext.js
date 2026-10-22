@@ -12,6 +12,7 @@ import { useProfile } from '../../context/ProfileContext';
 import { isGuestUser } from '../auth/guestAccount';
 
 const SAVE_DEBOUNCE_MS = 700;
+const RESUME_SCHEMA_VERSION = 1;
 const INITIAL_RESUME_STATE = {
   personalInfo: {
     fullName: '',
@@ -169,6 +170,13 @@ export function ResumeProvider({ children }) {
       if (error) throw error;
       if (generation !== generationRef.current) return;
 
+      if (data?.schema_version > RESUME_SCHEMA_VERSION) {
+        loadStatusRef.current = 'error';
+        setLoadStatus('error');
+        setLoadError('This resume was saved by a newer version of the app');
+        return;
+      }
+
       const normalized = data ? normalizeResumeData(data.data) : createEmptyResume();
       dataRef.current = normalized;
       setResumeDataState(normalized);
@@ -272,7 +280,7 @@ export function ResumeProvider({ children }) {
           .upsert(
             {
               user_id: currentUserId,
-              schema_version: 1,
+              schema_version: RESUME_SCHEMA_VERSION,
               data: payload,
             },
             { onConflict: 'user_id' },

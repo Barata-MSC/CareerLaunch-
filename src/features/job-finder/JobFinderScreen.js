@@ -14,7 +14,6 @@ import {
   FlatList,
   ScrollView,
   Alert,
-  Linking,
   StyleSheet,
   StatusBar,
   Platform,
@@ -24,6 +23,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useProfile } from '../../context/ProfileContext';
 import AccountGate from '../../components/AccountGate';
+import { openExternalUrl } from '../../utils/openExternalUrl';
 
 const PURPLE = '#5B21D6';
 const CATEGORIES = ['All', 'IT', 'Design', 'Finance', 'Marketing'];
@@ -242,9 +242,7 @@ function JobFinderContent({ navigation }) {
   };
 
   const openLink = (url) => {
-    Linking.openURL(url).catch(() =>
-      Alert.alert('Could not open link', 'Please try again later.')
-    );
+    openExternalUrl(url);
   };
 
   const titles = { list: 'Job Search', detail: 'Job Details' };

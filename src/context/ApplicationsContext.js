@@ -10,6 +10,7 @@ import React, {
 import { supabase } from '@config/supabase';
 import { useProfile } from './ProfileContext';
 import { isGuestUser } from '../features/auth/guestAccount';
+import { isHttpUrl } from '../utils/openExternalUrl';
 
 const ApplicationsContext = createContext(null);
 
@@ -37,9 +38,32 @@ const SAMPLE_JOB_BRANDS = {
 
 function getJobIdentity(job) {
   return {
-    source: job.sourceType || job.provider || 'sample',
+    source: String(job.sourceType || job.provider || 'sample'),
     externalJobId: String(job.externalJobId ?? job.id),
   };
+}
+
+function getSafeApplyUrl(job) {
+  const value = job.link || job.applyUrl;
+  if (typeof value !== 'string') return null;
+
+  const url = value.trim();
+  return url.length <= 2048 && isHttpUrl(url) ? url : null;
+}
+
+function getApplicationFieldError(job, source, externalJobId) {
+  const fields = [
+    ['title', String(job.title || 'Untitled role'), 300],
+    ['company', job.company ? String(job.company) : '', 200],
+    ['location', job.location ? String(job.location) : '', 200],
+    ['source', source, 100],
+    ['external job ID', externalJobId, 200],
+  ];
+  const invalidField = fields.find(([, fieldValue, maxLength]) => fieldValue.length > maxLength);
+
+  return invalidField
+    ? 'This listing has a field that exceeds the supported length and cannot be tracked.'
+    : '';
 }
 
 function formatDate(value) {
@@ -87,7 +111,7 @@ function createApplicationPayload(job, userId, notes = '') {
     title: String(job.title || 'Untitled role'),
     company: job.company ? String(job.company) : null,
     location: job.location ? String(job.location) : null,
-    apply_url: job.link || job.applyUrl ? String(job.link || job.applyUrl) : null,
+    apply_url: getSafeApplyUrl(job),
     status: STATUS_TO_CODE.Applied,
     notes: notes || null,
   };
@@ -205,6 +229,12 @@ export function ApplicationsProvider({ children }) {
       }
 
       const { source, externalJobId } = getJobIdentity(job);
+      const fieldError = getApplicationFieldError(job, source, externalJobId);
+      if (fieldError) {
+        setMutationError(fieldError);
+        return { added: false, existing: null, error: fieldError };
+      }
+
       const existing = applicationsRef.current.find(
         (application) =>
           application.source === source && application.externalJobId === externalJobId,
@@ -220,7 +250,7 @@ export function ApplicationsProvider({ children }) {
           title: String(job.title || 'Untitled role'),
           company: job.company || '',
           location: job.location || '',
-          link: job.link || job.applyUrl || '',
+          link: getSafeApplyUrl(job) || '',
         },
         source,
         externalJobId,
@@ -363,8 +393,13 @@ export function ApplicationsProvider({ children }) {
   );
 
   const updateNotes = useCallback(
-    (applicationId, notes) =>
-      updateApplication(applicationId, { notes }, { notes: notes || null }),
+    (applicationId, notes) => {
+      if (notes.length > 5000) {
+        setMutationError('Notes can be at most 5000 characters.');
+        return Promise.resolve(false);
+      }
+      return updateApplication(applicationId, { notes }, { notes: notes || null });
+    },
     [updateApplication],
   );
 

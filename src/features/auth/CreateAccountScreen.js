@@ -236,16 +236,34 @@ export default function CreateAccountScreen({ navigation }) {
     });
 
     // Refresh the session so the app sees the account as a full (non-guest) account.
-    await supabase.auth.refreshSession();
+    let refreshFailed = false;
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      refreshFailed = !!error || !data.session;
+    } catch {
+      refreshFailed = true;
+    }
+
+    let sessionRefreshFailed = false;
+    if (refreshFailed) {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        sessionRefreshFailed = !!error || !data.user;
+      } catch {
+        sessionRefreshFailed = true;
+      }
+    }
 
     setLoading(false);
 
     showAlert(
       'Account created!',
-      (profileError
-        ? 'Your account is ready and your progress is saved to it, but we could not save your details. You can add them on your Profile screen.'
-        : 'Your account is ready and your progress is saved to it.') +
-        (hasGuestLogin ? ' From now on, log in with your email and password instead of your username.' : ''),
+      sessionRefreshFailed
+        ? 'Your account was created, but we could not refresh your sign-in. Please sign in again.'
+        : (profileError
+            ? 'Your account is ready and your progress is saved to it, but we could not save your details. You can add them on your Profile screen.'
+            : 'Your account is ready and your progress is saved to it.') +
+          (hasGuestLogin ? ' From now on, log in with your email and password instead of your username.' : ''),
       () => navigation?.goBack(),
     );
   };

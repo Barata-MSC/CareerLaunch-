@@ -80,6 +80,7 @@ Deno.serve(async (req) => {
     email,
     email_confirm: true,
     user_metadata: { ...user.user_metadata, is_guest: false },
+    app_metadata: { ...(user.app_metadata ?? {}), is_guest: false },
   });
 
   if (error) {

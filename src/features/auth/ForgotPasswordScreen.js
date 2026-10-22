@@ -55,21 +55,6 @@ export default function ForgotPasswordScreen({ navigation, route }) {
     setLoading(true);
 
     try {
-      const { data: emailExists, error: emailCheckError } = await supabase.rpc(
-        'does_auth_email_exist',
-        { candidate_email: trimmed },
-      );
-
-      if (emailCheckError) {
-        setFormError('Could not verify this email address. Please try again.');
-        return;
-      }
-
-      if (!emailExists) {
-        setFormError('Email address does not exist. Please check it or create an account.');
-        return;
-      }
-
       const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
         redirectTo: getRecoveryRedirectUrl(),
       });
@@ -131,8 +116,8 @@ export default function ForgotPasswordScreen({ navigation, route }) {
       {sent ? (
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            We've sent a link to {email.trim()} to reset your password. Check your inbox (and your
-            spam folder). The link opens the app so you can choose a new password.
+            If an account exists for this email, a reset link has been sent. Check your inbox (and
+            your spam folder). The link opens the app so you can choose a new password.
           </Text>
         </View>
       ) : null}
