@@ -22,9 +22,9 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `00-careers-layer.md` | Careers screen above the tracks | Implemented; career picker and shared registry are in use. |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
 | `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Implemented; source/license verification and human audio checks remain. |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, Nursing, and Lawyer are built and registered. All four are currently available; resolve the incomplete Lawyer expert-review sign-off before describing it as expert-reviewed. Doctor and Marine specs remain unbuilt. |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, Nursing, and Lawyer are built and registered. Lawyer is available in the app; expert review sign-off is still incomplete. Teacher and Nursing review notes record completed team review. The Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine specs exist, but their content folders are not built and `careers.js` marks them `coming-soon`. |
 | `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Implemented; guest/upgraded-account flow and server enforcement still need human verification. |
-| `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked until the coverage test passes |
+| `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked; latest coverage run on 2026-10-22 failed (0 of 6 usable queries; all returned HTTP 404). |
 | `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain. |
 | `07-ai-coach.md` | AI evaluation of typed interview answers | Ready (needs an AI key and a privacy decision) |
 | `08-voice-interview-coach.md` | Speech-to-text input for the Interview Coach (needs a development build) | Run after 07 (needs one new dependency approved) |
@@ -32,7 +32,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 
 Briefs 06 and 09 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
-Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & Tourism content (their specs do not exist yet), and exporting the resume to a file.
+Not written yet: Learning Hub content folders and courses for Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine. Their career specs exist in `docs/tasks/specs/`, and all five are marked `coming-soon` in `src/features/learning-hub/careers/careers.js`. Resume export to a file is also not written yet.
 
 ## Recommended order and dependencies
 
@@ -58,10 +58,10 @@ Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & To
 ## Human-only steps
 
 - Before any real launch, turn email confirmation back on or configure custom SMTP.
-- Adding and licensing audio files.
+- Adding and licensing audio files. Before any real launch, fill in verified attribution for `tap.mp3`, `error.mp3`, `success.mp3`, `lesson-complete.mp3`, and `quiz-pass.mp3` in `src/assets/sounds/CREDITS.md` (author/source unknown and license unverified until a human confirms them).
 - Creating API keys and storing them as Supabase secrets; applying migrations; deploying Supabase Edge Functions (the lead dev).
 - Running the job API coverage test.
-- Expert review of Lawyer, Doctor, Marine, and similar regulated career content before it is shown as available. Teacher and Nursing have completed review and are available.
+- Lawyer is available in the app; expert review sign-off is still incomplete. Obtain and record its expert review. Doctor and Marine must not be shown as available before expert review. Teacher and Nursing are available; their review notes record completed team review.
 - Approving the new voice dependency and building a development build for voice testing (brief 08).
 - Testing on real devices.
 
@@ -71,7 +71,7 @@ The team deploys functions with the Supabase CLI. These notes come from how the 
 
 - **Function layout.** One folder per function (`supabase/functions/<name>/index.ts`) and shared code in `supabase/functions/_shared/`. The existing `upgrade-guest-account` function is a single flat file, `supabase/functions/index.ts`. The briefs leave it untouched; moving it into its own folder is a separate task.
 - **Project setup.** There is no `supabase/config.toml` in the repository yet. The lead dev runs `supabase init` and `supabase link` once, and commits the result if the team agrees.
-- **Migration history.** The existing SQL files were applied by hand in the SQL editor, so the CLI has no record of them, and some file names have no timestamp prefix (for example `accounts_schema_updated.sql`). As far as I know, running `supabase db push` now could try to re-apply old files or skip the ones without a timestamp. Until the history is reconciled (for example with `supabase migration repair`), apply each new migration by pasting it into the SQL editor, one at a time, and run the RLS tests right away. The project is a single production project.
+- **Migration history.** The team reports that the existing SQL files were applied by hand in the SQL editor; this is not verified against the live Supabase project. The CLI has no record of those reported applications, and some file names have no timestamp prefix (for example `accounts_schema_updated.sql`). As far as I know, running `supabase db push` now could try to re-apply old files or skip the ones without a timestamp. Until the history is reconciled (for example with `supabase migration repair`), apply each new migration by pasting it into the SQL editor, one at a time, and run the RLS tests right away. The project is a single production project.
 - **Secrets and deploy.** `supabase secrets set NAME=value` for the secrets named in each brief, and `supabase functions deploy <name>`. Never commit a secret.
 - **Local testing.** `supabase functions serve` generally needs Docker. If nobody has it, the "serve locally" validation steps are reported as not run.
 

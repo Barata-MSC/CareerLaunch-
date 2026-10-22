@@ -21,7 +21,8 @@ career:
   learner_level: complete beginner  # who the lessons are written for
   philippines_context: true         # true = examples may use local settings, but no unverified legal or regulatory facts
   review_required: false            # true for regulated fields (Nursing, Doctor, Lawyer, Marine, Teacher, Accountancy)
-                                    # when true, status STAYS 'coming-soon' until a human flips it after expert review
+                                    # for new/review-gated careers, keep status 'coming-soon' until expert review
+                                    # Lawyer is a current exception: available in-app, with expert sign-off incomplete
   run_mode: build                   # plan = write the outline and checkpoint only, then stop; build = full build
 
 tracks:                             # ordered; at least one

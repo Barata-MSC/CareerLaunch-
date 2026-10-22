@@ -5,12 +5,12 @@ export const QUESTIONS = [
     lessonId: 'dv-1',
     question: 'What is the main purpose of data visualization?',
     answers: [
-      'To make a dataset larger',
       'To reveal patterns and communicate insight clearly',
+      'To make a dataset larger',
       'To replace statistics altogether',
       'To avoid writing explanations',
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       'Visualization turns raw numbers into a form people can understand quickly and act on.',
   },
@@ -19,19 +19,19 @@ export const QUESTIONS = [
     question: 'Why is cleaning the data before plotting important?',
     answers: [
       'It reduces the number of charts needed',
-      'It makes the chart look more colorful',
       'It prevents wrong labels, missing values, and inconsistent categories from distorting the story',
+      'It makes the chart look more colorful',
       'It removes the need for context',
     ],
-    correct: 2,
+    correct: 1,
     explanation:
       'Dirty data leads to bad assumptions and misleading visuals. Cleaning makes the chart trustworthy.',
   },
   {
     lessonId: 'dv-3',
     question: 'Which chart is most appropriate for comparing category totals?',
-    answers: ['Scatter plot', 'Bar chart', 'Histogram', 'Map'],
-    correct: 1,
+    answers: ['Scatter plot', 'Histogram', 'Bar chart', 'Map'],
+    correct: 2,
     explanation: 'Bar charts are best for comparing discrete categories such as regions or products.',
   },
   {
@@ -39,11 +39,11 @@ export const QUESTIONS = [
     question: 'What does a histogram help you see?',
     answers: [
       'Whether two variables are related',
-      'How values are distributed across a range',
       'Only the average value',
       'The date of a report',
+      'How values are distributed across a range',
     ],
-    correct: 1,
+    correct: 3,
     explanation: 'A histogram shows the shape of a distribution and reveals spread, clusters, and skew.',
   },
   {
@@ -70,23 +70,23 @@ export const QUESTIONS = [
     question: 'What is the goal of a good dashboard layout?',
     answers: [
       'To make every chart equally large',
-      'To help the viewer focus on the most important insights first',
       'To hide detail from decision-makers',
       'To use every color in the design system',
+      'To help the viewer focus on the most important insights first',
     ],
-    correct: 1,
+    correct: 3,
     explanation: 'Good dashboard layout leads the eye to the most important metrics and patterns.',
   },
   {
     lessonId: 'dv-8',
     question: 'Why is narrative important in data visualization?',
     answers: [
-      'It turns a chart into insight by explaining what it means',
       'It removes the need for any labels',
       'It replaces the need for a dataset',
+      'It turns a chart into insight by explaining what it means',
       'It guarantees the result is causal',
     ],
-    correct: 0,
+    correct: 2,
     explanation: 'A chart without explanation can be confusing. Narrative makes the takeaway clear.',
   },
   {

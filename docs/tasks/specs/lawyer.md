@@ -1,6 +1,6 @@
 # Career Spec: Lawyer
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: plan`, have a law student or lawyer review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its skills**, not a course in substantive law.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`. Lawyer is available in the app; expert review sign-off is still incomplete, so its current availability must not be described as completed expert review. Review the outline with a law student or lawyer before future content work. The content is an **orientation to the profession and its skills**, not a course in substantive law.
 
 ```yaml
 career:

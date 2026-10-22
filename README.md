@@ -39,7 +39,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 |---|---|
 | `auth/` | Authentication-related screens and flows. |
 | `dashboard/` | Main dashboard experience. |
-| `interview-coach/` | AI interview preparation experience. |
+| `interview-coach/` | Common interview questions, typed answers with local heuristic feedback, simulated voice feedback, and a session summary. |
 | `job-finder/` | Job discovery and listing experience. |
 | `job-tracker/` | Job application tracking. |
 | `learning-hub/` | Career picker, shared career/track/course registry, course navigation, lessons, quizzes, and learning progress. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, and `lawyer/`. |
@@ -59,14 +59,14 @@ The Learning Hub now has a career-first flow: learners choose a career, select o
 | Cybersecurity | Security Analyst (8); Security Governance and Compliance (6) | 14 | 140 | 140 | Available; introductory, defensive content. |
 | Teacher | Elementary Teacher (8); Secondary Teacher (7) | 15 | 150 | 150 | Available following project-owner/team review sign-off. |
 | Nursing | Nursing Student Path (8) | 8 | 80 | 80 | Available following team review, as recorded in the project checkpoint. |
-| Lawyer | Lawyer Path (8); Paralegal and Legal Support (6) | 14 | 140 | 140 | Available in the app; see the review-status note below. |
+| Lawyer | Lawyer Path (8); Paralegal and Legal Support (6) | 14 | 140 | 140 | Available in the app; expert review sign-off is still incomplete. |
 | **Added by brief 03** | **7 tracks** | **51** | **510** | **510** | **Four career folders are registered.** |
 
 Each listed course has 10 lessons and a 10-question quiz bank; a course quiz attempt uses 10 questions. The complete shared registry currently validates 10 tracks and 68 courses across the seeded career catalog, including the existing Software Engineering content. Software Engineering's UI/UX roadmap still has steps without course content; those steps remain detail-only rather than complete courses.
 
-**Review and availability caveats:** Lawyer is marked `available` in the career data, and its checkpoint records owner approval. However, the review notes still contain an incomplete sign-off and a checklist that says subject-expert confirmation should happen before availability. Do not describe Lawyer as independently expert-reviewed until that discrepancy is resolved. Teacher and Nursing checkpoints record team review/approval, but some reviewer-name/date fields remain placeholders. Nursing content is educational orientation, not clinical training; Lawyer content is introductory career orientation, not legal advice. Cybersecurity content is conceptual and defensive, not operational attack guidance.
+**Review and availability caveats:** Lawyer is available in the app; expert review sign-off is still incomplete. Its review notes are not evidence of completed expert review. Teacher and Nursing review notes record team review and approval, though some reviewer-name/date fields remain placeholders. Doctor and Marine are marked coming soon and must not be shown as available before expert review. Nursing content is educational orientation, not clinical training; Lawyer content is introductory career orientation, not legal advice. Cybersecurity content is conceptual and defensive, not operational attack guidance.
 
-The Doctor and Marine specs remain unbuilt; both careers remain unavailable. Accountancy, Civil Engineering, and Hospitality & Tourism do not yet have career-content specs. See [`docs/tasks/progress/`](docs/tasks/progress/) for the build checkpoints and [`src/features/learning-hub/README.md`](src/features/learning-hub/README.md) for the course data contract and pathway details.
+The Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine career specs exist in [`docs/tasks/specs/`](docs/tasks/specs/), but their Learning Hub content folders are not built; all five are marked `coming-soon` in `src/features/learning-hub/careers/careers.js`. See [`docs/tasks/progress/`](docs/tasks/progress/) for the build checkpoints and [`src/features/learning-hub/README.md`](src/features/learning-hub/README.md) for the course data contract and pathway details.
 
 ### Other implemented briefs
 
