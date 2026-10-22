@@ -34,6 +34,10 @@ const civilEngineeringCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/civil-engineering/courseLessons.js',
 );
+const hospitalityTourismCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/hospitality-tourism/courseLessons.js',
+);
 const moduleCache = new Map();
 const nullComponent = () => null;
 const ReactMock = {
@@ -219,6 +223,7 @@ async function run() {
     'marine',
     'accountancy',
     'civil-engineering',
+    'hospitality-tourism',
   ].includes(careerId)
     ? courses.map((course) => ({
       ...course,
@@ -232,7 +237,9 @@ async function run() {
               ? loadSourceModule(marineCourseLessonsPath).getMarineLessons(course.lessons || [])
               : careerId === 'accountancy'
                 ? loadSourceModule(accountancyCourseLessonsPath).getAccountancyLessons(course.lessons || [])
-                : loadSourceModule(civilEngineeringCourseLessonsPath).getCivilEngineeringLessons(course.lessons || []),
+                : careerId === 'civil-engineering'
+                  ? loadSourceModule(civilEngineeringCourseLessonsPath).getCivilEngineeringLessons(course.lessons || [])
+                  : loadSourceModule(hospitalityTourismCourseLessonsPath).getHospitalityTourismLessons(course.lessons || []),
     }))
     : courses;
   const references = new Set();
