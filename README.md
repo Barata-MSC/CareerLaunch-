@@ -12,6 +12,7 @@ The project brings several career-development tools together in one application:
 - [Feature Modules](#feature-modules)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
+- [Motion and Accessibility](#motion-and-accessibility)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Local Setup](#local-setup)
@@ -41,7 +42,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 | `interview-coach/` | AI interview preparation experience. |
 | `job-finder/` | Job discovery and listing experience. |
 | `job-tracker/` | Job application tracking. |
-| `learning-hub/` | Learning screens, course navigation, lessons, quizzes, and progress-related code. The visible source structure includes shared learning components and a `software-engineering/` area. |
+| `learning-hub/` | Career and track browsing, course navigation, lessons, quizzes, and progress. Shared registry/screens are in `careers/` and `shared/`; career content is in sibling folders such as `software-engineering/` and `cybersecurity/`. |
 | `profile/` | User profile experience. |
 | `resume-builder/` | Resume creation and related screens. |
 
@@ -76,6 +77,12 @@ The project uses a feature-oriented structure with shared infrastructure:
 6. **Assets (`src/assets/`)** — images and other static resources used by the application.
 7. **Supabase resources (`supabase/`)** — project-related Supabase files, if maintained in this repository.
 
+## Motion and Accessibility
+
+The app uses React Native's built-in `Animated` API; it does not add Reanimated or another animation dependency. Motion is currently restricted to the Dashboard, using `Float`, `FadeSlideIn`, `AnimatedProgressFill`, and opt-in `AppPressable` scaling from `src/components/motion/`.
+
+Dashboard quick-action icons, entrances, profile progress, and explicitly enabled press feedback animate while respecting the system reduce-motion setting. Learning Hub/course screens and stack/tab navigation remain static by design. See the [Brief 01 implementation report](docs/tasks/progress/01-animation.md) for validation, exclusions, and the remaining manual test checklist.
+
 Keep feature-specific code close to its feature. Move logic to shared components or utilities only when it is genuinely reused or needs a clear shared responsibility. Avoid putting all screen logic into `App.js`.
 
 ## Project Structure
@@ -88,7 +95,8 @@ CareerLaunch-/
 ├── .vscode/                       # VS Code workspace settings, if shared
 ├── src/
 │   ├── assets/                    # Images and other UI assets
-│   ├── components/                # Reusable UI components
+│   ├── components/                # Reusable UI components, including motion primitives
+│   │   └── motion/
 │   ├── config/                    # App configuration, including service clients
 │   ├── context/                   # React Context providers
 │   ├── features/
@@ -98,8 +106,10 @@ CareerLaunch-/
 │   │   ├── job-finder/
 │   │   ├── job-tracker/
 │   │   ├── learning-hub/
+│   │   │   ├── careers/            # Career metadata, screens, and combined registry
 │   │   │   ├── shared/             # Shared learning screens, components, and progress utilities
-│   │   │   └── software-engineering/
+│   │   │   ├── software-engineering/
+│   │   │   └── cybersecurity/
 │   │   ├── profile/
 │   │   └── resume-builder/
 │   └── navigation/                # Navigation configuration

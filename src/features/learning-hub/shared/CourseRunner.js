@@ -6,7 +6,6 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, BackHandler, View, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import AnimatedStage from '@components/motion/AnimatedStage';
 import useCourseProgress from './progress/useCourseProgress';
 import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
@@ -34,7 +33,6 @@ export default function CourseRunner({ course, navigation }) {
   );
 
   const [screen, setScreen] = useState('lessons');
-  const [stageDirection, setStageDirection] = useState(1);
   const [selectedLesson, setSelectedLesson] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -44,10 +42,7 @@ export default function CourseRunner({ course, navigation }) {
   const lastQuizPassAttemptRef = useRef('');
 
   // ---------- Navigation ----------
-  const goToLessons = () => {
-    setStageDirection(-1);
-    setScreen('lessons');
-  };
+  const goToLessons = () => setScreen('lessons');
 
   // Back button: leave the course from the main list, otherwise go back to it
   const handleBack = () => {
@@ -71,23 +66,19 @@ export default function CourseRunner({ course, navigation }) {
   // ---------- Lessons ----------
   const openLesson = (index) => {
     setSelectedLesson(index);
-    setStageDirection(1);
     setScreen('lesson');
   };
 
   const nextLesson = () => {
     if (selectedLesson < lessons.length - 1) {
-      setStageDirection(1);
       setSelectedLesson(selectedLesson + 1);
     } else {
-      setStageDirection(1);
       setScreen('lessonList');
     }
   };
 
   const previousLesson = () => {
     if (selectedLesson > 0) {
-      setStageDirection(-1);
       setSelectedLesson(selectedLesson - 1);
     }
   };
@@ -109,12 +100,10 @@ export default function CourseRunner({ course, navigation }) {
     setScore(0);
     setSaveError(false);
     lastQuizPassAttemptRef.current = '';
-    setStageDirection(1);
     setScreen('quiz');
   };
 
   const previousQuestion = () => {
-    setStageDirection(-1);
     if (questionIndex > 0) {
       const updatedAnswers = [...answers];
       if (selectedAnswer !== null) updatedAnswers[questionIndex] = selectedAnswer;
@@ -130,7 +119,6 @@ export default function CourseRunner({ course, navigation }) {
 
   const nextQuestion = () => {
     if (selectedAnswer === null) return;
-    setStageDirection(1);
 
     // Store the answer by position so going back and re-answering works
     const updatedAnswers = [...answers];
@@ -189,24 +177,17 @@ export default function CourseRunner({ course, navigation }) {
         </View>
       )}
 
-      <AnimatedStage
-        stageKey={screen === 'lesson' ? `${screen}:${selectedLesson}` : screen === 'quiz' ? `${screen}:${questionIndex}` : screen}
-        direction={stageDirection}
-      >
-        {screen === 'lessons' && (
+      {screen === 'lessons' && (
           <LessonsScreen
             course={course}
             lessons={lessons}
             onBack={handleBack}
             onOpenLesson={openLesson}
-            onStartQuiz={() => {
-              setStageDirection(1);
-              setScreen('quizIntro');
-            }}
+            onStartQuiz={() => setScreen('quizIntro')}
           />
-        )}
+      )}
 
-        {screen === 'lesson' && (
+      {screen === 'lesson' && (
           <LessonScreen
             course={course}
             lessons={lessons}
@@ -216,26 +197,23 @@ export default function CourseRunner({ course, navigation }) {
             onNext={nextLesson}
             onToggleComplete={handleToggleLesson}
           />
-        )}
+      )}
 
-        {screen === 'lessonList' && (
+      {screen === 'lessonList' && (
           <LessonListScreen
             course={course}
             lessons={lessons}
             onBack={handleBack}
             onOpenLesson={openLesson}
-            onStartQuiz={() => {
-              setStageDirection(1);
-              setScreen('quizIntro');
-            }}
+            onStartQuiz={() => setScreen('quizIntro')}
           />
-        )}
+      )}
 
-        {screen === 'quizIntro' && (
+      {screen === 'quizIntro' && (
           <QuizIntroScreen course={quizCourse} onBack={handleBack} onStart={startQuiz} />
-        )}
+      )}
 
-        {screen === 'quiz' && (
+      {screen === 'quiz' && (
           <QuizScreen
             course={quizCourse}
             questionIndex={questionIndex}
@@ -245,9 +223,9 @@ export default function CourseRunner({ course, navigation }) {
             onNext={nextQuestion}
             onBack={handleBack}
           />
-        )}
+      )}
 
-        {screen === 'result' && (
+      {screen === 'result' && (
           <ResultScreen
             course={{ ...quizCourse, lessons }}
             answers={answers}
@@ -255,14 +233,10 @@ export default function CourseRunner({ course, navigation }) {
             saveError={saveError}
             onBack={handleBack}
             onOpenLesson={openLesson}
-            onReviewLessons={() => {
-              setStageDirection(-1);
-              setScreen('lessonList');
-            }}
+            onReviewLessons={() => setScreen('lessonList')}
             onRetake={startQuiz}
           />
-        )}
-      </AnimatedStage>
+      )}
     </SafeAreaView>
   );
 }

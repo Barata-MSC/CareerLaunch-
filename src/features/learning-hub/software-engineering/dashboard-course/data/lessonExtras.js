@@ -112,7 +112,7 @@ export const EXTRAS = {
     video: pbi('Data modeling'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Read a star schema',
         task: 'Tap an item on the left, then what it means on the right.',
         pairs: [
@@ -174,7 +174,7 @@ export const EXTRAS = {
     video: pbi('Dashboards'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Match the DAX function',
         task: 'Tap a function on the left, then what it does on the right.',
         pairs: [
@@ -208,7 +208,7 @@ export const EXTRAS = {
     video: tab('Introduction'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Know the Tableau products',
         task: 'Tap an item on the left, then what it is for on the right.',
         pairs: [
@@ -244,7 +244,7 @@ export const EXTRAS = {
     video: tab('Joins and Relationships'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Fields and connections',
         task: 'Tap an item on the left, then its meaning on the right.',
         pairs: [
@@ -298,7 +298,7 @@ export const EXTRAS = {
     video: tab('Calculated fields'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Match the calculation',
         task: 'Tap an item on the left, then what it does on the right.',
         pairs: [
@@ -331,7 +331,7 @@ export const EXTRAS = {
     video: tab('Dashboards / Mini Project'),
     activities: [
       {
-        type: 'match',
+        type: 'matchPairs',
         title: 'Pick the right chart',
         task: 'Tap a chart on the left, then the question it answers on the right.',
         pairs: [

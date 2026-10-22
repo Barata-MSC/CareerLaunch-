@@ -1,4 +1,4 @@
-import { TRACKS } from '../software-engineering/SoftwareEngineerRoadmap';
+import { TRACKS } from './registry';
 
 export const CAREERS = [
   {
@@ -19,8 +19,8 @@ export const CAREERS = [
     subtitle: 'Protect systems, data, and people from digital risk.',
     icon: '🛡️',
     color: '#2E7DFF',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['cyber-security-analyst', 'cyber-grc'],
     overview:
       'Cybersecurity focuses on defending digital systems and helping organizations respond to risks, threats, and security issues.',
     skillsPreview: ['Risk awareness', 'Attention to detail', 'Critical thinking'],

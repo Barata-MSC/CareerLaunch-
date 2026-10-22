@@ -1,6 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import useReduceMotion from '../components/motion/useReduceMotion';
 
 import {
   ForgotPasswordScreen,
@@ -19,15 +18,12 @@ export default function AuthNavigator({
   recovery = null,
   onRecoveryDone,
 }) {
-  const reducedMotion = useReduceMotion();
-
   return (
     <Stack.Navigator
       initialRouteName={recovery ? 'ResetPassword' : initialRouteName}
       screenOptions={{
         headerShown: false,
-        animation: reducedMotion ? 'none' : 'slide_from_right',
-        animationDuration: 250,
+        animation: 'none',
       }}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />

@@ -1,5 +1,7 @@
 # Brief 01: Animation and Motion
 
+Current implementation is intentionally restricted to Dashboard motion; Learning Hub/course and global navigation animations are excluded. See [`progress/01-animation.md`](progress/01-animation.md) for the implemented scope, exclusions, and validation. Keep this brief as the reusable specification; update the report if scope changes.
+
 **Run `02-sfx.md` first** (it creates `AppPressable`, which this brief extends). If `AppPressable` does not exist when you start, create a minimal version with the API described in the SFX brief (`sound` prop, forwards `Pressable` props) and say so in the report.
 
 ## Prompt

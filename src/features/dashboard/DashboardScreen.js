@@ -89,6 +89,7 @@ export default function DashboardScreen({ navigation }) {
 
         <AppPressable
           style={styles.profileCard}
+          animatePress
           onPress={() => {
             navigation.navigate('Profile');
           }}
@@ -102,16 +103,14 @@ export default function DashboardScreen({ navigation }) {
               <AnimatedProgressFill progress={profileProgress * 100} style={styles.progressFill} />
             </View>
           </View>
-          <Float amplitude={4} duration={2600} phaseOffset={200}>
-            <Image
-              source={
-                profile?.avatar_url
-                  ? { uri: profile.avatar_url }
-                  : AVATAR_PLACEHOLDER
-              }
-              style={styles.avatar}
-            />
-          </Float>
+          <Image
+            source={
+              profile?.avatar_url
+                ? { uri: profile.avatar_url }
+                : AVATAR_PLACEHOLDER
+            }
+            style={styles.avatar}
+          />
         </AppPressable>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -127,7 +126,17 @@ export default function DashboardScreen({ navigation }) {
                   isPressed && styles.quickActionTileActive,
                 ]}
               >
-                <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                {shouldFloat ? (
+                  <Float
+                    amplitude={5}
+                    duration={3000 + Number(action.id) * 200}
+                    phaseOffset={Number(action.id) * 350}
+                  >
+                    <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                  </Float>
+                ) : (
+                  <Text style={styles.quickActionIcon}>{action.icon}</Text>
+                )}
                 {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
                   <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
                     <Text style={styles.lockBadgeText}>🔒</Text>
@@ -139,17 +148,12 @@ export default function DashboardScreen({ navigation }) {
             const actionButton = (
               <AppPressable
                 style={styles.quickActionWrap}
+                animatePress
                 onPressIn={() => setPressedId(action.id)}
                 onPressOut={() => setPressedId(null)}
                 onPress={() => handleQuickAction(action)}
               >
-                {shouldFloat ? (
-                  <Float amplitude={5} duration={3000 + Number(action.id) * 200} phaseOffset={Number(action.id) * 350}>
-                    {tile}
-                  </Float>
-                ) : (
-                  tile
-                )}
+                {tile}
                 <Text style={styles.quickActionLabel}>{action.label}</Text>
               </AppPressable>
             );
@@ -182,6 +186,7 @@ export default function DashboardScreen({ navigation }) {
               <AppPressable
                 key={item.label}
                 style={styles.checklistItem}
+                animatePress
                 onPress={() => handleChecklistPress(item)}
               >
                 <View
@@ -264,7 +269,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 6,
     position: 'relative',
-    alignSelf: 'center',
   },
   quickActionTileActive: {
     borderWidth: 3,

@@ -1,15 +1,13 @@
 import AppPressable from '@components/AppPressable';
-import FadeSlideIn from '@components/motion/FadeSlideIn';
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
 import { getStatusLabel } from '../courseUtils';
-import AnimatedProgressFill from '@components/motion/AnimatedProgressFill';
 
 // `lessons` already carries a derived `status` (see courseUtils.withStatus).
 export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, onStartQuiz }) {
-  const completedLessons = lessons.filter((l) => l.status === 'completed').length;
+  const completedLessons = lessons.filter((lesson) => lesson.status === 'completed').length;
   const progress = Math.round((completedLessons / lessons.length) * 100);
 
   return (
@@ -37,16 +35,19 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
           </View>
 
           <View style={styles.progressBackground}>
-            <AnimatedProgressFill progress={progress} style={styles.progressFill} />
+            <View style={[styles.progressFill, { width: `${progress}%` }]} />
           </View>
         </View>
 
         <Text style={common.sectionTitle}>Your lessons</Text>
 
         <View style={styles.lessonList}>
-          {lessons.map((lesson, index) => {
-            const card = (
-              <AppPressable style={styles.lessonCard} onPress={() => onOpenLesson(index)}>
+          {lessons.map((lesson, index) => (
+            <AppPressable
+              key={lesson.id}
+              style={styles.lessonCard}
+              onPress={() => onOpenLesson(index)}
+            >
                 <View
                   style={[
                     styles.lessonNumber,
@@ -82,17 +83,8 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
                 </View>
 
                 <Text style={common.chevron}>›</Text>
-              </AppPressable>
-            );
-
-            return index < 5 ? (
-              <FadeSlideIn key={lesson.id} delay={Math.min(index * 55, 220)}>
-                {card}
-              </FadeSlideIn>
-            ) : (
-              <React.Fragment key={lesson.id}>{card}</React.Fragment>
-            );
-          })}
+            </AppPressable>
+          ))}
         </View>
 
         <AppPressable style={common.quizButton} onPress={onStartQuiz}>
