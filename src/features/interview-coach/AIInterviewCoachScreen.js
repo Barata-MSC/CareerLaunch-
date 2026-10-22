@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 // src/screens/AIInterviewCoachScreen/AIInterviewCoachScreen.js
 // Uses only core React Native, so no extra packages are needed.
 // Simulated interview practice: pick a question, "answer" it by voice
@@ -426,13 +427,10 @@ function AIInterviewCoachContent({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <View style={styles.header}>
-        <AppPressable
+        <BackButton
           onPress={handleExit}
           style={styles.backButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-        </AppPressable>
+        />
         <Text style={styles.headerTitle}>AI Interview Coach</Text>
         <View style={styles.backButton} />
       </View>
@@ -455,8 +453,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  backButton: { width: 32, height: 32, justifyContent: 'center' },
-  backArrow: { fontSize: 26, color: '#111111', fontWeight: '400' },
+  backButton: { width: 44 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#111111' },
 
   scrollContent: { paddingHorizontal: 24, paddingBottom: 40, alignItems: 'center' },

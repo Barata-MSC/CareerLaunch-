@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -294,20 +295,7 @@ function JobApplicationTrackerContent({ navigation }) {
           <>
             {/* HEADER */}
             <View style={styles.header}>
-              <AppPressable
-                onPress={handleBack}
-                style={styles.backBtn}
-                hitSlop={{
-                  top: 10,
-                  bottom: 10,
-                  left: 10,
-                  right: 10,
-                }}
-              >
-                <Text style={styles.backText}>
-                  {'<'}
-                </Text>
-              </AppPressable>
+              <BackButton onPress={handleBack} style={styles.backBtn} />
 
               <Text style={styles.headerTitle}>
                 Application Tracker
@@ -589,12 +577,7 @@ const styles = StyleSheet.create({
   },
 
   backBtn: {
-    width: 32,
-  },
-
-  backText: {
-    fontSize: 22,
-    color: '#111827',
+    width: 44,
   },
 
   headerTitle: {

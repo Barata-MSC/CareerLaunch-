@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import { supabase } from '@config/supabase';
 import { useProfile } from '../../context/ProfileContext';
 import { getSoundEnabled, setSoundEnabled } from '../../utils/sounds';
@@ -294,9 +295,11 @@ export default function ProfileScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.headerRow}>
-            <AppPressable style={styles.backButton} onPress={() => navigation?.goBack()} sound="tap">
-              <Text style={styles.backArrow}>‹</Text>
-            </AppPressable>
+            <BackButton
+              onPress={() => navigation?.goBack()}
+              style={styles.backButton}
+              sound="tap"
+            />
 
             <Text style={styles.headerTitle}>Profile</Text>
             <View style={styles.backButton} />
@@ -346,14 +349,13 @@ export default function ProfileScreen({ navigation }) {
         >
           {/* HEADER */}
           <View style={styles.headerRow}>
-            <AppPressable
+            <BackButton
+              accessibilityLabel="Back"
               style={styles.backButton}
               onPress={() => navigation?.goBack()}
               disabled={loading}
               sound="tap"
-            >
-              <Text style={styles.backArrow}>‹</Text>
-            </AppPressable>
+            />
 
             <Text style={styles.headerTitle}>Profile</Text>
             <View style={styles.backButton} />
@@ -565,8 +567,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-  backButton: { width: 32, height: 32, justifyContent: 'center' },
-  backArrow: { fontSize: 26, color: '#111111', fontWeight: '400' },
+  backButton: { width: 44 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#111111' },
 
   avatarWrap: { alignItems: 'center', marginBottom: 24 },

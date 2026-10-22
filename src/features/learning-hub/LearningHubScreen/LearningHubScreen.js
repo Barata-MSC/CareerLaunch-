@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import AnimatedStage from '@components/motion/AnimatedStage';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
 import Float from '@components/motion/Float';
@@ -28,6 +29,7 @@ import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
 import { PURPLE } from '../shared/styles';
+import { ASSESSMENT_COPY } from '../../career-assessment/data/copy';
 
 // Every course of every track, so progress loads with one query per table.
 const ALL_COURSES = COURSES;
@@ -267,6 +269,19 @@ export default function LearningHubScreen({ navigation, route }) {
         <FadeSlideIn delay={0} enabled={!reduceMotion}>
           <Text style={styles.intro}>Pick a career to explore.</Text>
         </FadeSlideIn>
+
+        <AppPressable
+          accessibilityRole="button"
+          accessibilityLabel={ASSESSMENT_COPY.title}
+          onPress={() => navigation.navigate('CareerAssessmentIntro')}
+          style={styles.assessmentCard}
+        >
+          <View style={styles.assessmentCardBody}>
+            <Text style={styles.assessmentCardTitle}>{ASSESSMENT_COPY.title}</Text>
+            <Text style={styles.assessmentCardDescription}>{ASSESSMENT_COPY.intro}</Text>
+          </View>
+          <Text style={styles.assessmentCardArrow}>›</Text>
+        </AppPressable>
 
         {filteredCareers.length === 0 ? (
           <Text style={styles.empty}>No careers match your search</Text>
@@ -521,13 +536,7 @@ export default function LearningHubScreen({ navigation, route }) {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
       <View style={styles.header}>
-        <AppPressable
-          onPress={handleBack}
-          style={styles.backBtn}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backText}>{'<'}</Text>
-        </AppPressable>
+        <BackButton onPress={handleBack} style={styles.backBtn} />
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.backBtn} />
       </View>
@@ -584,9 +593,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  backBtn: { width: 32 },
-  backText: { fontSize: 22, color: '#111827' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#111827' },
+  backBtn: { width: 44 },
+  headerTitle: { flex: 1, textAlign: 'center', fontSize: 17, fontWeight: '700', color: '#111827' },
 
   intro: { fontSize: 13, color: '#6B7280', marginBottom: 14 },
 
@@ -618,6 +626,21 @@ const styles = StyleSheet.create({
   chipTextActive: { color: '#fff', fontWeight: '600' },
 
   listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 12, flexGrow: 1 },
+  assessmentCard: {
+    minHeight: 88,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0EBFF',
+    borderWidth: 1,
+    borderColor: '#D9CCFF',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+  },
+  assessmentCardBody: { flex: 1, gap: 5 },
+  assessmentCardTitle: { color: '#352070', fontSize: 16, fontWeight: '800' },
+  assessmentCardDescription: { color: '#514A68', fontSize: 13, lineHeight: 18 },
+  assessmentCardArrow: { color: '#5B21F5', fontSize: 28, fontWeight: '700', marginLeft: 10 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
