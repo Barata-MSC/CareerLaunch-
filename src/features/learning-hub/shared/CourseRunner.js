@@ -6,6 +6,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, BackHandler, View, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import AnimatedStage from '@components/motion/AnimatedStage';
 import useCourseProgress from './progress/useCourseProgress';
 import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
@@ -176,66 +177,77 @@ export default function CourseRunner({ course, navigation }) {
         </View>
       )}
 
-      {screen === 'lessons' && (
-        <LessonsScreen
-          course={course}
-          lessons={lessons}
-          onBack={handleBack}
-          onOpenLesson={openLesson}
-          onStartQuiz={() => setScreen('quizIntro')}
-        />
-      )}
+      <AnimatedStage
+        stageKey={screen}
+        direction={
+          screen === 'lesson' || screen === 'quiz' || screen === 'result'
+            ? 'forward'
+            : screen === 'lessonList' || screen === 'lessons'
+              ? 'back'
+              : 'none'
+        }
+      >
+        {screen === 'lessons' && (
+          <LessonsScreen
+            course={course}
+            lessons={lessons}
+            onBack={handleBack}
+            onOpenLesson={openLesson}
+            onStartQuiz={() => setScreen('quizIntro')}
+          />
+        )}
 
-      {screen === 'lesson' && (
-        <LessonScreen
-          course={course}
-          lessons={lessons}
-          lessonIndex={selectedLesson}
-          onBack={handleBack}
-          onPrevious={previousLesson}
-          onNext={nextLesson}
-          onToggleComplete={handleToggleLesson}
-        />
-      )}
+        {screen === 'lesson' && (
+          <LessonScreen
+            course={course}
+            lessons={lessons}
+            lessonIndex={selectedLesson}
+            onBack={handleBack}
+            onPrevious={previousLesson}
+            onNext={nextLesson}
+            onToggleComplete={handleToggleLesson}
+          />
+        )}
 
-      {screen === 'lessonList' && (
-        <LessonListScreen
-          course={course}
-          lessons={lessons}
-          onBack={handleBack}
-          onOpenLesson={openLesson}
-          onStartQuiz={() => setScreen('quizIntro')}
-        />
-      )}
+        {screen === 'lessonList' && (
+          <LessonListScreen
+            course={course}
+            lessons={lessons}
+            onBack={handleBack}
+            onOpenLesson={openLesson}
+            onStartQuiz={() => setScreen('quizIntro')}
+          />
+        )}
 
-      {screen === 'quizIntro' && (
-        <QuizIntroScreen course={quizCourse} onBack={handleBack} onStart={startQuiz} />
-      )}
+        {screen === 'quizIntro' && (
+          <QuizIntroScreen course={quizCourse} onBack={handleBack} onStart={startQuiz} />
+        )}
 
-      {screen === 'quiz' && (
-        <QuizScreen
-          course={quizCourse}
-          questionIndex={questionIndex}
-          selectedAnswer={selectedAnswer}
-          onSelectAnswer={setSelectedAnswer}
-          onPrevious={previousQuestion}
-          onNext={nextQuestion}
-          onBack={handleBack}
-        />
-      )}
+        {screen === 'quiz' && (
+          <QuizScreen
+            course={quizCourse}
+            questionIndex={questionIndex}
+            selectedAnswer={selectedAnswer}
+            onSelectAnswer={setSelectedAnswer}
+            onPrevious={previousQuestion}
+            onNext={nextQuestion}
+            onBack={handleBack}
+          />
+        )}
 
-      {screen === 'result' && (
-        <ResultScreen
-          course={{ ...quizCourse, lessons }}
-          answers={answers}
-          score={score}
-          saveError={saveError}
-          onBack={handleBack}
-          onOpenLesson={openLesson}
-          onReviewLessons={() => setScreen('lessonList')}
-          onRetake={startQuiz}
-        />
-      )}
+        {screen === 'result' && (
+          <ResultScreen
+            course={{ ...quizCourse, lessons }}
+            answers={answers}
+            score={score}
+            saveError={saveError}
+            onBack={handleBack}
+            onOpenLesson={openLesson}
+            onReviewLessons={() => setScreen('lessonList')}
+            onRetake={startQuiz}
+          />
+        )}
+      </AnimatedStage>
     </SafeAreaView>
   );
 }

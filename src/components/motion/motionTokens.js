@@ -5,6 +5,7 @@ export const durations = {
   reducedMotionFade: 80,
   press: 100,
   progress: 350,
+  stage: 240,
   floatHalfCycle: 1500,
 };
 
@@ -20,6 +21,7 @@ export const springs = {
 
 export const distances = {
   entrance: 8,
+  stage: 20,
   floatAmplitude: 5,
   pressScale: 0.97,
   popScale: 1.12,

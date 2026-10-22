@@ -5,6 +5,7 @@
 // so nothing about the lessons changes.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Animated,
   View,
   Text,
   TextInput,
@@ -19,6 +20,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import AppPressable from '@components/AppPressable';
+import AnimatedStage from '@components/motion/AnimatedStage';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
+import useReduceMotion from '@components/motion/useReduceMotion';
 import { COURSES, TRACKS } from '../careers/registry';
 import useAllCoursesProgress, { getCourseStatus } from '../shared/progress/useAllCoursesProgress';
 import { CAREERS, getCareerById } from '../careers/careers';
@@ -77,6 +82,7 @@ export default function LearningHubScreen({ navigation, route }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
     const careerId = route?.params?.careerId;
@@ -250,12 +256,14 @@ export default function LearningHubScreen({ navigation, route }) {
       </View>
 
       <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
-        <Text style={styles.intro}>Pick a career to explore.</Text>
+        <FadeSlideIn delay={0} enabled={!reduceMotion}>
+          <Text style={styles.intro}>Pick a career to explore.</Text>
+        </FadeSlideIn>
 
         {filteredCareers.length === 0 ? (
           <Text style={styles.empty}>No careers match your search</Text>
         ) : (
-          filteredCareers.map((career) => {
+          filteredCareers.map((career, index) => {
             const isAvailable = career.status === 'available';
             const hasPreview = !isAvailable && (career.trackIds || []).length > 0;
             const careerCourseIds = (career.trackIds || [])
@@ -267,41 +275,48 @@ export default function LearningHubScreen({ navigation, route }) {
             const percent = totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
 
             return (
-              <AppPressable
+              <FadeSlideIn
                 key={career.id}
-                accessibilityRole="button"
-                accessibilityLabel={`${career.title}, ${isAvailable ? 'available' : hasPreview ? 'lessons preview available' : career.status}`}
-                style={[styles.card, !isAvailable && !hasPreview && styles.cardMuted]}
-                onPress={() => openCareer(career)}
+                delay={Math.min(180 + index * 28, 400)}
+                enabled={!reduceMotion}
               >
-                <View style={[styles.icon, { backgroundColor: career.color }]}>
-                  <Text style={styles.iconEmoji}>{career.icon}</Text>
-                </View>
-
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{career.title}</Text>
-                  <Text style={styles.meta}>
-                    {isAvailable
-                      ? `${career.trackIds.length} tracks`
-                      : hasPreview
-                        ? 'Preview lessons'
-                        : 'Coming soon'}
-                  </Text>
-                  <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
-
-                  {isAvailable || hasPreview ? (
-                    <View style={styles.progressRow}>
-                      {renderProgress(percent)}
+                <PressScale>
+                  <AppPressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`${career.title}, ${isAvailable ? 'available' : hasPreview ? 'lessons preview available' : career.status}`}
+                    style={[styles.card, !isAvailable && !hasPreview && styles.cardMuted]}
+                    onPress={() => openCareer(career)}
+                  >
+                    <View style={[styles.icon, { backgroundColor: career.color }]}>
+                      <Text style={styles.iconEmoji}>{career.icon}</Text>
                     </View>
-                  ) : (
-                    <View style={styles.comingSoonBadge}>
-                      <Text style={styles.comingSoonLabel}>Coming soon</Text>
-                    </View>
-                  )}
-                </View>
 
-                {(isAvailable || hasPreview) && <Text style={styles.chevron}>›</Text>}
-              </AppPressable>
+                    <View style={styles.cardBody}>
+                      <Text style={styles.cardTitle}>{career.title}</Text>
+                      <Text style={styles.meta}>
+                        {isAvailable
+                          ? `${career.trackIds.length} tracks`
+                          : hasPreview
+                            ? 'Preview lessons'
+                            : 'Coming soon'}
+                      </Text>
+                      <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
+
+                      {isAvailable || hasPreview ? (
+                        <View style={styles.progressRow}>
+                          {renderProgress(percent)}
+                        </View>
+                      ) : (
+                        <View style={styles.comingSoonBadge}>
+                          <Text style={styles.comingSoonLabel}>Coming soon</Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {(isAvailable || hasPreview) && <Text style={styles.chevron}>›</Text>}
+                  </AppPressable>
+                </PressScale>
+              </FadeSlideIn>
             );
           })
         )}
@@ -317,7 +332,9 @@ export default function LearningHubScreen({ navigation, route }) {
 
     return (
       <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
-        <Text style={styles.intro}>Pick a track to see its courses.</Text>
+        <FadeSlideIn delay={0} enabled={!reduceMotion}>
+          <Text style={styles.intro}>Pick a track to see its courses.</Text>
+        </FadeSlideIn>
         {currentCareer?.status !== 'available' && (
           <View style={styles.previewNotice}>
             <Text style={styles.previewNoticeText}>
@@ -333,44 +350,47 @@ export default function LearningHubScreen({ navigation, route }) {
         {careerTracks.length === 0 ? (
           <Text style={styles.empty}>No tracks match this career yet.</Text>
         ) : (
-          careerTracks.map((track) => {
+          careerTracks.map((track, index) => {
             const meta = TRACK_META[track.name] || FALLBACK_META;
             const blurb = track.subtitle || meta.blurb;
             const comingSoon = !track.courseCount;
 
             return (
-              <AppPressable
-                key={track.name}
-                accessibilityRole="button"
-                accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
-                style={[styles.card, comingSoon && styles.cardMuted]}
-                disabled={comingSoon}
-                onPress={() => openTrack(track)}
-              >
-                <View style={[styles.icon, { backgroundColor: meta.color }]}>
-                  <Text style={styles.iconEmoji}>{meta.icon}</Text>
-                </View>
-
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>{track.title || track.name}</Text>
-                  <Text style={styles.meta}>
-                    {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
-                  </Text>
-                  {!!blurb && (
-                    <Text style={styles.desc} numberOfLines={2}>
-                      {blurb}
-                    </Text>
-                  )}
-
-                  {!comingSoon && (
-                    <View style={styles.progressRow}>
-                      {renderProgress(track.percent)}
+              <FadeSlideIn key={track.name} delay={Math.min(150 + index * 28, 400)} enabled={!reduceMotion}>
+                <PressScale>
+                  <AppPressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`${track.name}, ${comingSoon ? 'coming soon' : 'available'}`}
+                    style={[styles.card, comingSoon && styles.cardMuted]}
+                    disabled={comingSoon}
+                    onPress={() => openTrack(track)}
+                  >
+                    <View style={[styles.icon, { backgroundColor: meta.color }]}>
+                      <Text style={styles.iconEmoji}>{meta.icon}</Text>
                     </View>
-                  )}
-                </View>
 
-                {!comingSoon && <Text style={styles.chevron}>›</Text>}
-              </AppPressable>
+                    <View style={styles.cardBody}>
+                      <Text style={styles.cardTitle}>{track.title || track.name}</Text>
+                      <Text style={styles.meta}>
+                        {comingSoon ? 'Coming soon' : `${track.courseCount} courses`}
+                      </Text>
+                      {!!blurb && (
+                        <Text style={styles.desc} numberOfLines={2}>
+                          {blurb}
+                        </Text>
+                      )}
+
+                      {!comingSoon && (
+                        <View style={styles.progressRow}>
+                          {renderProgress(track.percent)}
+                        </View>
+                      )}
+                    </View>
+
+                    {!comingSoon && <Text style={styles.chevron}>›</Text>}
+                  </AppPressable>
+                </PressScale>
+              </FadeSlideIn>
             );
           })
         )}
@@ -379,7 +399,7 @@ export default function LearningHubScreen({ navigation, route }) {
   };
 
   // ---------- Step 2: courses of the chosen track ----------
-  const renderCourseCard = ({ item }) => {
+  const renderCourseCard = ({ item, index }) => {
     if (!item?.course) return null;
 
     const done = item.status === 'completed';
@@ -387,25 +407,29 @@ export default function LearningHubScreen({ navigation, route }) {
     const code = (item.course.shortCode || item.title).slice(0, 4).toUpperCase();
 
     return (
-      <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
-        <View style={styles.courseIcon}>
-          <Text style={styles.courseIconText}>{code}</Text>
-        </View>
+      <FadeSlideIn delay={Math.min(160 + index * 28, 400)} enabled={!reduceMotion}>
+        <PressScale>
+          <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openCourse(item)}>
+            <View style={styles.courseIcon}>
+              <Text style={styles.courseIconText}>{code}</Text>
+            </View>
 
-        <View style={styles.cardBody}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.meta}>{lessonCount} lessons</Text>
-          <Text style={styles.desc} numberOfLines={2}>
-            {selectedCareerId === 'teacher' ? item.course.subtitle : item.description}
-          </Text>
-        </View>
+            <View style={styles.cardBody}>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.meta}>{lessonCount} lessons</Text>
+              <Text style={styles.desc} numberOfLines={2}>
+                {selectedCareerId === 'teacher' ? item.course.subtitle : item.description}
+              </Text>
+            </View>
 
-        <View style={[styles.actionBtn, done && styles.actionBtnDone]}>
-          <Text style={[styles.actionText, done && styles.actionTextDone]}>
-            {BUTTON_LABEL[item.status] || 'Start'}
-          </Text>
-        </View>
-      </AppPressable>
+            <View style={[styles.actionBtn, done && styles.actionBtnDone]}>
+              <Text style={[styles.actionText, done && styles.actionTextDone]}>
+                {BUTTON_LABEL[item.status] || 'Start'}
+              </Text>
+            </View>
+          </AppPressable>
+        </PressScale>
+      </FadeSlideIn>
     );
   };
 
@@ -491,9 +515,11 @@ export default function LearningHubScreen({ navigation, route }) {
         <View style={styles.backBtn} />
       </View>
 
-      {view === 'careers' && renderCareers()}
-      {view === 'tracks' && renderTracks()}
-      {view === 'courses' && renderCourses()}
+      <AnimatedStage stageKey={view} direction={view === 'tracks' ? 'forward' : view === 'courses' ? 'forward' : 'none'}>
+        {view === 'careers' && renderCareers()}
+        {view === 'tracks' && renderTracks()}
+        {view === 'courses' && renderCourses()}
+      </AnimatedStage>
     </SafeAreaView>
   );
 }
