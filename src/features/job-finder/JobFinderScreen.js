@@ -7,7 +7,10 @@ import canvaIcon from '../../assets/canva.png';
 import deloitteIcon from '../../assets/deloitte.png';
 import globeIcon from '../../assets/globe.png';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import Pop from '@components/motion/Pop';
+import PressScale from '@components/motion/PressScale';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   View,
@@ -142,6 +145,44 @@ const STATUS_STYLES = {
   Interview: { bg: '#DCFCE7', fg: '#15803D' },
 };
 
+function JobCardEntrance({ itemId, eligible, delay, animatedJobIdsRef, children }) {
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    if (!eligible || animatedJobIdsRef.current.has(itemId)) return;
+    animatedJobIdsRef.current.add(itemId);
+    setShouldAnimate(true);
+  }, [animatedJobIdsRef, eligible, itemId]);
+
+  return <FadeSlideIn enabled={shouldAnimate} delay={delay}>{children}</FadeSlideIn>;
+}
+
+function TrackedJobsButton({ count, onPress }) {
+  const previousCount = useRef(count);
+  const [popCount, setPopCount] = useState(null);
+
+  useEffect(() => {
+    if (previousCount.current !== count) {
+      previousCount.current = count;
+      setPopCount(count);
+    }
+  }, [count]);
+
+  return (
+    <Pop
+      key={popCount === null ? 'initial' : popCount}
+      value={popCount !== null}
+      playOnMount={popCount !== null}
+    >
+      <PressScale>
+        <AppPressable style={styles.primaryBtn} onPress={onPress}>
+          <Text style={styles.primaryBtnText}>Tracked Jobs ({count})</Text>
+        </AppPressable>
+      </PressScale>
+    </Pop>
+  );
+}
+
 function CompanyLogo({ company, color, logo, size = 44 }) {
   if (logo) {
     return (
@@ -185,9 +226,26 @@ function JobFinderContent({ navigation }) {
   const [refreshFailed, setRefreshFailed] = useState(false);
   const [fetchedAt, setFetchedAt] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [initialAnimatedJobIds, setInitialAnimatedJobIds] = useState(null);
+  const initialAnimationOrderRef = useRef(new Map());
+  const animatedJobIdsRef = useRef(new Set());
+  const initialBatchCapturedRef = useRef(false);
 
   // Shared with JobApplicationTracker
   const { applications, isJobTracked, addApplication } = useApplications();
+
+  const storeJobs = (nextJobs) => {
+    if (!initialBatchCapturedRef.current && nextJobs.length > 0) {
+      const firstBatch = nextJobs.slice(0, 6);
+      const ids = new Set(firstBatch.map((job) => job.id));
+      initialAnimationOrderRef.current = new Map(
+        firstBatch.map((job, index) => [job.id, index]),
+      );
+      initialBatchCapturedRef.current = true;
+      setInitialAnimatedJobIds(ids);
+    }
+    setJobs(nextJobs);
+  };
 
   useEffect(() => {
     let active = true;
@@ -195,7 +253,7 @@ function JobFinderContent({ navigation }) {
     const setSampleFallback = () => {
       if (!active) return;
       const sampleJobs = category === 'All' ? JOBS : JOBS.filter((job) => job.category === category);
-      setJobs(sampleJobs);
+      storeJobs(sampleJobs);
       setShowingSamples(true);
       setRefreshFailed(false);
       setFetchedAt(null);
@@ -234,7 +292,7 @@ function JobFinderContent({ navigation }) {
         }));
 
         if (!active) return;
-        setJobs(providerJobs);
+        storeJobs(providerJobs);
         setShowingSamples(false);
         setRefreshFailed(Boolean(data.error));
         setFetchedAt(data.fetchedAt || null);
@@ -345,27 +403,40 @@ function JobFinderContent({ navigation }) {
   const renderJobCard = ({ item }) => {
     const applied = isJobTracked(item);
     return (
-      <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
-        <CompanyLogo company={item.company} color={item.color} logo={item.logo} />
-        <View style={styles.cardBody}>
-          <Text style={styles.jobTitle}>{item.title}</Text>
-          <Text style={styles.company}>{item.company}</Text>
-          <Text style={styles.meta} numberOfLines={1}>
-            {[item.location, item.type].filter(Boolean).join(' · ')}
-          </Text>
-          <Text style={styles.desc} numberOfLines={2}>
-            {item.description}
-          </Text>
-        </View>
-        <AppPressable
-          style={[styles.applyBtn, applied && styles.applyBtnDone]}
-          onPress={() => handleApply(item)}
-        >
-          <Text style={[styles.applyText, applied && styles.applyTextDone]}>
-            {applied ? 'Tracked' : 'Track'}
-          </Text>
-        </AppPressable>
-      </AppPressable>
+      <JobCardEntrance
+        itemId={item.id}
+        eligible={initialAnimatedJobIds?.has(item.id) || false}
+        delay={Math.min((initialAnimationOrderRef.current.get(item.id) || 0) * 65, 325)}
+        animatedJobIdsRef={animatedJobIdsRef}
+      >
+        <PressScale>
+          <AppPressable style={styles.card} activeOpacity={0.85} onPress={() => openDetail(item)}>
+            <CompanyLogo company={item.company} color={item.color} logo={item.logo} />
+            <View style={styles.cardBody}>
+              <Text style={styles.jobTitle}>{item.title}</Text>
+              <Text style={styles.company}>{item.company}</Text>
+              <Text style={styles.meta} numberOfLines={1}>
+                {[item.location, item.type].filter(Boolean).join(' · ')}
+              </Text>
+              <Text style={styles.desc} numberOfLines={2}>
+                {item.description}
+              </Text>
+            </View>
+            <Pop value={applied}>
+              <PressScale>
+                <AppPressable
+                  style={[styles.applyBtn, applied && styles.applyBtnDone]}
+                  onPress={() => handleApply(item)}
+                >
+                  <Text style={[styles.applyText, applied && styles.applyTextDone]}>
+                    {applied ? 'Tracked' : 'Track'}
+                  </Text>
+                </AppPressable>
+              </PressScale>
+            </Pop>
+          </AppPressable>
+        </PressScale>
+      </JobCardEntrance>
     );
   };
 
@@ -388,13 +459,16 @@ function JobFinderContent({ navigation }) {
           {CATEGORIES.map((c) => {
             const active = c === category;
             return (
-              <AppPressable
-                key={c}
-                style={[styles.chip, active && styles.chipActive]}
-                onPress={() => setCategory(c)}
-              >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>{c}</Text>
-              </AppPressable>
+              <Pop key={c} value={active}>
+                <PressScale>
+                  <AppPressable
+                    style={[styles.chip, active && styles.chipActive]}
+                    onPress={() => setCategory(c)}
+                  >
+                    <Text style={[styles.chipText, active && styles.chipTextActive]}>{c}</Text>
+                  </AppPressable>
+                </PressScale>
+              </Pop>
             );
           })}
         </ScrollView>
@@ -428,22 +502,24 @@ function JobFinderContent({ navigation }) {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           loadingJobs ? (
-            <View style={styles.loadingJobs}>
-              <ActivityIndicator size="small" color={PURPLE} />
-              <Text style={styles.empty}>Loading listings...</Text>
-            </View>
+            <FadeSlideIn>
+              <View style={styles.loadingJobs}>
+                <ActivityIndicator size="small" color={PURPLE} />
+                <Text style={styles.empty}>Loading listings...</Text>
+              </View>
+            </FadeSlideIn>
           ) : (
-            <Text style={styles.empty}>No jobs match your search. Try another keyword or category.</Text>
+            <FadeSlideIn>
+              <Text style={styles.empty}>No jobs match your search. Try another keyword or category.</Text>
+            </FadeSlideIn>
           )
         }
       />
 
-      <AppPressable
-        style={styles.primaryBtn}
+      <TrackedJobsButton
+        count={applications.length}
         onPress={() => navigation && navigation.navigate('JobApplicationTracker')}
-      >
-        <Text style={styles.primaryBtnText}>Tracked Jobs ({applications.length})</Text>
-      </AppPressable>
+      />
     </View>
   );
 
@@ -462,33 +538,51 @@ function JobFinderContent({ navigation }) {
     return (
       <ScrollView contentContainerStyle={styles.detailContent}>
         <View style={styles.detailHeader}>
-          <CompanyLogo company={job.company} color={job.color} logo={job.logo} size={64} />
-          <Text style={styles.detailTitle}>{job.title}</Text>
+          <Pop value playOnMount>
+            <CompanyLogo company={job.company} color={job.color} logo={job.logo} size={64} />
+          </Pop>
+          <FadeSlideIn delay={40}>
+            <Text style={styles.detailTitle}>{job.title}</Text>
+          </FadeSlideIn>
         </View>
 
-        {rows.map(([label, value]) => (
-          <View key={label} style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{label}</Text>
-            <Text style={styles.detailValue}>{value}</Text>
+        <FadeSlideIn delay={80}>
+          <View>
+            {rows.map(([label, value]) => (
+              <View key={label} style={styles.detailRow}>
+                <Text style={styles.detailLabel}>{label}</Text>
+                <Text style={styles.detailValue}>{value}</Text>
+              </View>
+            ))}
           </View>
-        ))}
+        </FadeSlideIn>
 
-        <Text style={styles.detailSectionTitle}>Description</Text>
-        <Text style={styles.detailDesc}>{job.description}</Text>
+        <FadeSlideIn delay={100}>
+          <View>
+            <Text style={styles.detailSectionTitle}>Description</Text>
+            <Text style={styles.detailDesc}>{job.description}</Text>
+          </View>
+        </FadeSlideIn>
 
-        <AppPressable onPress={() => openLink(job.link || job.applyUrl)}>
-          <Text style={styles.link}>{job.link || job.applyUrl}</Text>
-        </AppPressable>
+        <PressScale>
+          <AppPressable onPress={() => openLink(job.link || job.applyUrl)}>
+            <Text style={styles.link}>{job.link || job.applyUrl}</Text>
+          </AppPressable>
+        </PressScale>
 
-        <AppPressable
-          style={[styles.primaryBtn, applied && styles.primaryBtnDone]}
-          onPress={() => handleApply(job)}
-        >
+        <PressScale>
+          <AppPressable
+            style={[styles.primaryBtn, applied && styles.primaryBtnDone]}
+            onPress={() => handleApply(job)}
+          >
             <Text style={styles.primaryBtnText}>{applied ? 'Tracked' : 'Track job'}</Text>
-        </AppPressable>
-        <AppPressable style={styles.secondaryBtn} onPress={() => setView('list')}>
-          <Text style={styles.secondaryBtnText}>Back to job list</Text>
-        </AppPressable>
+          </AppPressable>
+        </PressScale>
+        <PressScale>
+          <AppPressable style={styles.secondaryBtn} onPress={() => setView('list')}>
+            <Text style={styles.secondaryBtnText}>Back to job list</Text>
+          </AppPressable>
+        </PressScale>
       </ScrollView>
     );
   };
