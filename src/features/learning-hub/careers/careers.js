@@ -95,10 +95,11 @@ export const CAREERS = [
     icon: '📊',
     color: '#22C55E',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['acct-foundations', 'acct-practice'],
     overview:
       'Accountancy focuses on financial records, reporting, and analysis that support planning, compliance, and informed business decisions.',
     skillsPreview: ['Accuracy', 'Analysis', 'Organization'],
+    educationalNote: 'Educational orientation, not accounting, tax, or financial advice.',
   },
   {
     id: 'civil-engineering',
@@ -107,10 +108,11 @@ export const CAREERS = [
     icon: '🏗️',
     color: '#F97316',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['civ-structures-construction', 'civ-infrastructure-environment'],
     overview:
       'Civil engineering brings together planning, structural thinking, and project coordination to shape roads, buildings, and public infrastructure.',
     skillsPreview: ['Planning', 'Design thinking', 'Problem solving'],
+    educationalNote: 'Educational orientation, not engineering design guidance.',
   },
   {
     id: 'hospitality-tourism',

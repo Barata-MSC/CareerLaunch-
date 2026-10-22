@@ -11,6 +11,8 @@ import {
 } from '../nursing';
 import { tracks as teacherTracks, courses as teacherCourses } from '../teacher';
 import { tracks as doctorTracks, courses as doctorCourses } from '../doctor';
+import { tracks as accountancyTracks, courses as accountancyCourses } from '../accountancy';
+import { tracks as civilEngineeringTracks, courses as civilEngineeringCourses } from '../civil-engineering';
 import { tracks as marineTracks, courses as marineCourses } from '../marine';
 import {
   tracks as hospitalityTourismTracks,
@@ -133,6 +135,16 @@ export const CAREER_CONTENT = [
     careerId: 'hospitality-tourism',
     tracks: hospitalityTourismTracks,
     courses: hospitalityTourismCourses,
+  },
+  {
+    careerId: 'accountancy',
+    tracks: accountancyTracks,
+    courses: accountancyCourses,
+  },
+  {
+    careerId: 'civil-engineering',
+    tracks: civilEngineeringTracks,
+    courses: civilEngineeringCourses,
   },
 ];
 
