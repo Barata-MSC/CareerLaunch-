@@ -13,6 +13,10 @@ import PressScale from '@components/motion/PressScale';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
+  BackHandler,
+  Modal,
+  Pressable,
   View,
   Text,
   TextInput,
@@ -31,10 +35,22 @@ import { useProfile } from '../../context/ProfileContext';
 import AccountGate from '../../components/AccountGate';
 import { supabase } from '../../config/supabase';
 import { openExternalUrl } from '../../utils/openExternalUrl';
+import { durations, easings, distances } from '@components/motion/motionTokens';
+import useReduceMotion from '@components/motion/useReduceMotion';
+import {
+  countJobFilters,
+  createEmptyJobFilters,
+  DATE_POSTED_OPTIONS,
+  EMPLOYMENT_TYPES,
+  getJobFilterSummary,
+  JOB_CATEGORIES,
+  JOB_LOCATIONS,
+  JOB_REQUIREMENTS,
+  removeJobFilter,
+} from './jobSearchOptions';
 
 const PURPLE = '#5B21D6';
 const SEARCH_PLACEHOLDER = '#9CA3AF';
-const CATEGORIES = ['All', 'IT', 'Design', 'Finance', 'Marketing'];
 
 const JOBS = [
   {
@@ -185,6 +201,37 @@ function TrackedJobsButton({ count, onPress }) {
   );
 }
 
+function FiltersButton({ count, onPress }) {
+  const previousCount = useRef(count);
+  const [popCount, setPopCount] = useState(null);
+
+  useEffect(() => {
+    if (previousCount.current !== count) {
+      previousCount.current = count;
+      setPopCount(count);
+    }
+  }, [count]);
+
+  return (
+    <Pop
+      key={popCount === null ? 'initial' : popCount}
+      value={popCount !== null}
+      playOnMount={popCount !== null}
+    >
+      <PressScale>
+        <AppPressable
+          style={[styles.filterButton, count > 0 && styles.filterButtonActive]}
+          onPress={onPress}
+        >
+          <Text style={[styles.filterButtonText, count > 0 && styles.filterButtonTextActive]}>
+            Filter{count > 0 ? ` · ${count}` : ''}
+          </Text>
+        </AppPressable>
+      </PressScale>
+    </Pop>
+  );
+}
+
 function CompanyLogo({ company, color, logo, size = 44 }) {
   if (logo) {
     return (
@@ -233,11 +280,295 @@ function SearchIcon() {
   );
 }
 
+function FilterChoice({ label, selected, onPress }) {
+  return (
+    <Pop value={selected}>
+      <PressScale>
+        <AppPressable
+          accessibilityRole="button"
+          accessibilityState={{ selected }}
+          style={[styles.filterChoice, selected && styles.filterChoiceSelected]}
+          onPress={onPress}
+        >
+          <Text style={[styles.filterChoiceText, selected && styles.filterChoiceTextSelected]}>
+            {label}
+          </Text>
+        </AppPressable>
+      </PressScale>
+    </Pop>
+  );
+}
+
+function ActiveFilterChip({ filter, exiting, onRemove, onRemoved }) {
+  const [removing, setRemoving] = useState(false);
+  const removalStartedRef = useRef(false);
+  const removalAnimationRef = useRef(null);
+  const opacity = useRef(new Animated.Value(1)).current;
+  const reduceMotion = useReduceMotion();
+  const nativeDriver = Platform.OS !== 'web';
+
+  useEffect(() => {
+    if (!exiting) {
+      removalAnimationRef.current?.stop();
+      removalAnimationRef.current = null;
+      removalStartedRef.current = false;
+      setRemoving(false);
+      opacity.setValue(1);
+    }
+  }, [exiting, opacity]);
+
+  useEffect(() => () => removalAnimationRef.current?.stop(), []);
+
+  const handleRemove = () => {
+    if (removalStartedRef.current) return;
+    removalStartedRef.current = true;
+    setRemoving(true);
+    onRemove(filter);
+    const animation = Animated.timing(opacity, {
+      toValue: 0,
+      duration: reduceMotion ? durations.reducedMotionFade : durations.press,
+      useNativeDriver: nativeDriver,
+    });
+    removalAnimationRef.current = animation;
+    animation.start(({ finished }) => {
+      removalAnimationRef.current = null;
+      if (finished) onRemoved(filter.key, filter.value);
+    });
+  };
+
+  return (
+    <FadeSlideIn>
+      <Animated.View style={{ opacity }}>
+        <AppPressable
+          disabled={removing}
+          style={styles.summaryChip}
+          onPress={handleRemove}
+          accessibilityLabel={`Remove ${filter.label} filter`}
+        >
+          <Text style={styles.summaryChipText}>{filter.label} ×</Text>
+        </AppPressable>
+      </Animated.View>
+    </FadeSlideIn>
+  );
+}
+
+function FilterSheet({ visible, initialFilters, onClose, onApply }) {
+  const [draft, setDraft] = useState(createEmptyJobFilters);
+  const reduceMotion = useReduceMotion();
+  const reduceMotionRef = useRef(reduceMotion);
+  reduceMotionRef.current = reduceMotion;
+  const translateY = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const animationRef = useRef(null);
+  const closingRef = useRef(false);
+  const nativeDriver = Platform.OS !== 'web';
+  const initialFiltersRef = useRef(initialFilters);
+  initialFiltersRef.current = initialFilters;
+
+  useEffect(() => {
+    if (!visible) return undefined;
+    closingRef.current = false;
+    const shouldReduceMotion = reduceMotionRef.current;
+    setDraft({
+      ...initialFiltersRef.current,
+      employmentTypes: [...initialFiltersRef.current.employmentTypes],
+      jobRequirements: [...initialFiltersRef.current.jobRequirements],
+    });
+    translateY.setValue(shouldReduceMotion ? 0 : distances.entrance * 3);
+    opacity.setValue(0);
+    backdropOpacity.setValue(0);
+    const animation = Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: shouldReduceMotion ? durations.reducedMotionFade : durations.entrance,
+        easing: easings.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: shouldReduceMotion ? durations.reducedMotionFade : durations.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: shouldReduceMotion ? durations.reducedMotionFade : durations.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+    ]);
+    animationRef.current = animation;
+    animation.start();
+    return () => {
+      animation.stop();
+      if (animationRef.current === animation) animationRef.current = null;
+    };
+  }, [nativeDriver, translateY, opacity, backdropOpacity, visible]);
+
+  useEffect(() => {
+    if (!visible || !reduceMotion || closingRef.current) return;
+    animationRef.current?.stop();
+    animationRef.current = null;
+    translateY.setValue(0);
+    opacity.setValue(1);
+    backdropOpacity.setValue(1);
+  }, [reduceMotion, visible, translateY, opacity, backdropOpacity]);
+
+  const closeSheet = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    if (reduceMotion) {
+      animationRef.current?.stop();
+      animationRef.current = null;
+      onClose();
+      return;
+    }
+    animationRef.current?.stop();
+    const animation = Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: distances.entrance * 3,
+        duration: durations.entrance,
+        easing: easings.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: durations.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: durations.entrance,
+        useNativeDriver: nativeDriver,
+      }),
+    ]);
+    animationRef.current = animation;
+    animation.start(({ finished }) => {
+      animationRef.current = null;
+      if (finished) onClose();
+    });
+  };
+
+  const toggleArrayValue = (field, value) => {
+    setDraft((current) => ({
+      ...current,
+      [field]: current[field].includes(value)
+        ? current[field].filter((item) => item !== value)
+        : [...current[field], value],
+    }));
+  };
+
+  const renderChoices = (options, selectedValues, onSelect) => (
+    <View style={styles.filterChoices}>
+      {options.map((option) => (
+        <FilterChoice
+          key={option.value}
+          label={option.label}
+          selected={selectedValues.includes(option.value)}
+          onPress={() => onSelect(option.value)}
+        />
+      ))}
+    </View>
+  );
+
+  const sheet = (
+    <Animated.View style={[styles.sheetOverlay, { opacity: backdropOpacity }]}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={closeSheet} accessibilityLabel="Close filters" />
+      <Animated.View style={[styles.filterSheet, { opacity, transform: [{ translateY }] }]}>
+        <View style={styles.sheetHandle} />
+        <View style={styles.sheetHeader}>
+          <Text style={styles.sheetTitle}>Filters</Text>
+          <AppPressable onPress={closeSheet} hitSlop={10}>
+            <Text style={styles.sheetClose}>Close</Text>
+          </AppPressable>
+        </View>
+
+        <ScrollView
+          style={styles.sheetScroll}
+          contentContainerStyle={styles.sheetScrollContent}
+          showsVerticalScrollIndicator
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.filterGroupTitle}>Job type</Text>
+          {renderChoices(EMPLOYMENT_TYPES, draft.employmentTypes, (value) =>
+            toggleArrayValue('employmentTypes', value))}
+          <Text style={styles.filterGroupHint}>Select any that fit; selected types are combined.</Text>
+
+          <Text style={styles.filterGroupTitle}>Remote only</Text>
+          <Pop value={draft.remoteOnly}>
+            <PressScale>
+              <AppPressable
+                accessibilityRole="switch"
+                accessibilityState={{ checked: draft.remoteOnly }}
+                style={[styles.remoteToggle, draft.remoteOnly && styles.remoteToggleSelected]}
+                onPress={() => setDraft((current) => ({ ...current, remoteOnly: !current.remoteOnly }))}
+              >
+                <Text style={[styles.remoteToggleText, draft.remoteOnly && styles.remoteToggleTextSelected]}>
+                  {draft.remoteOnly ? 'On' : 'Off'}
+                </Text>
+              </AppPressable>
+            </PressScale>
+          </Pop>
+
+          <Text style={styles.filterGroupTitle}>Date posted</Text>
+          {renderChoices(DATE_POSTED_OPTIONS, [draft.datePosted], (value) =>
+            setDraft((current) => ({ ...current, datePosted: value })))}
+
+          <Text style={styles.filterGroupTitle}>Experience</Text>
+          {renderChoices(JOB_REQUIREMENTS, draft.jobRequirements, (value) =>
+            toggleArrayValue('jobRequirements', value))}
+          <Text style={styles.filterGroupHint}>Selected experience options are combined.</Text>
+
+          <Text style={styles.filterGroupTitle}>Location</Text>
+          {renderChoices(JOB_LOCATIONS, [draft.location], (value) =>
+            setDraft((current) => ({ ...current, location: value })))}
+        </ScrollView>
+
+        <View style={styles.sheetFooter}>
+          <AppPressable onPress={() => setDraft(createEmptyJobFilters())}>
+            <Text style={styles.clearAllText}>Clear all</Text>
+          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.showResultsButton}
+              onPress={() => {
+                onApply(draft);
+                closeSheet();
+              }}
+            >
+              <Text style={styles.showResultsText}>Show results</Text>
+            </AppPressable>
+          </PressScale>
+        </View>
+      </Animated.View>
+    </Animated.View>
+  );
+
+  if (Platform.OS === 'web') {
+    return visible ? <View style={styles.webSheetOverlay}>{sheet}</View> : null;
+  }
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="none"
+      onRequestClose={closeSheet}
+      statusBarTranslucent
+    >
+      {sheet}
+    </Modal>
+  );
+}
+
 function JobFinderContent({ navigation }) {
   // view: 'list' | 'detail'  (tracker is now its own screen)
   const [view, setView] = useState('list');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const [appliedFilters, setAppliedFilters] = useState(createEmptyJobFilters);
+  const [exitingFilters, setExitingFilters] = useState([]);
+  const [filterSheetVisible, setFilterSheetVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
@@ -245,10 +576,12 @@ function JobFinderContent({ navigation }) {
   const [refreshFailed, setRefreshFailed] = useState(false);
   const [fetchedAt, setFetchedAt] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [filterCompatibilityWarning, setFilterCompatibilityWarning] = useState(false);
   const [initialAnimatedJobIds, setInitialAnimatedJobIds] = useState(null);
   const initialAnimationOrderRef = useRef(new Map());
   const animatedJobIdsRef = useRef(new Set());
   const initialBatchCapturedRef = useRef(false);
+  const requestIdRef = useRef(0);
 
   // Shared with JobApplicationTracker
   const { applications, isJobTracked, addApplication } = useApplications();
@@ -268,6 +601,7 @@ function JobFinderContent({ navigation }) {
 
   useEffect(() => {
     let active = true;
+    const requestId = ++requestIdRef.current;
 
     const setSampleFallback = () => {
       if (!active) return;
@@ -276,6 +610,7 @@ function JobFinderContent({ navigation }) {
       setShowingSamples(true);
       setRefreshFailed(false);
       setFetchedAt(null);
+      setFilterCompatibilityWarning(countJobFilters(appliedFilters) > 0);
     };
 
     const loadJobs = async () => {
@@ -284,11 +619,21 @@ function JobFinderContent({ navigation }) {
       setShowingSamples(false);
       setRefreshFailed(false);
       setFetchedAt(null);
+      setFilterCompatibilityWarning(false);
 
       try {
         const { data, error } = await supabase.functions.invoke('job-search', {
-          body: { category },
+          body: {
+            category,
+            searchText: submittedQuery,
+            employmentTypes: appliedFilters.employmentTypes,
+            remoteOnly: appliedFilters.remoteOnly,
+            datePosted: appliedFilters.datePosted,
+            jobRequirements: appliedFilters.jobRequirements,
+            location: appliedFilters.location,
+          },
         });
+        if (!active || requestId !== requestIdRef.current) return;
         if (error) throw error;
         if (!Array.isArray(data?.jobs)) throw new Error('Invalid job-search response.');
 
@@ -310,15 +655,18 @@ function JobFinderContent({ navigation }) {
           logo: null,
         }));
 
-        if (!active) return;
         storeJobs(providerJobs);
         setShowingSamples(false);
         setRefreshFailed(Boolean(data.error));
         setFetchedAt(data.fetchedAt || null);
+        setFilterCompatibilityWarning(
+          countJobFilters(appliedFilters) > 0 && data.filtersApplied !== true,
+        );
       } catch {
+        if (!active || requestId !== requestIdRef.current) return;
         setSampleFallback();
       } finally {
-        if (active) setLoadingJobs(false);
+        if (active && requestId === requestIdRef.current) setLoadingJobs(false);
       }
     };
 
@@ -326,7 +674,7 @@ function JobFinderContent({ navigation }) {
     return () => {
       active = false;
     };
-  }, [category, retryCount]);
+  }, [appliedFilters, category, retryCount, submittedQuery]);
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -340,6 +688,20 @@ function JobFinderContent({ navigation }) {
       return matchesCategory && matchesQuery;
     });
   }, [jobs, query, category]);
+  const activeFilterCount = countJobFilters(appliedFilters);
+  const activeFilterSummary = useMemo(
+    () => getJobFilterSummary(appliedFilters),
+    [appliedFilters],
+  );
+  const activeFilterKeys = new Set(
+    activeFilterSummary.map((filter) => `${filter.key}:${filter.value}`),
+  );
+  const visibleFilterSummary = [
+    ...activeFilterSummary.map((filter) => ({ ...filter, exiting: false })),
+    ...exitingFilters
+      .filter((filter) => !activeFilterKeys.has(`${filter.key}:${filter.value}`))
+      .map((filter) => ({ ...filter, exiting: true })),
+  ];
 
   const updatedLabel = () => {
     if (!fetchedAt) return '';
@@ -359,6 +721,45 @@ function JobFinderContent({ navigation }) {
   const openDetail = (job) => {
     setSelectedJob(job);
     setView('detail');
+  };
+
+  const handleSearchSubmit = () => {
+    const nextQuery = query.trim();
+    if (nextQuery === submittedQuery) {
+      setRetryCount((count) => count + 1);
+    } else {
+      setSubmittedQuery(nextQuery);
+    }
+  };
+
+  const applyFilters = (filters) => {
+    setAppliedFilters(filters);
+    setSubmittedQuery(query.trim());
+  };
+
+  const clearAppliedFilters = () => {
+    setAppliedFilters(createEmptyJobFilters());
+    setSubmittedQuery(query.trim());
+  };
+
+  const removeAppliedFilter = (key, value) => {
+    setAppliedFilters((current) => removeJobFilter(current, key, value));
+    setSubmittedQuery(query.trim());
+  };
+
+  const startRemovingFilter = (filter) => {
+    setExitingFilters((current) => (
+      current.some((item) => item.key === filter.key && item.value === filter.value)
+        ? current
+        : [...current, filter]
+    ));
+    removeAppliedFilter(filter.key, filter.value);
+  };
+
+  const finishRemovingFilter = (key, value) => {
+    setExitingFilters((current) => current.filter(
+      (filter) => filter.key !== key || filter.value !== value,
+    ));
   };
 
   // Apply -> confirmation -> record in ApplicationsContext -> visible in Application Tracker
@@ -469,23 +870,27 @@ function JobFinderContent({ navigation }) {
           placeholderTextColor={SEARCH_PLACEHOLDER}
           value={query}
           onChangeText={setQuery}
+          onSubmitEditing={handleSearchSubmit}
           returnKeyType="search"
         />
       </View>
 
-      <Text style={styles.sectionLabel}>Categories</Text>
+      <View style={styles.categoryHeader}>
+        <Text style={styles.sectionLabel}>Categories</Text>
+        <FiltersButton count={activeFilterCount} onPress={() => setFilterSheetVisible(true)} />
+      </View>
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={true} contentContainerStyle={styles.chipRow}>
-          {CATEGORIES.map((c) => {
-            const active = c === category;
+          {JOB_CATEGORIES.map(({ value, label }) => {
+            const active = value === category;
             return (
-              <Pop key={c} value={active}>
+              <Pop key={value} value={active}>
                 <PressScale>
                   <AppPressable
                     style={[styles.chip, active && styles.chipActive]}
-                    onPress={() => setCategory(c)}
+                    onPress={() => setCategory(value)}
                   >
-                    <Text style={[styles.chipText, active && styles.chipTextActive]}>{c}</Text>
+                    <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
                   </AppPressable>
                 </PressScale>
               </Pop>
@@ -493,6 +898,39 @@ function JobFinderContent({ navigation }) {
           })}
         </ScrollView>
       </View>
+
+      {visibleFilterSummary.length > 0 && (
+        <View style={styles.summaryRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.summaryChipRow}
+          >
+            {visibleFilterSummary.map((filter) => (
+              <ActiveFilterChip
+                key={`${filter.key}:${filter.value}`}
+                filter={filter}
+                exiting={filter.exiting}
+                onRemove={startRemovingFilter}
+                onRemoved={finishRemovingFilter}
+              />
+            ))}
+            {activeFilterSummary.length > 0 && (
+              <AppPressable onPress={clearAppliedFilters} style={styles.summaryClearButton}>
+                <Text style={styles.summaryClearText}>Clear all</Text>
+              </AppPressable>
+            )}
+          </ScrollView>
+        </View>
+      )}
+
+      {filterCompatibilityWarning && (
+        <Text style={styles.filterCompatibilityWarning}>
+          {showingSamples
+            ? 'Filters are not applied to sample listings. Check your connection, or ask the lead developer to deploy the updated search function.'
+            : 'Filters need the updated job-search service. Ask the lead developer to deploy the latest Edge Function to apply them to live results.'}
+        </Text>
+      )}
 
       {loadingJobs ? null : showingSamples ? (
         <View style={styles.sampleNotice}>
@@ -530,7 +968,18 @@ function JobFinderContent({ navigation }) {
             </FadeSlideIn>
           ) : (
             <FadeSlideIn>
-              <Text style={styles.empty}>No jobs match your search. Try another keyword or category.</Text>
+              <View>
+                <Text style={styles.empty}>
+                  {activeFilterCount > 0
+                    ? 'No jobs match these filters. Try changing them or clear all filters.'
+                    : 'No jobs match your search. Try another keyword or category.'}
+                </Text>
+                {activeFilterCount > 0 && (
+                  <AppPressable style={styles.emptyClearButton} onPress={clearAppliedFilters}>
+                    <Text style={styles.emptyClearText}>Clear filters</Text>
+                  </AppPressable>
+                )}
+              </View>
             </FadeSlideIn>
           )
         }
@@ -618,6 +1067,14 @@ function JobFinderContent({ navigation }) {
 
       {view === 'list' && renderList()}
       {view === 'detail' && renderDetail()}
+      {view === 'list' && (
+        <FilterSheet
+          visible={filterSheetVisible}
+          initialFilters={appliedFilters}
+          onClose={() => setFilterSheetVisible(false)}
+          onApply={applyFilters}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -649,7 +1106,26 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
 
-  sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
+  categoryHeader: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  sectionLabel: { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#111827' },
+  filterButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF',
+  },
+  filterButtonActive: { borderColor: PURPLE, backgroundColor: '#EDE9FE' },
+  filterButtonText: { color: '#374151', fontSize: 12, fontWeight: '700' },
+  filterButtonTextActive: { color: PURPLE },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },
   chip: {
     paddingHorizontal: 16,
@@ -663,6 +1139,25 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: PURPLE, borderColor: PURPLE },
   chipText: { fontSize: 13, color: '#374151' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
+
+  summaryRow: { marginBottom: 8 },
+  summaryChipRow: { paddingHorizontal: 16, alignItems: 'center', gap: 8 },
+  summaryChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: '#EDE9FE',
+  },
+  summaryChipText: { color: PURPLE, fontSize: 11, fontWeight: '600' },
+  summaryClearButton: { paddingHorizontal: 4, paddingVertical: 6 },
+  summaryClearText: { color: PURPLE, fontSize: 11, fontWeight: '700' },
+  filterCompatibilityWarning: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    color: '#92400E',
+    fontSize: 11,
+    lineHeight: 16,
+  },
 
   listContent: { paddingHorizontal: 16, paddingBottom: 12, flexGrow: 1 },
   sampleNotice: {
@@ -730,6 +1225,100 @@ const styles = StyleSheet.create({
   secondaryBtnText: { color: PURPLE, fontSize: 14, fontWeight: '600' },
 
   empty: { textAlign: 'center', color: '#6B7280', marginTop: 40, paddingHorizontal: 24 },
+  emptyClearButton: { alignSelf: 'center', marginTop: 12, padding: 8 },
+  emptyClearText: { color: PURPLE, fontWeight: '700', fontSize: 13 },
+
+  sheetOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(17,24,39,0.45)',
+  },
+  webSheetOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+    justifyContent: 'flex-end',
+  },
+  filterSheet: {
+    width: '100%',
+    maxHeight: '86%',
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 10,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 12,
+  },
+  sheetHandle: {
+    alignSelf: 'center',
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#D1D5DB',
+    marginBottom: 10,
+  },
+  sheetHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  sheetTitle: { color: '#111827', fontSize: 17, fontWeight: '700' },
+  sheetClose: { color: PURPLE, fontSize: 13, fontWeight: '700' },
+  sheetScroll: { flexShrink: 1 },
+  sheetScrollContent: { paddingHorizontal: 20, paddingTop: 4, paddingBottom: 12 },
+  filterGroupTitle: {
+    marginTop: 16,
+    marginBottom: 9,
+    color: '#111827',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  filterGroupHint: { color: '#6B7280', fontSize: 11, marginTop: -2 },
+  filterChoices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  filterChoice: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
+  },
+  filterChoiceSelected: { backgroundColor: '#EDE9FE', borderColor: PURPLE },
+  filterChoiceText: { color: '#374151', fontSize: 12 },
+  filterChoiceTextSelected: { color: PURPLE, fontWeight: '700' },
+  remoteToggle: {
+    alignSelf: 'flex-start',
+    minWidth: 74,
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: '#F3F4F6',
+  },
+  remoteToggleSelected: { backgroundColor: '#EDE9FE' },
+  remoteToggleText: { color: '#4B5563', fontSize: 12, fontWeight: '700' },
+  remoteToggleTextSelected: { color: PURPLE },
+  sheetFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  clearAllText: { color: PURPLE, fontSize: 13, fontWeight: '700', paddingVertical: 10 },
+  showResultsButton: {
+    minWidth: 140,
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: PURPLE,
+  },
+  showResultsText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
 
   detailContent: { padding: 16 },
   detailHeader: { alignItems: 'center', marginBottom: 16 },
