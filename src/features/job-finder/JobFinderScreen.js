@@ -24,6 +24,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import Svg, { Circle, Line } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications } from '../../context/ApplicationsContext';
 import { useProfile } from '../../context/ProfileContext';
@@ -32,6 +33,7 @@ import { supabase } from '../../config/supabase';
 import { openExternalUrl } from '../../utils/openExternalUrl';
 
 const PURPLE = '#5B21D6';
+const SEARCH_PLACEHOLDER = '#9CA3AF';
 const CATEGORIES = ['All', 'IT', 'Design', 'Finance', 'Marketing'];
 
 const JOBS = [
@@ -211,6 +213,23 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
     >
       <Text style={[styles.logoText, { fontSize: size * 0.42 }]}>{company?.[0] || '?'}</Text>
     </View>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <Svg width={17} height={17} viewBox="0 0 20 20" accessibilityLabel="Search">
+      <Circle cx="8.5" cy="8.5" r="5.5" stroke={SEARCH_PLACEHOLDER} strokeWidth="1.8" fill="none" />
+      <Line
+        x1="12.5"
+        y1="12.5"
+        x2="17"
+        y2="17"
+        stroke={SEARCH_PLACEHOLDER}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </Svg>
   );
 }
 
@@ -443,10 +462,11 @@ function JobFinderContent({ navigation }) {
   const renderList = () => (
     <View style={styles.flex}>
       <View style={styles.searchBox}>
+        <SearchIcon />
         <TextInput
           style={styles.searchInput}
           placeholder="Search for jobs, companies, agencies..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={SEARCH_PLACEHOLDER}
           value={query}
           onChangeText={setQuery}
           returnKeyType="search"
@@ -624,8 +644,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
     borderRadius: 10,
     paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  searchInput: { height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
+  searchInput: { flex: 1, height: 44, fontSize: 14, paddingHorizontal: 10, color: '#111827' },
 
   sectionLabel: { marginTop: 16, marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#111827' },
   chipRow: { paddingHorizontal: 16, paddingVertical: 10 },
