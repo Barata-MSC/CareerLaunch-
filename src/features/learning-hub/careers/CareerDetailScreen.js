@@ -55,12 +55,16 @@ export default function CareerDetailScreen({ navigation, route }) {
           </View>
         </View>
 
-        {career.status !== 'available' ? (
+        {career.status !== 'available' || career.id === 'lawyer' ? (
           <View style={styles.noticeCard}>
             {career.trackIds?.length ? (
               <>
                 <Text style={styles.noticeTitle}>
-                  {career.id === 'doctor' ? 'Preview Doctor lessons' : `Preview ${career.title} lessons`}
+                  {career.id === 'lawyer'
+                    ? 'Explore Lawyer lessons'
+                    : career.id === 'doctor'
+                      ? 'Preview Doctor lessons'
+                      : `Preview ${career.title} lessons`}
                 </Text>
                 <Text style={styles.noticeText}>
                   {career.id === 'doctor'
@@ -69,7 +73,9 @@ export default function CareerDetailScreen({ navigation, route }) {
                       ? 'The Deck Officer track is available as an educational preview while expert review is pending. This content is not professional or safety training.'
                       : career.id === 'accountancy'
                         ? 'The learning path and lessons are available as an educational preview while accountancy expert review is pending. This content is not accounting, tax, or financial advice.'
-                      : 'The learning path and lessons are available as an educational preview while expert review is pending.'}
+                        : career.id === 'lawyer'
+                          ? 'Explore introductory career lessons. This content is educational and is not legal advice.'
+                          : 'The learning path and lessons are available as an educational preview while expert review is pending.'}
                 </Text>
                 <AppPressable
                   accessibilityRole="button"

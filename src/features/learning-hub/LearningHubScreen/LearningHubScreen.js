@@ -189,7 +189,7 @@ export default function LearningHubScreen({ navigation, route }) {
   };
 
   const openCareer = (career) => {
-    if (career.status === 'available') {
+    if (career.status === 'available' && career.id !== 'lawyer') {
       setSelectedCareerId(career.id);
       setQuery('');
       setView('tracks');
