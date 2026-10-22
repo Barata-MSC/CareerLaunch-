@@ -1,4 +1,53 @@
 {
-  "topLevelKeys": [],
-  "firstJob": null
+  "topLevelKeys": [
+    "status",
+    "request_id",
+    "parameters",
+    "data"
+  ],
+  "firstJob": {
+    "job_id": "NmltUEVmaWlwLUNwTFNDQUFBQUFBQT09OkVzd0JDb3dCUVVwcFZEUjBTa2wyTjNkcGNrdG1jbDlzVmxsYVZFdEdla3d4Ym1GZldGQk1MWGh6UmtSalowWk5RazFTUms1U01VaHJUMGxmTjJoRk9HbFdObUZoWjJWaU5FWnNWQzFtVDNsUk9FMHlPWEJ6Y0hSeWFYRk5PRWRhYzJSV09IcElMVmd5VkdkM01DMWxWMlpFYlMxb1pVUmxTSFU1V1RKdmF6STNRbVU1ZEhoRlN6TjRWbUpwWVVWZlJVUVNGMkl3Ym1GaGRtNWZSamRQUjNjNFkxQm5VSHA0YjFGWkdpSkJSSE55T1daU2VXVkZNVzVHTlRsUVdHVkdXRk5mVXpoNldEQmtNVzB5UTNkMw",
+    "job_title": "Software Developer (Node.js, Remote)",
+    "employer_name": "AMAGI",
+    "employer_logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZa23HPcLFcrdeOWpNgFVHTHe8zUE_qF28XKNH&s=0",
+    "employer_website": null,
+    "job_publisher": "Indeed",
+    "job_employment_type": "Full-time",
+    "job_employment_types": [
+      "FULLTIME"
+    ],
+    "job_apply_link": "https://ph.indeed.com/viewjob?jk=983c08713751c202",
+    "job_apply_is_direct": false,
+    "apply_options": [
+      {
+        "apply_link": "https://ph.indeed.com/viewjob?jk=983c08713751c202",
+        "is_direct": false,
+        "publisher": "Indeed"
+      }
+    ],
+    "job_description": "AMAGI (https://amagi.io) is looking for experienced Software Developers with strong Node.js experience to help us build software to help people around the world.\n\nWe are interested in mature candidates that seek to solve problems in our target industries using technology. The ideal candidate is intelligent, reliable, and a good person. If you use anything other than your own words to apply to this job, you will be rejected.\n\nRequired Education, Skills, and Qualifications:\n\n• Solid experience developing with JavaScript\n\n• Solid experience with Node.js\n\n• Experience working with GraphQL\n\n• Constant desire to grow and develop\n\n• Skill in writing quality, readable, and efficient code\n\n• Creative with excellent problem solving and analytical skills\n\n• Must be a team player and excellent communication skills\n\nWe especially like candidates who have:\n\n• Experience with ASTM or developing with medical devices\n\n• Participated in local technical meetups and communities\n\n• Participated in open-source projects\n\n• Ever held a leadership position in a sports team\n\n• Ever been globally ranked in a video game\n\n• Military experience\n\nJob Type: Full-time\n\nPay: Php50,000.00 - Php55,000.00 per month\n\nBenefits:\n\n• Additional leave\n\n• Flexible schedule\n\n• Flextime\n\n• Health insurance\n\n• Paid training\n\n• Pay raise\n\n• Work from home\n\nApplication Question(s):\n\n• Describe a time you were given a set of instructions that you personally disagreed with. How did you resolve the conflict?\n\n• You are asked to perform a repetitive, 2-hour manual data entry task that you believe could be automated with a quick script. The lead architect tells you: 'Do it manually, do not automate it.' What do you do?\n\nWork Location: Remote",
+    "job_is_remote": false,
+    "job_posted_at": "2 days ago",
+    "job_posted_at_timestamp": 1792454400,
+    "job_posted_at_datetime_utc": "2026-10-20T00:00:00.000Z",
+    "job_location": "Philippines",
+    "job_city": null,
+    "job_state": null,
+    "job_country": "PH",
+    "job_latitude": 12.879721,
+    "job_longitude": 121.774017,
+    "job_benefits": null,
+    "job_benefits_strings": null,
+    "job_google_link": "https://www.google.com/search?q=jobs&gl=ph&hl=en&udm=8#vhid=vt%3D20/docid%3D6imPEfiip-CpLSCAAAAAAA%3D%3D&vssid=jobs-detail-viewer",
+    "job_salary": null,
+    "job_salary_string": null,
+    "job_min_salary": null,
+    "job_max_salary": null,
+    "job_salary_period": null,
+    "job_highlights": {},
+    "job_onet_soc": null,
+    "job_onet_job_zone": null,
+    "employer_reviews": null,
+    "job_uid": "6imPEfiip-CpLSCAAAAAAA=="
+  }
 }

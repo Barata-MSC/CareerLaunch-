@@ -7,7 +7,8 @@ import { useAccountTier } from '../features/auth/accountTier';
 const PURPLE = '#5B21F5';
 
 export default function AccountGate({ featureName, description, children, navigation }) {
-  const nav = navigation || useNavigation();
+  const navigationFromContext = useNavigation();
+  const nav = navigation || navigationFromContext;
   const { isGuest, isFullAccount, loading } = useAccountTier();
 
   if (loading) {
