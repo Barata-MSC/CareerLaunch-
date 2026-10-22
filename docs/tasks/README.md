@@ -30,6 +30,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `08-voice-interview-coach.md` | Speech-to-text input for the Interview Coach (needs a development build) | Run after 07 (needs one new dependency approved) |
 | `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain (run after 04). |
 | `10-career-assessment.md` | Free local-first Holland Code career-interest assessment | Implemented with 36 original items, deterministic local scoring/matching, device drafts/results, worksheet sharing, and an owner-only migration; migration application, RLS, account-upgrade, and device verification remain. |
+| `11-onboarding-walkthrough.md` | Short post-login tutorial modal | Implemented as a skippable, versioned, per-user local walkthrough with Profile replay; storage-error, guest, login, and device interaction checks need human verification. |
 
 Briefs 06, 09, and 10 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
@@ -40,7 +41,7 @@ Not written yet: Learning Hub content beyond the current seeded career catalog. 
 1. **00 Careers layer** first. It is small, and 03 depends on it.
 2. **04 Guest gating** early. Briefs 05, 06, and 07 reuse its hook, lock screen, and server helper.
 3. **02 SFX, then 01 Animation.** SFX creates the shared `AppPressable` wrapper; Animation adds press feedback inside it. Merge 02 before starting 01.
-4. **06, then 05, then 07, then 08.** 06 can run any time after 04 and works with the sample listings. 05 needs the coverage test. 07 needs a key. 08 needs 07 and a development build. **09** (Resume Builder saving) only needs 04 and can run any time after it. **10** uses the 00 career registry, 04 guest-account detection, and the 09 local/Supabase persistence pattern; the 07 Coach hand-off is optional and was skipped because brief 07 is not implemented.
+4. **06, then 05, then 07, then 08.** 06 can run any time after 04 and works with the sample listings. 05 needs the coverage test. 07 needs a key. 08 needs 07 and a development build. **09** (Resume Builder saving) only needs 04 and can run any time after it. **10** uses the 00 career registry, 04 guest-account detection, and the 09 local/Supabase persistence pattern; the 07 Coach hand-off is optional and was skipped because brief 07 is not implemented. **11** uses the authenticated dashboard, guest-account model from 04, and available feature inventory from 10; it needs no database migration.
 5. **03 Career content**: one career per branch, and each career's content goes in its own folder under `src/features/learning-hub/` (for example `learning-hub/cybersecurity/`), next to `software-engineering/`. `careers/` holds only the shared layer (career metadata, screens, and the registry). The shared registry and validator were introduced with Cybersecurity; future career runs should extend them instead of creating replacements. Merge `00` before career work, and merge a career before starting another to avoid registry conflicts.
 
 ## Files outside the briefs
@@ -48,6 +49,7 @@ Not written yet: Learning Hub content beyond the current seeded career catalog. 
 - `specs/<career-id>.md`: the Career Spec for each career (binding input for brief 03).
 - `scripts/validate-learning-content.mjs`: shared integrity validator for all registered careers; run it with `npm run validate:content` after content or registry changes.
 - `scripts/validate-assessment.mjs`: no-device validation for assessment items, scoring, matching, career coverage, and route registration; run it with `npm run validate:assessment`.
+- `scripts/validate-walkthrough.mjs`: no-device validation for walkthrough copy, versioning, preference decisions, session guard behavior, and stored-value shape; run it with `npm run validate:walkthrough`.
 - `scripts/job-api-coverage-test.mjs`: dev-only script that checks whether the job API returns usable Philippine listings. Keep your key in your shell, never in a file.
 - `progress/`: created by runs. Checkpoints for career builds and the coverage report. Commit them; they are the resume point if a run stops early.
 - `src/features/learning-hub/careers/registry.js`: shared career track/course registry. Add future career modules here through their `index.js`; do not duplicate Software Engineering or Cybersecurity track/course wiring.
@@ -63,6 +65,7 @@ Not written yet: Learning Hub content beyond the current seeded career catalog. 
 - Adding and licensing audio files. Before any real launch, fill in verified attribution for `tap.mp3`, `error.mp3`, `success.mp3`, `lesson-complete.mp3`, and `quiz-pass.mp3` in `src/assets/sounds/CREDITS.md` (author/source unknown and license unverified until a human confirms them).
 - Creating API keys and storing them as Supabase secrets; applying migrations; deploying Supabase Edge Functions (the lead dev).
 - Applying `supabase/migrations/20261023003000_career_assessment_results.sql`, running its two-user RLS checks, and testing assessment completion, restart/resume, account upgrade consent, offline fallback, career links, and worksheet sharing on real devices.
+- Testing the onboarding walkthrough after full-account, guest, and returning-user login; verify Skip/backdrop/Android back, the persistent opt-out, Profile replay, preference-read failure, and small-screen layout. No migration or account data setup is needed for its local preference.
 - Running the job API coverage test.
 - Lawyer is available in the app; expert review sign-off is still incomplete. Obtain and record its expert review. Doctor and Marine must not be shown as available before expert review. Teacher and Nursing are available; their review notes record completed team review.
 - Approving the new voice dependency and building a development build for voice testing (brief 08).

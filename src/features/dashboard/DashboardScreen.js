@@ -15,6 +15,7 @@ import { useApplications } from '../../context/ApplicationsContext';
 import { useResume } from '../resume-builder/ResumeContext';
 import { areRequiredResumeSectionsComplete } from '../resume-builder/validators';
 import AppPressable from '@components/AppPressable';
+import { WalkthroughModal, useWalkthrough } from '@features/onboarding';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
 import Float from '@components/motion/Float';
 import Pop from '@components/motion/Pop';
@@ -125,12 +126,21 @@ function AnimatedProgressFill({ progress }) {
   );
 }
 
-export default function DashboardScreen({ navigation }) {
+export default function DashboardScreen({ navigation, route }) {
   const [pressedId, setPressedId] = useState(null);
-  const { profile, isGuest } = useProfile();
+  const { profile, isGuest, session, loading: profileLoading } = useProfile();
   const { hasPracticed } = usePractice();
   const { applications } = useApplications();
   const { resumeData } = useResume();
+  const userId = session?.user?.id;
+  const dashboardReady = Boolean(userId && !profileLoading && profile?.id === userId);
+  const walkthrough = useWalkthrough(userId, dashboardReady);
+
+  useEffect(() => {
+    if (!route?.params?.replayWalkthrough || !walkthrough.ready) return;
+    walkthrough.replay();
+    navigation.setParams({ replayWalkthrough: undefined });
+  }, [navigation, route?.params?.replayWalkthrough, walkthrough.ready, walkthrough.replay]);
 
   const displayName = profile?.first_name || profile?.username || 'there';
   const filledCount = PROFILE_FIELDS.filter((key) => !!profile?.[key]).length;
@@ -291,6 +301,15 @@ export default function DashboardScreen({ navigation }) {
           </View>
         </FadeSlideIn>
       </ScrollView>
+      <WalkthroughModal
+        visible={walkthrough.visible}
+        stepIndex={walkthrough.stepIndex}
+        saveError={walkthrough.saveError}
+        onBack={() => walkthrough.setStepIndex((index) => Math.max(0, index - 1))}
+        onNext={walkthrough.next}
+        onSkip={walkthrough.skip}
+        onDontShowAgain={walkthrough.saveAndClose}
+      />
     </SafeAreaView>
   );
 }
