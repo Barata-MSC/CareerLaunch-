@@ -10,7 +10,7 @@ import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
 import useReduceMotion from '@components/motion/useReduceMotion';
 import { durations } from '@components/motion/motionTokens';
 
-const useNativeDriver = Platform.OS !== 'web';
+const useNativeDriver = false;
 
 function AnimatedProgressFill({ progress }) {
   const reduceMotion = useReduceMotion();

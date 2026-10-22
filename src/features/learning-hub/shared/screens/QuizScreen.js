@@ -1,13 +1,13 @@
 import AppPressable from '@components/AppPressable';
 import Pop from '@components/motion/Pop';
 import React from 'react';
-import { Animated, View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
+import { Animated, View, Text, ScrollView, StyleSheet } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE } from '../styles';
 import { distances, durations } from '@components/motion/motionTokens';
 import useReduceMotion from '@components/motion/useReduceMotion';
 
-const useNativeDriver = Platform.OS !== 'web';
+const useNativeDriver = false;
 
 function AnimatedProgressBar({ value }) {
   const reduceMotion = useReduceMotion();
