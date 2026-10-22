@@ -23,6 +23,8 @@ Course durations in the product are estimates, not promises. Learning content sh
 
 The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation is in `software-engineering/index.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
 
+Shared motion primitives live in `src/components/motion/` and are used for the dashboard and Learning Hub. `AnimatedStage` handles in-screen level and course-stage changes, `FadeSlideIn` provides staggered entrance motion, `Float` is limited to hero elements, `Pop` reinforces completion/selection feedback, and reduce-motion is respected everywhere.
+
 ### Careers
 
 | Career | Status | Tracks mapping |

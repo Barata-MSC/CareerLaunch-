@@ -1,8 +1,44 @@
 import AppPressable from '@components/AppPressable';
+import Pop from '@components/motion/Pop';
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Animated, View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { PURPLE, LIGHT_PURPLE } from '../styles';
+import { distances, durations } from '@components/motion/motionTokens';
+import useReduceMotion from '@components/motion/useReduceMotion';
+
+const useNativeDriver = Platform.OS !== 'web';
+
+function AnimatedProgressBar({ value }) {
+  const reduceMotion = useReduceMotion();
+  const progress = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    const animation = Animated.timing(progress, {
+      toValue: value,
+      duration: reduceMotion ? 0 : durations.progress,
+      useNativeDriver,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [progress, reduceMotion, value]);
+
+  return (
+    <View style={styles.questionProgressBackground}>
+      <Animated.View
+        style={[
+          styles.questionProgressFill,
+          {
+            width: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            }),
+          },
+        ]}
+      />
+    </View>
+  );
+}
 
 export default function QuizScreen({
   course,
@@ -21,7 +57,11 @@ export default function QuizScreen({
     <>
       <CourseHeader title="Quiz" onBack={onBack} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={common.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={common.container}
+      >
         <View style={styles.questionHeader}>
           <Text style={common.smallText}>{course.title} · Quiz</Text>
           <Text style={styles.questionCounter}>
@@ -29,14 +69,7 @@ export default function QuizScreen({
           </Text>
         </View>
 
-        <View style={styles.questionProgressBackground}>
-          <View
-            style={[
-              styles.questionProgressFill,
-              { width: `${((questionIndex + 1) / questions.length) * 100}%` },
-            ]}
-          />
-        </View>
+        <AnimatedProgressBar value={(questionIndex + 1) / questions.length} />
 
         <Text style={styles.questionText}>{question.question}</Text>
 
@@ -45,21 +78,22 @@ export default function QuizScreen({
             const selected = selectedAnswer === index;
 
             return (
-              <AppPressable
-                key={answer}
-                style={[styles.answerButton, selected && styles.answerSelected]}
-                onPress={() => onSelectAnswer(index)}
-              >
-                <View style={[styles.answerCircle, selected && styles.answerCircleSelected]}>
-                  <Text style={[styles.answerLetter, selected && styles.answerLetterSelected]}>
-                    {String.fromCharCode(65 + index)}
-                  </Text>
-                </View>
+              <Pop key={answer} value={selected}>
+                <AppPressable
+                  style={[styles.answerButton, selected && styles.answerSelected]}
+                  onPress={() => onSelectAnswer(index)}
+                >
+                  <View style={[styles.answerCircle, selected && styles.answerCircleSelected]}>
+                    <Text style={[styles.answerLetter, selected && styles.answerLetterSelected]}>
+                      {String.fromCharCode(65 + index)}
+                    </Text>
+                  </View>
 
-                <Text style={[styles.answerText, selected && styles.answerTextSelected]}>
-                  {answer}
-                </Text>
-              </AppPressable>
+                  <Text style={[styles.answerText, selected && styles.answerTextSelected]}>
+                    {answer}
+                  </Text>
+                </AppPressable>
+              </Pop>
             );
           })}
         </View>
@@ -84,6 +118,7 @@ export default function QuizScreen({
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   questionHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   questionCounter: { fontSize: 11, color: '#888888' },
   questionProgressBackground: {
