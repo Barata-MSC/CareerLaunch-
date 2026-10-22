@@ -22,6 +22,7 @@ import AccountGate from '../../components/AccountGate';
 import { openExternalUrl } from '../../utils/openExternalUrl';
 
 const PURPLE = '#5B21D6';
+const DEFAULT_LOGO_COLOR = '#2563EB';
 
 const TABS = ['All', 'Applied', 'Interview', 'Hired', 'Rejected'];
 
@@ -79,7 +80,7 @@ function CompanyLogo({ company, color, logo, size = 44 }) {
           width: size,
           height: size,
           borderRadius: size / 4,
-          backgroundColor: color,
+          backgroundColor: color || DEFAULT_LOGO_COLOR,
         },
       ]}
     >
