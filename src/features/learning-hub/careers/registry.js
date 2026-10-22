@@ -12,6 +12,11 @@ import {
 import { tracks as teacherTracks, courses as teacherCourses } from '../teacher';
 import { tracks as doctorTracks, courses as doctorCourses } from '../doctor';
 import { tracks as accountancyTracks, courses as accountancyCourses } from '../accountancy';
+import { tracks as marineTracks, courses as marineCourses } from '../marine';
+import {
+  tracks as hospitalityTourismTracks,
+  courses as hospitalityTourismCourses,
+} from '../hospitality-tourism';
 
 import cssCourse from '../software-engineering/css-course/course';
 import CSSCourseScreen from '../software-engineering/css-course/CSSCourse';
@@ -119,6 +124,16 @@ export const CAREER_CONTENT = [
     careerId: 'doctor',
     tracks: doctorTracks,
     courses: doctorCourses,
+  },
+  {
+    careerId: 'marine',
+    tracks: marineTracks,
+    courses: marineCourses,
+  },
+  {
+    careerId: 'hospitality-tourism',
+    tracks: hospitalityTourismTracks,
+    courses: hospitalityTourismCourses,
   },
   {
     careerId: 'accountancy',

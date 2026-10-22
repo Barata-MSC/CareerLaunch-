@@ -82,10 +82,11 @@ export const CAREERS = [
     icon: '🚢',
     color: '#0EA5E9',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['mar-deck'],
     overview:
       'Marine careers cover work at sea, ship operations, and the engineering systems that keep vessels running safely and efficiently.',
     skillsPreview: ['Safety', 'Teamwork', 'Technical awareness'],
+    educationalNote: 'Educational orientation, not professional or safety training.',
   },
   {
     id: 'accountancy',
@@ -118,11 +119,11 @@ export const CAREERS = [
     subtitle: 'Create welcoming guest experiences and memorable travel journeys.',
     icon: '✈️',
     color: '#EC4899',
-    status: 'coming-soon',
-    trackIds: [],
+    status: 'available',
+    trackIds: ['ht-hospitality', 'ht-tourism'],
     overview:
-      'Hospitality and tourism combine customer service, communication, and coordination to deliver strong guest experiences and smooth travel service.',
-    skillsPreview: ['Customer care', 'Adaptability', 'Service mindset'],
+      'Hospitality and tourism bring together guest service, lodging, food experiences, events, destinations, guiding, and travel services. These pathways introduce service-minded teamwork and respectful ways to understand visitors and places.',
+    skillsPreview: ['Guest service', 'Communication', 'Cultural respect'],
   },
 ];
 
