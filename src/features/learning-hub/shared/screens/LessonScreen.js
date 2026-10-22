@@ -117,7 +117,7 @@ export default function LessonScreen({
         {/* Interactive Extras Rendered Here */}
         <LessonVideo video={lesson.video} />
         <LessonActivities key={lesson.id} activities={lesson.activities} />
-        <LessonReferences references={lesson.references} />
+        <LessonReferences references={lesson.references} title={lesson.referencesHeading} />
 
         <Pop value={isDone}>
           <AppPressable

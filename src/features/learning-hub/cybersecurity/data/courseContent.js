@@ -1,5 +1,7 @@
 import { GOVERNANCE_COURSES } from './governance';
 import { SECURITY_ANALYST_COURSES } from './securityAnalyst';
+import { applyLessonLinks } from '../../shared/lessonLinks';
+import { LESSON_LINKS } from '../links';
 
 const COURSE_DEFINITIONS = [...SECURITY_ANALYST_COURSES, ...GOVERNANCE_COURSES];
 
@@ -35,7 +37,7 @@ export function buildCyberLessons(courseId) {
   const definition = getCyberCourseDefinition(courseId);
   if (!definition) throw new Error(`Unknown cybersecurity course: ${courseId}`);
 
-  return definition.lessons.map(([title, objective, example], index) => ({
+  const lessons = definition.lessons.map(([title, objective, example], index) => ({
     id: `${courseId.replace(/^cyber-/, '')}-${index + 1}`,
     title,
     subtitle: 'Beginner concept and safe practice',
@@ -67,6 +69,11 @@ export function buildCyberLessons(courseId) {
           },
         ]
       : undefined,
+  }));
+
+  return applyLessonLinks(lessons, LESSON_LINKS).map((lesson) => ({
+    ...lesson,
+    referencesHeading: lesson.referencesHeading || 'Further reading',
   }));
 }
 
