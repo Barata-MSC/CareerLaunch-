@@ -23,6 +23,7 @@ export default function QuizIntroScreen({ course, onBack, onStart }) {
       <CourseHeader title="Quiz" onBack={onBack} />
 
       <ScrollView
+        style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.quizIntro}
       >
@@ -62,6 +63,7 @@ export default function QuizIntroScreen({ course, onBack, onStart }) {
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   quizIntro: { paddingHorizontal: 25, paddingTop: 40, paddingBottom: 35 },
   quizIcon: {
     width: 60,

@@ -14,7 +14,11 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
     <>
       <CourseHeader title="Lessons" onBack={onBack} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={common.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={common.container}
+      >
         <View style={styles.courseHeader}>
           <View style={styles.courseIcon}>
             <Text style={styles.courseIconText}>{course.shortCode}</Text>
@@ -96,6 +100,7 @@ export default function LessonsScreen({ course, lessons, onBack, onOpenLesson, o
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   courseHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 25 },
   courseIcon: {
     width: 48,

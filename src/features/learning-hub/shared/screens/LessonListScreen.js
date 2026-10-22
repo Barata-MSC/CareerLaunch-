@@ -10,7 +10,11 @@ export default function LessonListScreen({ course, lessons, onBack, onOpenLesson
     <>
       <CourseHeader title="Lessons" onBack={onBack} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={common.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={common.container}
+      >
         <Text style={common.sectionTitle}>{course.title} · Lessons</Text>
 
         {lessons.map((lesson, index) => (
@@ -50,6 +54,7 @@ export default function LessonListScreen({ course, lessons, onBack, onOpenLesson
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   lessonRow: {
     flexDirection: 'row',
     alignItems: 'center',
