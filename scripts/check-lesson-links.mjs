@@ -30,6 +30,10 @@ const accountancyCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/accountancy/courseLessons.js',
 );
+const civilEngineeringCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/civil-engineering/courseLessons.js',
+);
 const moduleCache = new Map();
 const nullComponent = () => null;
 const ReactMock = {
@@ -208,7 +212,14 @@ async function run() {
       track.steps?.some((step) => step.course?.id === course.id),
     ))
     .map(({ course }) => course);
-  const coursesWithRuntimeLessons = ['nursing', 'doctor', 'lawyer', 'marine', 'accountancy'].includes(careerId)
+  const coursesWithRuntimeLessons = [
+    'nursing',
+    'doctor',
+    'lawyer',
+    'marine',
+    'accountancy',
+    'civil-engineering',
+  ].includes(careerId)
     ? courses.map((course) => ({
       ...course,
       lessons: careerId === 'nursing'
@@ -219,7 +230,9 @@ async function run() {
             ? loadSourceModule(lawyerCourseLessonsPath).getLawyerLessons(course.lessons || [])
             : careerId === 'marine'
               ? loadSourceModule(marineCourseLessonsPath).getMarineLessons(course.lessons || [])
-              : loadSourceModule(accountancyCourseLessonsPath).getAccountancyLessons(course.lessons || []),
+              : careerId === 'accountancy'
+                ? loadSourceModule(accountancyCourseLessonsPath).getAccountancyLessons(course.lessons || [])
+                : loadSourceModule(civilEngineeringCourseLessonsPath).getCivilEngineeringLessons(course.lessons || []),
     }))
     : courses;
   const references = new Set();
