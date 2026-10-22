@@ -108,10 +108,11 @@ export const CAREERS = [
     icon: '🏗️',
     color: '#F97316',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['civ-structures-construction', 'civ-infrastructure-environment'],
     overview:
       'Civil engineering brings together planning, structural thinking, and project coordination to shape roads, buildings, and public infrastructure.',
     skillsPreview: ['Planning', 'Design thinking', 'Problem solving'],
+    educationalNote: 'Educational orientation, not engineering design guidance.',
   },
   {
     id: 'hospitality-tourism',
