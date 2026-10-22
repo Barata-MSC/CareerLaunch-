@@ -159,8 +159,9 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - Stage-level transitions in the Learning Hub use `AnimatedStage` for in-screen state changes; do not rely on `LayoutAnimation` or global layout animations.
 - Keep motion wrappers layout-neutral: use `flex: 1` (and `minHeight: 0` where they fill space), keep scroll containers height-bounded, and keep pinned headers and footers outside animated regions. Never hide or remove UI to make an animation work.
 - The Resume Builder uses these primitives for screen entrances, progress, score feedback, and entry actions. Keep form inputs outside state-triggered animations: typing must not remount inputs or replay entrance motion. Resume Builder entry keys and removal actions must remain stable so rapid add/remove interactions affect the exact selected item.
+- Job Finder search and details use the shared motion primitives. Keep the search input, filters, attribution, list sizing, and pinned tracker button in their existing layout; animate job rows only on their first appearance, never on search/filter rerenders or FlatList remounts.
 - Respect the system reduce-motion setting: disable floating and sliding, and use only a short fade or no animation.
-- Use `Float` sparingly on a few hero elements; never float items in scrolling lists. Motion currently covers the Dashboard, Learning Hub, and Resume Builder.
+- Use `Float` sparingly on a few hero elements; never float items in scrolling lists. Motion currently covers the Dashboard, Learning Hub, Resume Builder, and Job Finder.
 
 ## Expo, web, and project commands
 
