@@ -18,7 +18,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 
 const KEY = process.env.JSEARCH_API_KEY;
 const HOST = process.env.JSEARCH_HOST || 'jsearch.p.rapidapi.com';
-const BASE = process.env.JSEARCH_BASE_URL || `https://${HOST}/search`;
+const BASE = process.env.JSEARCH_BASE_URL || `https://${HOST}/search-v2`;
 const COUNTRY = (process.env.JOB_COUNTRY || 'ph').toLowerCase();
 
 const DEFAULT_QUERIES = [
@@ -48,7 +48,6 @@ const REQUIRED_USABLE = Math.ceil(queries.length * (4 / 6));
 async function runQuery(query) {
   const url = new URL(BASE);
   url.searchParams.set('query', query);
-  url.searchParams.set('page', '1');
   url.searchParams.set('num_pages', '1');
   url.searchParams.set('country', COUNTRY);
   url.searchParams.set('date_posted', 'all');
@@ -69,7 +68,7 @@ async function runQuery(query) {
     body = null;
   }
 
-  const jobs = Array.isArray(body?.data) ? body.data : [];
+  const jobs = Array.isArray(body?.data?.jobs) ? body.data.jobs : [];
   const inCountry = jobs.filter(
     (j) => String(j.job_country || '').toUpperCase() === COUNTRY.toUpperCase(),
   );
