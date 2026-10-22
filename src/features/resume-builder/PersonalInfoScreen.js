@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useState } from 'react';
 import {
   View,
@@ -92,14 +93,9 @@ export default function PersonalInfoScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Navigation Header */}
       <View style={styles.header}>
-        <AppPressable 
-          onPress={() => navigation?.goBack()} 
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-        </AppPressable>
+        <BackButton onPress={() => navigation?.goBack()} style={styles.headerBack} />
         <Text style={styles.headerTitle}>Personal Information</Text>
-        <View style={{ width: 24 }} />
+        <View style={{ width: 44 }} />
       </View>
  
       <KeyboardAvoidingView
@@ -325,6 +321,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#F2F2F7',
   },
+  headerBack: { width: 44 },
   backArrow: {
     fontSize: 32,
     color: '#111111',

@@ -1,0 +1,77 @@
+export const ASSESSMENT_COPY = {
+  eyebrow: 'CAREER EXPLORATION',
+  title: 'Find your best-fit career',
+  intro: 'Explore activities you enjoy and see career areas that may fit your interests.',
+  duration: 'About 15 minutes · Free · No right or wrong answers',
+  disclaimerTitle: 'A guide, not a diagnosis',
+  disclaimer:
+    'This is an interest and self-awareness guide, not a clinical or diagnostic psychological test. Use your results as a starting point, not a final decision.',
+  start: 'Start',
+  continue: 'Continue',
+  viewLastResult: 'View my last result',
+  retake: 'Retake',
+  questionCategory: 'Interest assessment',
+  questionProgress: (current, total) => `Question ${current} of ${total}`,
+  actionFieldLabel: (period) => `${period} action`,
+  back: 'Back',
+  next: 'Next',
+  finish: 'See my results',
+  resultTitle: 'Your interest profile',
+  resultDisclaimer:
+    'This is an interest and self-awareness guide, not a clinical or diagnostic psychological test.',
+  undifferentiated:
+    'Your interests are spread across several areas. You could explore broadly or take the assessment again later.',
+  matchesTitle: 'Your career matches',
+  exploreCareer: 'Explore this career',
+  alsoExplore: 'Also worth exploring',
+  comingSoon: 'Coming soon',
+  lowMatch: "Your interests may fit careers we don't cover yet.",
+  worksheet: 'Career Planning Worksheet',
+  openWorksheet: 'Open my worksheet',
+  saveOnDeviceResult: 'Save my on-device result to my account',
+  resultSaved: 'Your result is saved on this device and to your account.',
+  shareWorksheet: 'My Career Planning Worksheet',
+  loading: 'Loading your assessment…',
+  loadError: 'We could not load your saved assessment.',
+  localReadError: 'Saved assessment data could not be read from this device.',
+  storageError: 'Your device could not save this assessment. Please try again.',
+  draftMissingError: 'Your unfinished assessment could not be found. Please try again.',
+  answerSaveError: 'Your answer could not be saved on this device. Please try again.',
+  progressSaveError: 'Your progress could not be saved on this device. Please try again.',
+  incompleteError: 'Please answer every question before finishing.',
+  resultSaveError: 'Your result could not be saved on this device. Please try again.',
+  migrationSyncError:
+    'Your result is saved on this device. Account sync is unavailable because the assessment table is not set up yet.',
+  permissionSyncError:
+    'Your result is saved on this device. Account sync was blocked by the database permissions.',
+  genericSyncError:
+    'Your result is saved on this device. Account sync failed; check your connection and try again.',
+  remoteLoadMigrationError:
+    'Your on-device assessment remains available. Account history cannot be checked until the assessment table is set up.',
+  remoteLoadError:
+    'Your on-device assessment remains available, but account history could not be checked. Check your connection and try again.',
+  retry: 'Try again',
+  share: 'Share',
+  shareUnavailable: 'Sharing is not available on this device right now.',
+  reflectionPrompts: [
+    'Which result feels most like you, and why?',
+    'What would you like to learn or ask about a matching career?',
+    'Who could help you explore one of these options?',
+  ],
+  actionPeriods: ['30 days', '60 days', '90 days'],
+  actionPlaceholder: 'Write one small action you could take',
+  topTypes: 'Your top interest areas',
+  codeLabel: 'Your Holland code',
+  resultRange: 'Interest score',
+  introLoading: 'Checking for a saved result or unfinished assessment.',
+  noDraft: 'No unfinished assessment was found on this device.',
+  upgradeNote:
+    'An on-device result is available. Choose to save it to your account; it will not be uploaded unless you tap the button.',
+  worksheetIntro: 'Use these prompts to plan a few small next steps.',
+  emptyAction: 'Not decided yet',
+  reflectionHeading: 'Reflection',
+  actionPlanHeading: '30 / 60 / 90-day actions',
+  saveDeviceNote: 'Worksheet notes stay on this screen until you share them.',
+};
+
+export const WORKSHEET_SHARE_TITLE = ASSESSMENT_COPY.shareWorksheet;

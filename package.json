@@ -33,6 +33,8 @@
     "deploy": "gh-pages --nojekyll -d dist",
     "lint": "eslint .",
     "validate:content": "node scripts/validate-learning-content.mjs",
+    "validate:assessment": "node scripts/validate-assessment.mjs",
+    "validate:walkthrough": "node scripts/validate-walkthrough.mjs",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",

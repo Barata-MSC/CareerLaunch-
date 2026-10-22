@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 // Lets a guest turn their anonymous account into a full account WITHOUT losing
 // anything: it attaches an email + password to the guest's existing session
 // (supabase.auth.updateUser), so the user id, and every progress row tied to it,
@@ -278,13 +279,11 @@ export default function CreateAccountScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <AppPressable
+          <BackButton
             style={styles.backButton}
             onPress={() => navigation?.goBack()}
             disabled={loading}
-          >
-            <Text style={styles.backArrow}>‹</Text>
-          </AppPressable>
+          />
 
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>

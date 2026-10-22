@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useState } from 'react';
 import {
     View,
@@ -49,16 +50,11 @@ export default function ResumePreviewScreen({ navigation, route }) {
         <SafeAreaView style={styles.safeArea}>
             {/* Navigation Header */}
             <View style={styles.header}>
-                <AppPressable
-                    onPress={() => navigation?.goBack()}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                    <Text style={styles.backArrow}>‹</Text>
-                </AppPressable>
+                <BackButton onPress={() => navigation?.goBack()} style={styles.headerBack} />
                 <Text style={styles.headerTitle}>
                     {mode === 'test' ? 'Test Resume' : 'Resume Preview'}
                 </Text>
-                <View style={{ width: 24 }} />
+                <View style={{ width: 44 }} />
             </View>
  
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -330,6 +326,7 @@ const styles = StyleSheet.create({
         borderColor: '#E5E5EA',
         backgroundColor: '#FFFFFF',
     },
+    headerBack: { width: 44 },
     backArrow: {
         fontSize: 32,
         color: '#111111',

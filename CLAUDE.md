@@ -31,6 +31,8 @@ The approved prototype scope connects the Learning Hub, course lessons, quizzes,
 | Application Tracker | Persists user-selected job snapshots and supports Applied, Interview, Hired, and Rejected statuses, notes, and removal. Guest access is gated; a full account is required. Data loads and writes through Supabase once the human-applied migration is installed. | Job Finder entries remain bundled sample listings; adding one tracks intent and does not submit an application to an employer. Two-user RLS and offline rollback still require manual validation after applying the migration. |
 | Interview Coach | Common interview questions, typed responses, feedback, suggestions, and a session summary. Guest access is gated; a full account is required. | Text feedback uses local heuristic checks. Voice feedback is simulated; there is no speech transcription, speech analysis, or AI service integration. Practice history is in memory only. |
 | Resume Builder | Personal information, education, skills, experience, certificates, projects, validation, a completeness score/suggestions, and a preview flow. Guest access to the builder, sections, and preview is gated; a full account is required. Resume data is loaded and saved as one row per account in Supabase once the human-applied migration is installed. | The completeness score and suggestions are rule-based and derived, not stored or AI-generated. Profile photos remain in memory only and are not persisted. Saves are last-write-wins across devices. |
+| Career Assessment | Free 36-item RIASEC interest assessment with local deterministic scoring, career matching from `careers.js`, resumable on-device drafts, results, and a text-shareable career worksheet. Guest and signed-out assessment use is available. | This is an interest and self-awareness guide, not a clinical or diagnostic psychological test. Full accounts can save results remotely once the human-applied migration is installed; an existing local guest result is uploaded only after the user chooses to save it. |
+| Onboarding walkthrough | A short, skippable post-login tutorial with a versioned local preference per user ID and a Replay tutorial action in Profile. | Preference is device-local and not synchronized; storage-read failure suppresses automatic display. |
 | Learning Hub | Career-first browsing: Software Engineering, Cybersecurity, Teacher, Nursing, Lawyer, and Hospitality & Tourism have available tracks and courses, leading to the existing lessons and quizzes. Doctor has one registered, eight-course track, Marine has one registered, seven-course Deck Officer track, and Accountancy has two registered tracks with 12 courses; these are reachable as educational previews while their careers remain `coming-soon` pending the applicable expert review. Hospitality & Tourism has two tracks and 12 introductory courses. Cybersecurity has two tracks and 14 courses; Teacher has two tracks and 15 courses; Nursing has one team-reviewed track and eight courses; Lawyer has two tracks and 14 courses. Other careers are listed as coming soon and lead to detail-only views. Career progress is derived from course statuses, not stored separately. | Some Software Engineering roadmap steps have no course yet (notably most UI/UX steps); those remain detail-only items. Accountancy is introductory orientation, not accounting, tax, or financial advice and not board exam review; expert review is pending. Doctor preview content is educational orientation, not medical advice or clinical training. Marine preview content is educational orientation, not professional or safety training; its four-month estimate is an app study-time label only, not a training or sea-time requirement. Hospitality & Tourism is available; its content is educational orientation, not operating or certification training, and its track estimates are app study-time labels. Lawyer content is introductory and educational, not legal advice; Nursing content is educational orientation, not clinical training or medical advice. |
 | Profile and avatar | Profile data is read and updated in the Supabase `profiles` table; avatar upload uses Supabase Storage and can stage a pending upload locally. | The actual remote schema, bucket configuration, and RLS policies must be verified in the Supabase project; do not infer them from the client alone. |
 
@@ -106,6 +108,7 @@ These are recent code changes, not a claim that the overall product or every roa
 - `src/navigation/AppNavigator.js` registers app screens and course routes.
 - `src/features/` contains feature screens and logic; shared UI, context, configuration, navigation, and assets live in their corresponding `src/` directories.
 - Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, `lawyer/`, `doctor/`, and `marine/`.
+- Career assessment data and pure RIASEC scoring/matching live under `src/features/career-assessment/`; the assessment fit table must cover the actual IDs in `learning-hub/careers/careers.js`.
 - Keep navigation route names consistent with `navigation.navigate(...)`, and preserve stable course/lesson IDs.
 
 ## Technology and working commands
@@ -115,10 +118,12 @@ The checked-in package manifest is authoritative. The current stack is Expo SDK 
 - `npm start` — start Expo.
 - `npm run android`, `npm run ios`, `npm run web` — start the corresponding Expo target.
 - `npm run lint` — run ESLint.
+- `npm run validate:assessment` — validate assessment item counts, scoring, matching, career coverage, and route registration without a device.
+- `npm run validate:walkthrough` — validate walkthrough steps, preference decisions, and stored-value shape without a device.
 - `npx expo export -p web` — build the web bundle.
 - `npm run deploy` publishes to GitHub Pages; never run it unless deployment is explicitly requested.
 
-There is no test script in `package.json` at present. Do not claim automated tests passed unless a real test command is added and run.
+There is no general test script in `package.json`; `validate:content`, `validate:assessment`, and `validate:walkthrough` are focused integrity validators. Do not claim checks passed unless they were run.
 
 # CareerLaunch Development Instructions
 
@@ -180,6 +185,7 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - For Edge Function handlers that require a full account, use the shared `requireFullAccount` helper in `supabase/functions/_shared/requireFullAccount.ts`; it validates the caller with the anon key and rejects guest accounts without using a service-role key.
 - Handle Supabase errors explicitly and preserve useful error reporting; do not silently turn failures into success or empty data.
 - Supabase migrations are in `supabase/migrations/`, and the Edge Function entry point is in `supabase/functions/index.ts`. When changing database behavior, inspect relevant migrations and policies and keep client queries, migrations, and server-side logic consistent. Do not apply remote migrations or deploy functions without explicit authorization.
+- Career assessment results use `public.career_assessment_results` with owner-only select, insert, and delete RLS policies in `supabase/migrations/20261023003000_career_assessment_results.sql`. A human must apply the migration and run its two-user RLS checks; the presence of this file does not confirm live setup.
 
 ## Implementation and validation
 
@@ -199,3 +205,7 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 - Keep diffs focused and review them before finishing. Avoid generated outputs such as `dist/`, caches, or local environment files in source changes.
 - Never commit `.env`, credentials, user data, or generated build artifacts.
 - The team workflow targets pull requests into `main`; follow `GIT_WORKFLOW.md` when asked to create or prepare a branch or pull request.
+
+## Dashboard daily tip
+
+The 31 ordered tip strings live in `src/features/dashboard/data/dailyTips.js`. `src/features/dashboard/utils/dailyTip.js` keeps a persisted shuffle bag per Supabase user ID under `careerlaunch:daily-tip:v1:<user-id>`; each tip is used once per bag, and the next bag is reshuffled so its first tip differs from the previous bag's last tip. The Dashboard treats each Supabase `session_id` as a login session: navigation and token refresh keep the same cached tip, sign-out clears the in-memory selection, and a fresh app launch or a new sign-in advances the bag. Guest and registered accounts use their own user IDs, and upgrading a guest retains its user ID and rotation.

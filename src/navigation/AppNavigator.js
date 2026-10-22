@@ -27,6 +27,12 @@ import AccountGate from '../components/AccountGate';
 import ResumeDataGate from '../features/resume-builder/ResumeDataGate';
 import MainTabs from '@features/resume-builder/MainTabs';
 import { COURSE_ROUTES } from '../features/learning-hub/careers/registry';
+import {
+  AssessmentIntroScreen,
+  AssessmentQuestionScreen,
+  AssessmentResultScreen,
+  CareerWorksheetScreen,
+} from '../features/career-assessment';
 
 const Stack = createNativeStackNavigator();
 
@@ -83,6 +89,10 @@ export default function AppNavigator() {
       <Stack.Screen name="ResumePreview" component={GatedResumePreviewScreen} />
       <Stack.Screen name="JobApplicationTracker" component={JobApplicationTracker} />
       <Stack.Screen name="LearningHub" component={LearningHubScreen} />
+      <Stack.Screen name="CareerAssessmentIntro" component={AssessmentIntroScreen} />
+      <Stack.Screen name="CareerAssessmentQuestions" component={AssessmentQuestionScreen} />
+      <Stack.Screen name="CareerAssessmentResult" component={AssessmentResultScreen} />
+      <Stack.Screen name="CareerAssessmentWorksheet" component={CareerWorksheetScreen} />
     </Stack.Navigator>
   );
 }

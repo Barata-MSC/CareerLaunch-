@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -97,11 +98,9 @@ function ResumeBuilderContent({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <AppPressable onPress={() => navigation?.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backArrow}>‹</Text>
-        </AppPressable>
+        <BackButton onPress={() => navigation?.goBack()} style={styles.headerBack} />
         <Text style={styles.headerTitle}>Resume Builder</Text>
-        <View style={{ width: 24 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -213,6 +212,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
   },
+  headerBack: { width: 44 },
   backArrow: {
     fontSize: 26,
     color: '#111111',

@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
@@ -160,14 +161,9 @@ export default function CareerRoadmapScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <AppPressable
-          onPress={() => navigation.goBack()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-        </AppPressable>
+        <BackButton onPress={() => navigation.goBack()} style={styles.backButton} />
         <Text style={styles.headerTitle}>Career Roadmap</Text>
-        <View style={{ width: 26 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView
@@ -307,8 +303,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
+  backButton: { width: 44 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#1A1A1A' },
-  backArrow: { fontSize: 30, color: '#1A1A1A', lineHeight: 30 },
   checkMark: { color: '#fff', fontSize: 14, fontWeight: '700' },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 32 },
   goalCard: {
