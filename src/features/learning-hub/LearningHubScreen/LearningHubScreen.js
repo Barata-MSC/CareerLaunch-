@@ -321,7 +321,11 @@ export default function LearningHubScreen({ navigation, route }) {
         {currentCareer?.status !== 'available' && (
           <View style={styles.previewNotice}>
             <Text style={styles.previewNoticeText}>
-              Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
+              {currentCareer?.id === 'doctor'
+                ? 'Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.'
+                : currentCareer?.id === 'marine'
+                  ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
+                  : 'Preview only: this career learning content is awaiting expert review.'}
             </Text>
           </View>
         )}

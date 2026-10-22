@@ -33,12 +33,12 @@ The current Learning Hub begins with a career picker and then moves into a caree
 | Nursing | Available (team reviewed) | Nursing Student Path (8 courses) |
 | Doctor | Coming soon (expert review pending; lessons available as a draft preview) | Pre-Medicine and Medical Path (8 courses) |
 | Lawyer | Available in the app; expert review sign-off is still incomplete | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
-| Marine (Seafarer / Marine Engineering) | Coming soon | None |
+| Marine (Seafarer / Marine Engineering) | Coming soon (maritime expert review pending; Deck lessons available as an educational preview) | Deck Officer (Marine Transportation) (7 courses) |
 | Accountancy | Coming soon | None |
 | Civil Engineering | Coming soon | None |
 | Hospitality & Tourism | Coming soon | None |
 
-The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher, Nursing, Lawyer, and Doctor content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer are available with tracks and courses; Doctor's registered content is reachable only as an educational preview while the career remains coming soon for expert review. Other seeded careers have no registered courses yet.
+The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher, Nursing, Lawyer, Doctor, and Marine content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer are available with tracks and courses; Doctor and Marine have registered preview content while their careers remain coming soon for expert review. Marine currently exposes only the Deck Officer track; its Marine Engineer track remains unregistered. Other seeded careers have no registered courses yet.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
@@ -49,6 +49,7 @@ The folder name `software-engineering/` is the existing content folder for the S
 | Security Governance and Compliance | Risk Management, Security Policies and Frameworks, Data Privacy Fundamentals, Security Awareness and Social Engineering Defense, Business Continuity and Disaster Recovery, Audits and Compliance Basics | All six steps have courses. |
 | Nursing Student Path | The Nursing Profession and Ethics, Human Body Basics, Communication with Patients and Families, Fundamentals of Nursing Care, Infection Prevention Basics, Health Promotion and Community Health, Patient Safety/Documentation/Teamwork, Path to Practice and Caring for Yourself | Eight team-reviewed courses have ten lessons and ten quiz questions each; the content is educational orientation, not clinical training. |
 | Pre-Medicine and Medical Path | The Medical Profession and Ethics, Biology Foundations, Chemistry for Medicine, Human Body Systems Overview, Communication and Empathy in Medicine, Introduction to Clinical Thinking, Public Health and Health Systems, Path to Practice and Resilience | Eight courses have ten lessons and ten quiz questions each; educational orientation, not medical advice or clinical training. The career remains coming soon pending expert review. |
+| Deck Officer (Marine Transportation) | The Seafaring Profession, Ships, Parts, and Terminology, Navigation Concepts, Seamanship and Cargo Basics, Weather and the Ocean, Maritime Safety and Environmental Care, Path to Practice and Teamwork at Sea | Seven courses have ten lessons and ten quiz questions each; educational orientation, not professional or safety training. The career remains coming soon pending maritime expert review. Its four-month track estimate is an app study-time label only, not a training or sea-time requirement. |
 | Elementary Teacher | Foundations of Teaching, Child Development and Learning, Curriculum and Lesson Planning, Classroom Management, Teaching Literacy and Numeracy, Assessment of Learning, Inclusive and Differentiated Instruction, Professional Growth and Licensure Preparation | All eight courses have 10 lessons and 10 quiz questions each. |
 | Secondary Teacher | Adolescent Development and Learning, Subject Content and Pedagogy, Curriculum Design and Unit Planning, Classroom Culture and Behavior, Assessment and Feedback, Learner Guidance and Wellbeing, Teaching Career and Licensure Preparation | All seven courses have 10 lessons and 10 quiz questions each. |
 | Lawyer Path | The Legal Profession and Ethics, The Philippine Legal System, Legal Research Skills, Legal Writing and Analysis, Constitutional Law Concepts, Civil and Criminal Law Overview, Procedure, Evidence, and Advocacy Basics, Path to Practice and Client Communication | All eight courses have 10 lessons and 10 quiz questions each; introductory career orientation, not legal advice. |
@@ -127,18 +128,27 @@ src/features/learning-hub/
     med-<course-id>-course/
       course.js                     Course config
       <CourseName>Course.js         Thin screen wrapper around CourseRunner
+  marine/
+    index.js                        Marine track and course exports
+    tracks.js                       Deck Officer course order
+    REVIEW_NOTES.md                 Maritime expert review checklist; review pending
+    data/deckCourses.js             Authored Deck lesson, activity, and quiz data
+    mar-<course-id>-course/
+      course.js                     Course config
+      <CourseName>Course.js         Thin screen wrapper around CourseRunner
 ```
 
-The `careers/` folder is the shared layer for career metadata, screens, and the registry; career-specific course content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, `lawyer/`, and `doctor/`. The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
+The `careers/` folder is the shared layer for career metadata, screens, and the registry; career-specific course content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, `lawyer/`, `doctor/`, and `marine/`. The course modules are deliberately data-driven. A course wrapper normally imports its course configuration and returns `<CourseRunner course={course} navigation={navigation} />`. `CourseRunner` selects the shared screens and behavior. The course data, not a copied screen implementation, is what makes one course different from another.
 
 ### Shared flow and responsibilities
 
 - `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, refreshes aggregate progress when the screen regains focus, and preserves the current browsing view when returning from a course or roadmap.
-- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, Nursing, Lawyer, and Doctor tracks, courses, and routes. Doctor courses are accessible as a draft preview from the career detail page, while its career status remains `coming-soon` until expert review. `software-engineering/index.js` displays the selected career's roadmap while preserving existing track keys and route names.
+- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, Nursing, Lawyer, Doctor, and Marine tracks, courses, and routes. Doctor and Marine courses are accessible as draft previews from their career detail pages, while both career statuses remain `coming-soon` until expert review. `software-engineering/index.js` displays the selected career's roadmap while preserving existing track keys and route names.
 - `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
 - `teacher/` contains the Elementary Teacher and Secondary Teacher pathways, with 15 courses registered through the same shared registry.
 - `lawyer/` contains Lawyer Path and Paralegal and Legal Support, with 14 introductory courses registered through the same shared registry.
 - `doctor/` contains Pre-Medicine and Medical Path, with eight educational-orientation courses available as a draft preview. The career remains `coming-soon`; expert review is required before availability.
+- `marine/` contains the seven-course Deck Officer (Marine Transportation) preview. The career remains `coming-soon` pending maritime expert review; the Marine Engineer track is planned but not registered. Marine content is educational orientation, not professional or safety training, and its displayed track estimate is an app study-time label only.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
 - `shared/courseUtils.js` derives lesson statuses from saved completion IDs and selects questions for a quiz attempt. It does not mutate the authored course data.
 - `shared/progress/useCourseProgress.js` loads and saves progress for one course.
