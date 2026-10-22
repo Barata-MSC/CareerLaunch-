@@ -278,6 +278,16 @@ Confirm the actual names expected by the Supabase configuration in `src/config/`
 
 `EXPO_PUBLIC_` variables are bundled into client code and must not contain service-role keys or other privileged secrets. Configure appropriate Supabase Row Level Security policies and permissions for exposed data.
 
+#### Job Finder Edge Function secrets (lead developer)
+
+The lead developer configures these as Supabase Function secrets, not in the app's `.env` file:
+
+- `JOB_API_KEY` — RapidAPI key for JSearch; server-side only.
+- `JOB_API_MONTHLY_CAP` — optional request cap; defaults to 150 and is clamped to 200.
+- `JOB_CACHE_TTL_HOURS` — optional cache lifetime; defaults to 72 hours. Confirm that this retention period is permitted by the provider before deployment.
+
+The Edge Function and migration are not live until the lead developer applies the migration, sets secrets, deploys the function, and verifies the integration.
+
 ### 4. Start the development server
 
 ```powershell
