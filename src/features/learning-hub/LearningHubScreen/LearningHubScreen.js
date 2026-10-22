@@ -15,6 +15,7 @@ import {
   Platform,
   BackHandler,
 } from 'react-native';
+import Svg, { Circle, Line } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -78,6 +79,23 @@ const BUTTON_LABEL = {
   'in-progress': 'Continue',
   completed: 'Review',
 };
+
+function SearchIcon() {
+  return (
+    <Svg width={17} height={17} viewBox="0 0 20 20" accessibilityLabel="Search">
+      <Circle cx="8.5" cy="8.5" r="5.5" stroke="#9CA3AF" strokeWidth="1.8" fill="none" />
+      <Line
+        x1="12.5"
+        y1="12.5"
+        x2="17"
+        y2="17"
+        stroke="#9CA3AF"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
 
 export default function LearningHubScreen({ navigation, route }) {
   const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
@@ -248,6 +266,7 @@ export default function LearningHubScreen({ navigation, route }) {
 
   const renderCareerSearch = () => (
     <View style={styles.searchBox}>
+      <SearchIcon />
       <TextInput
         style={styles.searchInput}
         placeholder="Search careers..."
