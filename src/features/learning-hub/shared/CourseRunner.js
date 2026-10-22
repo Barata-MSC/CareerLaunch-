@@ -39,7 +39,8 @@ export default function CourseRunner({ course, navigation }) {
   const [answers, setAnswers] = useState([]);
   const [score, setScore] = useState(0);
   const [saveError, setSaveError] = useState(false);
-  const lastQuizPassAttemptRef = useRef('');
+  const quizAttemptIdRef = useRef(0);
+  const lastSoundedQuizAttemptRef = useRef(0);
 
   // ---------- Navigation ----------
   const goToLessons = () => setScreen('lessons');
@@ -97,7 +98,7 @@ export default function CourseRunner({ course, navigation }) {
     setAnswers([]);
     setScore(0);
     setSaveError(false);
-    lastQuizPassAttemptRef.current = '';
+    quizAttemptIdRef.current += 1;
     setScreen('quiz');
   };
 
@@ -132,11 +133,11 @@ export default function CourseRunner({ course, navigation }) {
       ).length;
       const percent = Math.round((finalScore / questions.length) * 100);
       const passed = percent >= course.passingPercent;
-      const attemptKey = `${course.id}:${questions.length}:${finalScore}:${percent}`;
+      const attemptId = quizAttemptIdRef.current;
 
-      if (passed && lastQuizPassAttemptRef.current !== attemptKey) {
-        playSound('quizPass');
-        lastQuizPassAttemptRef.current = attemptKey;
+      if (lastSoundedQuizAttemptRef.current !== attemptId) {
+        playSound(passed ? 'quizPass' : 'tap');
+        lastSoundedQuizAttemptRef.current = attemptId;
       }
 
       setScore(finalScore);

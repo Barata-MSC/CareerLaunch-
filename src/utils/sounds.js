@@ -13,31 +13,38 @@ export const SOUNDS = {
 
 const players = {};
 let soundEnabled = true;
+let soundInitializationPromise = null;
 
 export function getSoundEnabled() {
   return soundEnabled;
 }
 
-export async function initializeSound() {
-  try {
-    const storedValue = await AsyncStorage.getItem(SOUND_ENABLED_KEY);
-    soundEnabled = storedValue === null ? true : storedValue === 'true';
-  } catch (error) {
-    soundEnabled = true;
-  }
+export function initializeSound() {
+  if (soundInitializationPromise) return soundInitializationPromise;
 
-  try {
-    // Keep system audio available even when the phone is on silent; the app-level
-    // toggle remains the user-controlled on/off switch for these UI cues.
-    await setAudioModeAsync({
-      playsInSilentMode: true,
-      interruptionMode: 'mixWithOthers',
-    });
-  } catch (error) {
-    // Sound is decorative and must never block the app.
-  }
+  soundInitializationPromise = (async () => {
+    try {
+      const storedValue = await AsyncStorage.getItem(SOUND_ENABLED_KEY);
+      soundEnabled = storedValue === null ? true : storedValue === 'true';
+    } catch (error) {
+      soundEnabled = true;
+    }
 
-  return soundEnabled;
+    try {
+      // Keep system audio available even when the phone is on silent; the app-level
+      // toggle remains the user-controlled on/off switch for these UI cues.
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        interruptionMode: 'mixWithOthers',
+      });
+    } catch (error) {
+      // Sound is decorative and must never block the app.
+    }
+
+    return soundEnabled;
+  })();
+
+  return soundInitializationPromise;
 }
 
 export async function setSoundEnabled(enabled) {
@@ -65,8 +72,9 @@ export function playSound(name) {
     }
 
     const player = players[soundName];
-    player.seekTo(0);
-    player.play();
+    Promise.resolve(player.seekTo(0))
+      .then(() => player.play())
+      .catch(() => {});
   } catch (error) {
     // Sound is decoration; never let it break the UI.
   }

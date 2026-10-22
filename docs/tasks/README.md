@@ -57,6 +57,7 @@ Not written yet: briefs for Accountancy, Civil Engineering, and Hospitality & To
 
 ## Human-only steps
 
+- Before any real launch, turn email confirmation back on or configure custom SMTP.
 - Adding and licensing audio files.
 - Creating API keys and storing them as Supabase secrets; applying migrations; deploying Supabase Edge Functions (the lead dev).
 - Running the job API coverage test.

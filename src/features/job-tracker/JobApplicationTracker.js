@@ -7,7 +7,6 @@ import {
   ScrollView,
   FlatList,
   Modal,
-  Linking,
   Alert,
   StyleSheet,
   StatusBar,
@@ -19,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApplications, STATUSES } from '../../context/ApplicationsContext';
 import AccountGate from '../../components/AccountGate';
+import { openExternalUrl } from '../../utils/openExternalUrl';
 
 const PURPLE = '#5B21D6';
 
@@ -155,13 +155,7 @@ function JobApplicationTrackerContent({ navigation }) {
   // Open application link
   const openLink = (url) => {
     if (!url) return;
-
-    Linking.openURL(url).catch(() =>
-      Alert.alert(
-        'Could not open link',
-        'Please try again later.'
-      )
-    );
+    openExternalUrl(url);
   };
 
   // Back button
@@ -472,7 +466,7 @@ function JobApplicationTrackerContent({ navigation }) {
                   placeholder="Add a private note about this application"
                   placeholderTextColor="#9CA3AF"
                   multiline
-                  maxLength={2000}
+                  maxLength={5000}
                 />
                 <AppPressable
                   style={styles.notesSaveBtn}

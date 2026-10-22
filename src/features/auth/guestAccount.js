@@ -42,8 +42,12 @@ export const guestEmailFromUsername = (username) =>
 export const isGuestEmail = (email) =>
   typeof email === 'string' && email.trim().toLowerCase().endsWith(`@${GUEST_EMAIL_DOMAIN}`);
 
-// A guest is either an old anonymous account or a username-and-password account
-// carrying the is_guest flag. The flag lives in the sign-up data and is only used
-// to decide what the app shows, never to grant access to anything.
+// Keep this domain in sync with GUEST_EMAIL_DOMAIN in
+// supabase/functions/_shared/requireFullAccount.ts. User metadata and email are
+// editable by the signed-in user; app_metadata is the server-controlled marker.
 export const isGuestUser = (user) =>
-  !!user && (!!user.is_anonymous || user.user_metadata?.is_guest === true);
+  !!user &&
+  (user.app_metadata?.is_guest === true ||
+    user.is_anonymous === true ||
+    user.user_metadata?.is_guest === true ||
+    isGuestEmail(user.email));

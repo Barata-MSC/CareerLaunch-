@@ -73,6 +73,7 @@ export default function QuizScreen({
             style={[common.nextButton, selectedAnswer === null && styles.disabledNext]}
             onPress={onNext}
             disabled={selectedAnswer === null}
+            sound={isLast ? 'none' : 'tap'}
           >
             <Text style={common.nextText}>{isLast ? 'Submit' : 'Next'}</Text>
           </AppPressable>

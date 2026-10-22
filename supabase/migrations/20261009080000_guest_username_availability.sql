@@ -1,18 +1,27 @@
-create or replace function public.is_guest_username_taken(candidate_username text)
-returns boolean
-language sql
-stable
-security definer
+begin;
+
+create or replace function public.mark_guest_app_metadata()
+returns trigger
+language plpgsql
 set search_path = ''
 as $$
-  select exists (
-    select 1
-    from public.profiles
-    where lower(btrim(username)) = lower(btrim(candidate_username))
-  );
+begin
+  if new.email is not null
+    and pg_catalog.right(
+      pg_catalog.lower(new.email),
+      pg_catalog.length('@guest.careerlaunch.invalid')
+    ) = '@guest.careerlaunch.invalid'
+  then
+    new.raw_app_meta_data :=
+      coalesce(new.raw_app_meta_data, '{}'::jsonb) || '{"is_guest": true}'::jsonb;
+  end if;
+
+  return new;
+end;
 $$;
 
-revoke all on function public.is_guest_username_taken(text) from public;
-grant execute on function public.is_guest_username_taken(text) to anon, authenticated;
-
-notify pgrst, 'reload schema';
+drop trigger if exists mark_guest_app_metadata on auth.users;
+create trigger mark_guest_app_metadata
+before insert on auth.users
+for each row
+execute function public.mark_guest_app_metadata();
