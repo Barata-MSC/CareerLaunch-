@@ -14,6 +14,10 @@ const nursingCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/nursing/courseLessons.js',
 );
+const doctorCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/doctor/courseLessons.js',
+);
 const moduleCache = new Map();
 const nullComponent = () => null;
 const ReactMock = {
@@ -192,10 +196,12 @@ async function run() {
       track.steps?.some((step) => step.course?.id === course.id),
     ))
     .map(({ course }) => course);
-  const coursesWithRuntimeLessons = careerId === 'nursing'
+  const coursesWithRuntimeLessons = ['nursing', 'doctor'].includes(careerId)
     ? courses.map((course) => ({
       ...course,
-      lessons: loadSourceModule(nursingCourseLessonsPath).getNursingLessons(course.lessons || []),
+      lessons: careerId === 'nursing'
+        ? loadSourceModule(nursingCourseLessonsPath).getNursingLessons(course.lessons || [])
+        : loadSourceModule(doctorCourseLessonsPath).getDoctorLessons(course.lessons || []),
     }))
     : courses;
   const references = new Set();
