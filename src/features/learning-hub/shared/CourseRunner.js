@@ -11,6 +11,7 @@ import useCourseProgress from './progress/useCourseProgress';
 import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
 import { playSound } from '../../../utils/sounds';
+import { getTeacherLessons } from '../teacher/courseLessons';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -29,8 +30,14 @@ export default function CourseRunner({ course, navigation }) {
 
   const progress = useCourseProgress(course.id);
   const lessons = useMemo(
-    () => withStatus(course.lessons, progress.completedLessonIds),
-    [course.lessons, progress.completedLessonIds],
+    () =>
+      withStatus(
+        course.id.startsWith('teach-')
+          ? getTeacherLessons(course.lessons)
+          : course.lessons,
+        progress.completedLessonIds,
+      ),
+    [course.id, course.lessons, progress.completedLessonIds],
   );
 
   const [screen, setScreen] = useState('lessons');

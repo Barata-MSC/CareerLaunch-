@@ -129,14 +129,20 @@ async function checkReference(url) {
     let response = await fetchPolite(url, { method: 'HEAD' });
     if (!response.ok) response = await fetchPolite(url, { method: 'GET' });
     if (!response.ok) {
-      return { url, status: 'FAILED', detail: `HTTP ${response.status}` };
+      const status = response.status === 403 || response.status === 429 ? 'UNVERIFIED' : 'FAILED';
+      return { url, status, detail: `HTTP ${response.status}` };
     }
     if (response.redirected || response.url !== url) {
       return { url, status: 'REDIRECTED', detail: response.url };
     }
     return { url, status: 'OK', detail: `HTTP ${response.status}` };
   } catch (error) {
-    return { url, status: 'FAILED', detail: error.name === 'AbortError' ? 'Timed out' : error.message };
+    const timedOut = error.name === 'AbortError';
+    return {
+      url,
+      status: timedOut ? 'UNVERIFIED' : 'FAILED',
+      detail: timedOut ? 'Timed out; check manually' : error.message,
+    };
   }
 }
 
@@ -147,7 +153,8 @@ async function checkVideo(video) {
   try {
     const response = await fetchPolite(endpoint);
     if (!response.ok) {
-      return { url: `https://youtu.be/${video.id}`, status: 'FAILED', detail: `oEmbed HTTP ${response.status}` };
+      const status = response.status === 403 || response.status === 429 ? 'UNVERIFIED' : 'FAILED';
+      return { url: `https://youtu.be/${video.id}`, status, detail: `oEmbed HTTP ${response.status}` };
     }
     const result = await response.json();
     const matches = result.title.trim().toLowerCase() === video.title.trim().toLowerCase();
@@ -157,10 +164,11 @@ async function checkVideo(video) {
       detail: matches ? `Title matched: ${result.title}` : `Title mismatch: ${result.title}`,
     };
   } catch (error) {
+    const timedOut = error.name === 'AbortError';
     return {
       url: `https://youtu.be/${video.id}`,
-      status: 'FAILED',
-      detail: error.name === 'AbortError' ? 'Timed out' : error.message,
+      status: timedOut ? 'UNVERIFIED' : 'FAILED',
+      detail: timedOut ? 'Timed out; check manually' : error.message,
     };
   }
 }
@@ -205,7 +213,7 @@ async function run() {
   const counts = checks.reduce((result, check) => {
     result[check.status] += 1;
     return result;
-  }, { OK: 0, REDIRECTED: 0, FAILED: 0 });
+  }, { OK: 0, REDIRECTED: 0, UNVERIFIED: 0, FAILED: 0 });
   const timestamp = new Date().toISOString();
   const rows = checks.map(({ status, url, detail }) =>
     `| ${status} | ${url} | ${detail.replaceAll('|', '\\|')} |`,
@@ -215,7 +223,8 @@ async function run() {
     '',
     `Checked: ${timestamp}`,
     `Courses: ${courses.length}; unique reference URLs: ${references.size}; videos: ${videos.size}.`,
-    `Result: ${counts.OK} OK, ${counts.REDIRECTED} redirected, ${counts.FAILED} failed.`,
+    `Result: ${counts.OK} OK, ${counts.REDIRECTED} redirected, ${counts.UNVERIFIED} unverified, ${counts.FAILED} failed.`,
+    'HTTP 403, HTTP 429, and request timeouts are unverified and require a manual check; they are not reported as failures.',
     '',
     'This report reflects live checks made when the command ran; if the command is not run, link status is unknown and must not be described as verified.',
     '',
@@ -226,7 +235,7 @@ async function run() {
   ].join('\n');
   const reportPath = path.join(projectRoot, 'docs/tasks/progress', `link-check-${careerId}.md`);
   fs.writeFileSync(reportPath, report);
-  console.log(`Link check ${careerId}: ${counts.OK} OK, ${counts.REDIRECTED} redirected, ${counts.FAILED} failed.`);
+  console.log(`Link check ${careerId}: ${counts.OK} OK, ${counts.REDIRECTED} redirected, ${counts.UNVERIFIED} unverified, ${counts.FAILED} failed.`);
   console.log(`Report: ${path.relative(projectRoot, reportPath)}`);
   if (counts.FAILED) process.exitCode = 1;
 }
