@@ -351,7 +351,11 @@ export default function LearningHubScreen({ navigation, route }) {
                 ? 'Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.'
                 : currentCareer?.id === 'marine'
                   ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
-                  : 'Preview only: this career learning content is awaiting expert review.'}
+                  : currentCareer?.id === 'accountancy'
+                    ? 'Preview only: this Accountancy learning content is awaiting expert review. It is educational orientation, not accounting, tax, or financial advice.'
+                    : currentCareer?.id === 'civil-engineering'
+                      ? 'Preview only: this Civil Engineering learning content is awaiting expert review. It is educational orientation, not engineering design guidance.'
+                      : 'Preview only: this career learning content is awaiting expert review.'}
             </Text>
           </View>
         )}
@@ -450,16 +454,71 @@ export default function LearningHubScreen({ navigation, route }) {
     }
 
     return (
-      <FlatList
-        style={styles.scrollFlex}
-        data={visibleCourses}
-        keyExtractor={(item) => item.id}
-        renderItem={renderCourseCard}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
-        }
-      />
+      <View style={styles.flex}>
+        {currentCareer?.status !== 'available' && (
+          <View style={styles.previewNotice}>
+            <Text style={styles.previewNoticeText}>
+              {currentCareer?.id === 'doctor'
+                ? 'Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.'
+                : currentCareer?.id === 'marine'
+                  ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
+                  : currentCareer?.id === 'accountancy'
+                    ? 'Preview only: this Accountancy learning content is awaiting expert review. It is educational orientation, not accounting, tax, or financial advice.'
+                    : currentCareer?.id === 'civil-engineering'
+                      ? 'Preview only: this Civil Engineering learning content is awaiting expert review. It is educational orientation, not engineering design guidance.'
+                      : 'Preview only: this career learning content is awaiting expert review.'}
+            </Text>
+          </View>
+        )}
+        <View style={styles.searchBox}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for courses..."
+            placeholderTextColor="#9CA3AF"
+            value={query}
+            onChangeText={setQuery}
+            returnKeyType="search"
+          />
+        </View>
+
+        <Text style={styles.sectionLabel}>Status</Text>
+        <View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+            {FILTERS.map((f) => {
+              const active = f.key === filter;
+              return (
+                <AppPressable
+                  key={f.key}
+                  style={[styles.chip, active && styles.chipActive]}
+                  onPress={() => setFilter(f.key)}
+                >
+                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
+                </AppPressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        <FlatList
+          data={visibleCourses}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCourseCard}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
+          }
+        />
+
+        <AppPressable
+          style={styles.primaryBtn}
+          onPress={() => navigation.navigate('CareerRoadmap', {
+            goal: selectedTrack,
+            careerTrackIds: currentCareer?.trackIds,
+          })}
+        >
+          <Text style={styles.primaryBtnText}>View Roadmap</Text>
+        </AppPressable>
+      </View>
     );
   };
 
@@ -468,7 +527,15 @@ export default function LearningHubScreen({ navigation, route }) {
       {currentCareer?.status !== 'available' && (
         <View style={styles.previewNotice}>
           <Text style={styles.previewNoticeText}>
-            Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
+            {currentCareer?.id === 'doctor'
+              ? 'Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.'
+              : currentCareer?.id === 'marine'
+                ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
+                : currentCareer?.id === 'accountancy'
+                  ? 'Preview only: this Accountancy learning content is awaiting expert review. It is educational orientation, not accounting, tax, or financial advice.'
+                  : currentCareer?.id === 'civil-engineering'
+                    ? 'Preview only: this Civil Engineering learning content is awaiting expert review. It is educational orientation, not engineering design guidance.'
+                    : 'Preview only: this career learning content is awaiting expert review.'}
           </Text>
         </View>
       )}

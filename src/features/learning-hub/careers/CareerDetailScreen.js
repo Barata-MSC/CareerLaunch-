@@ -74,6 +74,8 @@ export default function CareerDetailScreen({ navigation, route }) {
                     ? 'The learning path and lessons are available as an educational preview while expert review is pending. This content is not medical advice or clinical training.'
                     : career.id === 'marine'
                       ? 'The Deck Officer track is available as an educational preview while expert review is pending. This content is not professional or safety training.'
+                      : career.id === 'accountancy'
+                        ? 'The learning path and lessons are available as an educational preview while accountancy expert review is pending. This content is not accounting, tax, or financial advice.'
                       : 'The learning path and lessons are available as an educational preview while expert review is pending.'}
                 </Text>
                 <AppPressable

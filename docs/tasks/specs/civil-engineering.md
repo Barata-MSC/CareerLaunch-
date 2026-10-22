@@ -1,6 +1,6 @@
 # Career Spec: Civil Engineering
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: plan`, have a civil engineering student, licensed civil engineer, or engineering instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its foundations**, not engineering design, construction guidance, or board exam review. Content goes in `src/features/learning-hub/civil-engineering/`.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: build`, have a civil engineering student, licensed civil engineer, or engineering instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the profession and its foundations**, not engineering design, construction guidance, or board exam review. Content goes in `src/features/learning-hub/civil-engineering/`.
 
 > **Draft.** The tracks and course lists below are proposals. Have a teammate or a civil engineering student review them before running.
 
@@ -11,7 +11,7 @@ career:
   learner_level: senior high school (STEM) and college students considering civil engineering, and first-year engineering students
   philippines_context: true
   review_required: true
-  run_mode: plan
+  run_mode: build
 
 tracks:
   - id: civ-structures-construction
