@@ -21,7 +21,7 @@ Course durations in the product are estimates, not promises. Learning content sh
 
 ## Current careers and roadmap
 
-The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation remains in `software-engineering/SoftwareEngineerRoadmap.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
+The current Learning Hub begins with a career picker and then moves into a career's track list. Career data lives in `careers/careers.js`; the shared registry in `careers/registry.js` combines each career's tracks and course routes. Software Engineering's track data is in `software-engineering/tracks.js`, and its roadmap presentation is in `software-engineering/index.js`. A track is an ordered list of steps; a step can point to a course and navigation route, or can be a detail-only/coming-soon item.
 
 ### Careers
 
@@ -75,7 +75,7 @@ src/features/learning-hub/
     screens/                        Reusable lesson, quiz, and result screens
   software-engineering/
     tracks.js                       Software Engineering track data
-    SoftwareEngineerRoadmap.js      Shared roadmap UI
+    index.js                        Shared roadmap UI
     <course>-course/
       course.js                     Course metadata and data composition
       <Course>Course.js              Thin screen wrapper around CourseRunner
@@ -123,8 +123,8 @@ The `careers/` folder is the shared layer for career metadata, screens, and the 
 
 ### Shared flow and responsibilities
 
-- `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, and refreshes aggregate progress when the screen regains focus.
-- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer tracks, courses, and routes. `software-engineering/SoftwareEngineerRoadmap.js` displays the selected career's roadmap while preserving existing track keys and route names.
+- `LearningHubScreen/LearningHubScreen.js` is the learner's Learning Hub entry. It lets learners browse careers, tracks, and courses in one screen, refreshes aggregate progress when the screen regains focus, and preserves the current browsing view when returning from a course or roadmap.
+- `careers/registry.js` combines Software Engineering, Cybersecurity, Teacher, Nursing, and Lawyer tracks, courses, and routes. `software-engineering/index.js` displays the selected career's roadmap while preserving existing track keys and route names.
 - `cybersecurity/` contains the two beginner pathways and 14 courses. Its examples and activities are conceptual, defensive, and authorization-focused; the Data Privacy Act of 2012 and National Privacy Commission are named only in the privacy course.
 - `teacher/` contains the Elementary Teacher and Secondary Teacher pathways, with 15 courses registered through the same shared registry.
 - `lawyer/` contains Lawyer Path and Paralegal and Legal Support, with 14 introductory courses registered through the same shared registry.
