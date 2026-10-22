@@ -143,6 +143,7 @@ Use `README.md` for project overview, setup, and team onboarding. This file adds
 
 - Reusable motion tokens and primitives live in `src/components/motion/`: `motionTokens.js`, `useReduceMotion`, `FadeSlideIn`, `Float`, `Pop`, and `AnimatedStage`.
 - Stage-level transitions in the Learning Hub use `AnimatedStage` for in-screen state changes; do not rely on `LayoutAnimation` or global layout animations.
+- Keep motion wrappers layout-neutral: use `flex: 1` (and `minHeight: 0` where they fill space), keep scroll containers height-bounded, and keep pinned headers and footers outside animated regions. Never hide or remove UI to make an animation work.
 - Respect the system reduce-motion setting: disable floating and sliding, and use only a short fade or no animation.
 - Use `Float` sparingly on a few hero elements; never float items in scrolling lists. Motion currently covers the Dashboard and the Learning Hub only.
 

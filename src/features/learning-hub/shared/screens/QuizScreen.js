@@ -57,7 +57,11 @@ export default function QuizScreen({
     <>
       <CourseHeader title="Quiz" onBack={onBack} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={common.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={common.container}
+      >
         <View style={styles.questionHeader}>
           <Text style={common.smallText}>{course.title} · Quiz</Text>
           <Text style={styles.questionCounter}>
@@ -114,6 +118,7 @@ export default function QuizScreen({
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   questionHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   questionCounter: { fontSize: 11, color: '#888888' },
   questionProgressBackground: {

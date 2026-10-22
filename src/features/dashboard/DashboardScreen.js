@@ -227,13 +227,9 @@ export default function DashboardScreen({ navigation }) {
                       isPressed && styles.quickActionTileActive,
                     ]}
                   >
-                    {index < 3 ? (
-                      <Float phaseOffset={index * 500}>
-                        <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                      </Float>
-                    ) : (
+                    <Float phaseOffset={index * 500}>
                       <Text style={styles.quickActionIcon}>{action.icon}</Text>
-                    )}
+                    </Float>
                     {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
                       <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
                         <Text style={styles.lockBadgeText}>🔒</Text>

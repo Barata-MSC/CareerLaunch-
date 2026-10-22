@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Animated, Platform, View } from 'react-native';
+import { Animated, Platform } from 'react-native';
 import { distances, durations, easings } from './motionTokens';
 import useReduceMotion from './useReduceMotion';
 
@@ -15,6 +15,7 @@ export default function AnimatedStage({
   const opacity = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const previousKeyRef = useRef(stageKey);
+  const motionSettingsRef = useRef({ direction: 'none', reduceMotion: false });
 
   const resolvedDirection = useMemo(() => {
     if (direction === 'forward' || direction === 'back' || direction === 'none') {
@@ -23,26 +24,26 @@ export default function AnimatedStage({
     return 'none';
   }, [direction]);
 
+  motionSettingsRef.current = {
+    direction: resolvedDirection,
+    reduceMotion,
+  };
+
   useEffect(() => {
-    const isNewStage = stageKey !== previousKeyRef.current;
+    if (stageKey === previousKeyRef.current) return undefined;
+    previousKeyRef.current = stageKey;
 
-    if (!isNewStage) {
-      opacity.stopAnimation();
-      translateX.stopAnimation();
+    const { direction: stageDirection, reduceMotion: shouldReduceMotion } =
+      motionSettingsRef.current;
+    opacity.stopAnimation();
+    translateX.stopAnimation();
+
+    if (shouldReduceMotion) {
       opacity.setValue(1);
       translateX.setValue(0);
-      previousKeyRef.current = stageKey;
       return undefined;
     }
 
-    if (reduceMotion) {
-      opacity.setValue(1);
-      translateX.setValue(0);
-      previousKeyRef.current = stageKey;
-      return undefined;
-    }
-
-    const stageDirection = resolvedDirection === 'none' ? 'none' : resolvedDirection;
     const travel = stageDirection === 'forward' ? distances.stage : stageDirection === 'back' ? -distances.stage : 0;
 
     opacity.setValue(0);
@@ -64,10 +65,18 @@ export default function AnimatedStage({
     ]);
 
     animation.start();
-    previousKeyRef.current = stageKey;
 
     return () => animation.stop();
-  }, [opacity, reduceMotion, resolvedDirection, stageKey, translateX]);
+  }, [opacity, stageKey, translateX]);
+
+  useEffect(() => {
+    if (!reduceMotion) return undefined;
+    opacity.stopAnimation();
+    translateX.stopAnimation();
+    opacity.setValue(1);
+    translateX.setValue(0);
+    return undefined;
+  }, [opacity, reduceMotion, translateX]);
 
   useEffect(() => {
     return () => {
@@ -79,6 +88,7 @@ export default function AnimatedStage({
   return (
     <Animated.View
       style={[
+        { flex: 1, minHeight: 0 },
         style,
         { opacity },
         !reduceMotion && { transform: [{ translateX }] },

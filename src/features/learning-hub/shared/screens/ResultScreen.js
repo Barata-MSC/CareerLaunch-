@@ -80,6 +80,7 @@ export default function ResultScreen({
       <CourseHeader title="Quiz Result" onBack={onBack} />
 
       <ScrollView
+        style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.resultContainer}
       >
@@ -219,6 +220,7 @@ export default function ResultScreen({
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   resultContainer: { alignItems: 'center', paddingHorizontal: 25, paddingTop: 40, paddingBottom: 35 },
   scoreCircle: {
     width: 110,

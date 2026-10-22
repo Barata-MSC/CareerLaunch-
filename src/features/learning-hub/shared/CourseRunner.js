@@ -179,6 +179,7 @@ export default function CourseRunner({ course, navigation }) {
 
       <AnimatedStage
         stageKey={screen}
+        style={styles.stage}
         direction={
           screen === 'lesson' || screen === 'quiz' || screen === 'result'
             ? 'forward'
@@ -253,6 +254,10 @@ export default function CourseRunner({ course, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  stage: {
+    flex: 1,
+    minHeight: 0,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',

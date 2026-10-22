@@ -65,7 +65,11 @@ export default function LessonScreen({
     <>
       <CourseHeader title={`Lesson ${lessonNumber} of ${lessons.length}`} onBack={onBack} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={common.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={common.container}
+      >
         <View style={styles.lessonProgressHeader}>
           <Text style={common.smallText}>
             Lesson {lessonNumber} of {lessons.length}
@@ -148,6 +152,7 @@ export default function LessonScreen({
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: { flex: 1, minHeight: 0 },
   lessonProgressHeader: { marginBottom: 20 },
   smallProgressBackground: {
     height: 5,

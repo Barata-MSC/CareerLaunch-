@@ -3,9 +3,8 @@
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated,
   View,
   Text,
   TextInput,
@@ -70,6 +69,8 @@ const FILTERS = [
   { key: 'completed', label: 'Completed' },
 ];
 
+const VIEW_ORDER = { careers: 0, tracks: 1, courses: 2 };
+
 const BUTTON_LABEL = {
   'not-started': 'Start',
   'in-progress': 'Continue',
@@ -84,6 +85,7 @@ export default function LearningHubScreen({ navigation, route }) {
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
   const reduceMotion = useReduceMotion();
+  const previousViewRef = useRef(view);
 
   useEffect(() => {
     const careerId = route?.params?.careerId;
@@ -97,6 +99,10 @@ export default function LearningHubScreen({ navigation, route }) {
     setView('tracks');
     navigation.setParams({ careerId: undefined });
   }, [navigation, route?.params?.careerId]);
+
+  useEffect(() => {
+    previousViewRef.current = view;
+  }, [view]);
 
   // Saved progress. Reload whenever the screen is focused, so it also updates
   // after the user comes back from a course.
@@ -238,25 +244,26 @@ export default function LearningHubScreen({ navigation, route }) {
     );
   };
 
-  const renderCareers = () => (
-    <View style={styles.flex}>
-      <View style={styles.searchBox}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search careers..."
-          placeholderTextColor="#9CA3AF"
-          value={query}
-          onChangeText={setQuery}
-          returnKeyType="search"
-        />
-        {query.trim() ? (
-          <AppPressable onPress={() => setQuery('')} style={styles.clearButton}>
-            <Text style={styles.clearText}>Clear</Text>
-          </AppPressable>
-        ) : null}
-      </View>
+  const renderCareerSearch = () => (
+    <View style={styles.searchBox}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search careers..."
+        placeholderTextColor="#9CA3AF"
+        value={query}
+        onChangeText={setQuery}
+        returnKeyType="search"
+      />
+      {query.trim() ? (
+        <AppPressable onPress={() => setQuery('')} style={styles.clearButton}>
+          <Text style={styles.clearText}>Clear</Text>
+        </AppPressable>
+      ) : null}
+    </View>
+  );
 
-      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
+  const renderCareers = () => (
+      <ScrollView style={styles.scrollFlex} contentContainerStyle={styles.listContent}>
         <FadeSlideIn delay={0} enabled={!reduceMotion}>
           <Text style={styles.intro}>Pick a career to explore.</Text>
         </FadeSlideIn>
@@ -324,7 +331,6 @@ export default function LearningHubScreen({ navigation, route }) {
           })
         )}
       </ScrollView>
-    </View>
   );
 
   // ---------- Step 1: tracks ----------
@@ -334,7 +340,7 @@ export default function LearningHubScreen({ navigation, route }) {
     );
 
     return (
-      <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
+      <ScrollView style={styles.scrollFlex} contentContainerStyle={styles.listContent}>
         <FadeSlideIn delay={0} enabled={!reduceMotion}>
           <Text style={styles.intro}>Pick a track to see its courses.</Text>
         </FadeSlideIn>
@@ -444,65 +450,58 @@ export default function LearningHubScreen({ navigation, route }) {
     }
 
     return (
-      <View style={styles.flex}>
-        {currentCareer?.status !== 'available' && (
-          <View style={styles.previewNotice}>
-            <Text style={styles.previewNoticeText}>
-              Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
-            </Text>
-          </View>
-        )}
-        <View style={styles.searchBox}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for courses..."
-            placeholderTextColor="#9CA3AF"
-            value={query}
-            onChangeText={setQuery}
-            returnKeyType="search"
-          />
-        </View>
-
-        <Text style={styles.sectionLabel}>Status</Text>
-        <View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-            {FILTERS.map((f) => {
-              const active = f.key === filter;
-              return (
-                <AppPressable
-                  key={f.key}
-                  style={[styles.chip, active && styles.chipActive]}
-                  onPress={() => setFilter(f.key)}
-                >
-                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
-                </AppPressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        <FlatList
-          data={visibleCourses}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCourseCard}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
-          }
-        />
-
-        <AppPressable
-          style={styles.primaryBtn}
-          onPress={() => navigation.navigate('CareerRoadmap', {
-            goal: selectedTrack,
-            careerTrackIds: currentCareer?.trackIds,
-          })}
-        >
-          <Text style={styles.primaryBtnText}>View Roadmap</Text>
-        </AppPressable>
-      </View>
+      <FlatList
+        style={styles.scrollFlex}
+        data={visibleCourses}
+        keyExtractor={(item) => item.id}
+        renderItem={renderCourseCard}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
+        }
+      />
     );
   };
+
+  const renderCourseControls = () => (
+    <>
+      {currentCareer?.status !== 'available' && (
+        <View style={styles.previewNotice}>
+          <Text style={styles.previewNoticeText}>
+            Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
+          </Text>
+        </View>
+      )}
+      <View style={styles.searchBox}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for courses..."
+          placeholderTextColor="#9CA3AF"
+          value={query}
+          onChangeText={setQuery}
+          returnKeyType="search"
+        />
+      </View>
+
+      <Text style={styles.sectionLabel}>Status</Text>
+      <View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+          {FILTERS.map((f) => {
+            const active = f.key === filter;
+            return (
+              <AppPressable
+                key={f.key}
+                style={[styles.chip, active && styles.chipActive]}
+                onPress={() => setFilter(f.key)}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>{f.label}</Text>
+              </AppPressable>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -520,11 +519,38 @@ export default function LearningHubScreen({ navigation, route }) {
         <View style={styles.backBtn} />
       </View>
 
-      <AnimatedStage stageKey={view} direction={view === 'tracks' ? 'forward' : view === 'courses' ? 'forward' : 'none'}>
-        {view === 'careers' && renderCareers()}
-        {view === 'tracks' && renderTracks()}
-        {view === 'courses' && renderCourses()}
-      </AnimatedStage>
+      <View style={styles.flex}>
+        {view === 'careers' && renderCareerSearch()}
+        {view === 'courses' && currentTrack && renderCourseControls()}
+
+        <AnimatedStage
+          stageKey={view}
+          style={styles.scrollFlex}
+          direction={
+            VIEW_ORDER[view] > VIEW_ORDER[previousViewRef.current]
+              ? 'forward'
+              : VIEW_ORDER[view] < VIEW_ORDER[previousViewRef.current]
+                ? 'back'
+                : 'none'
+          }
+        >
+          {view === 'careers' && renderCareers()}
+          {view === 'tracks' && renderTracks()}
+          {view === 'courses' && renderCourses()}
+        </AnimatedStage>
+
+        {view === 'courses' && currentTrack && (
+          <AppPressable
+            style={styles.primaryBtn}
+            onPress={() => navigation.navigate('CareerRoadmap', {
+              goal: selectedTrack,
+              careerTrackIds: currentCareer?.trackIds,
+            })}
+          >
+            <Text style={styles.primaryBtnText}>View Roadmap</Text>
+          </AppPressable>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -537,6 +563,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   flex: { flex: 1 },
+  scrollFlex: { flex: 1, minHeight: 0 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
