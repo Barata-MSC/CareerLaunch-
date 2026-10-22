@@ -14,6 +14,11 @@ const registryPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/registry.js',
 );
+const teacherLinksPath = path.join(projectRoot, 'src/features/learning-hub/teacher/links.js');
+const teacherCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/teacher/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -23,14 +28,17 @@ const issues = [];
 const warnings = [];
 const moduleCache = new Map();
 globalThis.__DEV__ = false;
-const CYBERSECURITY_ALLOWED_DOMAINS = [
-  'nist.gov',
-  'cisa.gov',
-  'owasp.org',
-  'ncsc.gov.uk',
-  'cloudflare.com',
-  'privacy.gov.ph',
-];
+const REFERENCE_ALLOWED_DOMAINS = {
+  cybersecurity: [
+    'nist.gov',
+    'cisa.gov',
+    'owasp.org',
+    'ncsc.gov.uk',
+    'cloudflare.com',
+    'privacy.gov.ph',
+  ],
+  teacher: ['deped.gov.ph', 'ched.gov.ph', 'prc.gov.ph', 'unesco.org', 'edutopia.org'],
+};
 
 const ReactMock = {
   createElement: () => null,
@@ -167,6 +175,8 @@ function validateRegistry(registry, careers) {
   const trackIds = new Set();
   const careerIds = new Set();
   const staticRoutes = collectStaticStackRouteNames(fs.readFileSync(navigatorPath, 'utf8'));
+  const teacherLinks = loadSourceModule(teacherLinksPath).LESSON_LINKS;
+  const { getTeacherLessons } = loadSourceModule(teacherCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -227,14 +237,47 @@ function validateRegistry(registry, careers) {
     'matchPairs',
   ]);
 
+  const teacherLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('teach-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(teacherLinks).forEach((lessonId) => {
+    requireValue(
+      teacherLessonIds.has(lessonId),
+      `Teacher lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  teacherLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(teacherLinks, lessonId),
+      `Teacher lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(teacherLinks).length === teacherLessonIds.size,
+    `Teacher lesson link count does not match real lesson ids: ${Object.keys(teacherLinks).length} entries for ${teacherLessonIds.size} lessons`,
+  );
+  console.log(
+    `Teacher runtime link coverage: ${teacherLessonIds.size} lesson ids, ${Object.keys(teacherLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
+    const referenceCareerId = courseId.startsWith('cyber-')
+      ? 'cybersecurity'
+      : courseId.startsWith('teach-')
+        ? 'teacher'
+        : null;
+    const lessons = referenceCareerId === 'teacher'
+      ? getTeacherLessons(course.lessons || [])
+      : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
     const questionTexts = new Set();
     const correctCounts = [0, 0, 0, 0];
     const referenceUrlCounts = new Map();
 
-    (course.lessons || []).forEach((lesson) => {
+    lessons.forEach((lesson) => {
       requireValue(Boolean(lesson.id), `Course ${courseId} has a lesson with no id`);
       requireValue(!lessonIds.has(lesson.id), `Course ${courseId} has duplicate lesson id: ${lesson.id}`);
       lessonIds.add(lesson.id);
@@ -252,12 +295,18 @@ function validateRegistry(registry, careers) {
         );
       });
 
-      if (courseId.startsWith('cyber-')) {
+      if (referenceCareerId) {
         const references = Array.isArray(lesson.references) ? lesson.references : [];
         requireValue(
           references.length > 0,
           `Course ${courseId}, lesson ${lesson.id} has no references`,
         );
+        if (referenceCareerId === 'teacher') {
+          requireValue(
+            lesson.referencesHeading === 'Further reading',
+            `Course ${courseId}, lesson ${lesson.id} has no Further reading heading`,
+          );
+        }
         const lessonUrls = new Set();
         references.forEach((reference) => {
           requireValue(
@@ -277,10 +326,10 @@ function validateRegistry(registry, careers) {
             issues.push(`Course ${courseId}, lesson ${lesson.id} has an invalid reference URL: ${reference.url}`);
           }
           requireValue(
-            CYBERSECURITY_ALLOWED_DOMAINS.some(
+            REFERENCE_ALLOWED_DOMAINS[referenceCareerId].some(
               (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
             ),
-            `Course ${courseId}, lesson ${lesson.id} uses a domain outside the cybersecurity allowlist: ${reference.url}`,
+            `Course ${courseId}, lesson ${lesson.id} uses a domain outside the ${referenceCareerId} allowlist: ${reference.url}`,
           );
           requireValue(
             !lessonUrls.has(reference.url),
@@ -309,7 +358,7 @@ function validateRegistry(registry, careers) {
       }
     });
 
-    if (courseId.startsWith('cyber-')) {
+    if (referenceCareerId) {
       referenceUrlCounts.forEach((count, url) => {
         if (count > 3) {
           warnings.push(`Course ${courseId}: reference URL appears on ${count} lessons: ${url}`);
