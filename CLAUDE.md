@@ -108,6 +108,7 @@ These are recent code changes, not a claim that the overall product or every roa
 - `src/navigation/AppNavigator.js` registers app screens and course routes.
 - `src/features/` contains feature screens and logic; shared UI, context, configuration, navigation, and assets live in their corresponding `src/` directories.
 - Learning Hub shared lesson/progress code is under `src/features/learning-hub/shared/`; career data, screens, and the combined track/course registry live under `src/features/learning-hub/careers/`. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, `lawyer/`, `doctor/`, and `marine/`.
+- Career lesson citations and optional video metadata live in each career's `links.js`, keyed by stable lesson IDs, and are merged with `shared/lessonLinks.js`. References must genuinely match the lesson topic; do not imply lesson text was sourced from them. Use “Further reading” outside Software Engineering, do not invent URLs or video IDs, and use `// VERIFY:` for unresolved source uncertainty. `npm run validate:content` validates citation domains and shape for covered careers; `npm run check:links -- <career-id>` checks current URL reachability and supplied video titles, but does not replace a human topic-fit review.
 - Career assessment data and pure RIASEC scoring/matching live under `src/features/career-assessment/`; the assessment fit table must cover the actual IDs in `learning-hub/careers/careers.js`.
 - Keep navigation route names consistent with `navigation.navigate(...)`, and preserve stable course/lesson IDs.
 
@@ -120,6 +121,7 @@ The checked-in package manifest is authoritative. The current stack is Expo SDK 
 - `npm run lint` — run ESLint.
 - `npm run validate:assessment` — validate assessment item counts, scoring, matching, career coverage, and route registration without a device.
 - `npm run validate:walkthrough` — validate walkthrough steps, preference decisions, and stored-value shape without a device.
+- `npm run check:links -- <career-id>` — perform an online, dev-only link check and write a report under `docs/tasks/progress/`.
 - `npx expo export -p web` — build the web bundle.
 - `npm run deploy` publishes to GitHub Pages; never run it unless deployment is explicitly requested.
 

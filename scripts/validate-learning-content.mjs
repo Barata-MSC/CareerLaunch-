@@ -23,6 +23,14 @@ const issues = [];
 const warnings = [];
 const moduleCache = new Map();
 globalThis.__DEV__ = false;
+const CYBERSECURITY_ALLOWED_DOMAINS = [
+  'nist.gov',
+  'cisa.gov',
+  'owasp.org',
+  'ncsc.gov.uk',
+  'cloudflare.com',
+  'privacy.gov.ph',
+];
 
 const ReactMock = {
   createElement: () => null,
@@ -224,6 +232,7 @@ function validateRegistry(registry, careers) {
     const questionsByLesson = new Map();
     const questionTexts = new Set();
     const correctCounts = [0, 0, 0, 0];
+    const referenceUrlCounts = new Map();
 
     (course.lessons || []).forEach((lesson) => {
       requireValue(Boolean(lesson.id), `Course ${courseId} has a lesson with no id`);
@@ -242,7 +251,71 @@ function validateRegistry(registry, careers) {
           `Course ${courseId}, lesson ${lesson.id} has unsupported activity type: ${activity.type}`,
         );
       });
+
+      if (courseId.startsWith('cyber-')) {
+        const references = Array.isArray(lesson.references) ? lesson.references : [];
+        requireValue(
+          references.length > 0,
+          `Course ${courseId}, lesson ${lesson.id} has no references`,
+        );
+        const lessonUrls = new Set();
+        references.forEach((reference) => {
+          requireValue(
+            typeof reference.text === 'string' && reference.text.trim().length > 0,
+            `Course ${courseId}, lesson ${lesson.id} has a reference with no text`,
+          );
+          requireValue(
+            typeof reference.url === 'string' && reference.url.startsWith('https://'),
+            `Course ${courseId}, lesson ${lesson.id} has a reference without an https URL`,
+          );
+          if (typeof reference.url !== 'string') return;
+
+          let hostname = '';
+          try {
+            hostname = new URL(reference.url).hostname.toLowerCase();
+          } catch {
+            issues.push(`Course ${courseId}, lesson ${lesson.id} has an invalid reference URL: ${reference.url}`);
+          }
+          requireValue(
+            CYBERSECURITY_ALLOWED_DOMAINS.some(
+              (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+            ),
+            `Course ${courseId}, lesson ${lesson.id} uses a domain outside the cybersecurity allowlist: ${reference.url}`,
+          );
+          requireValue(
+            !lessonUrls.has(reference.url),
+            `Course ${courseId}, lesson ${lesson.id} has a duplicate reference URL: ${reference.url}`,
+          );
+          lessonUrls.add(reference.url);
+          referenceUrlCounts.set(reference.url, (referenceUrlCounts.get(reference.url) || 0) + 1);
+        });
+
+        if (lesson.video) {
+          requireValue(
+            typeof lesson.video.id === 'string' && /^[\w-]{11}$/.test(lesson.video.id),
+            `Course ${courseId}, lesson ${lesson.id} has an invalid YouTube video id`,
+          );
+          requireValue(
+            Number.isInteger(lesson.video.start) && lesson.video.start >= 0,
+            `Course ${courseId}, lesson ${lesson.id} has an invalid video start time`,
+          );
+          ['chapter', 'title', 'channel'].forEach((field) => {
+            requireValue(
+              typeof lesson.video[field] === 'string' && lesson.video[field].trim().length > 0,
+              `Course ${courseId}, lesson ${lesson.id} has no video ${field}`,
+            );
+          });
+        }
+      }
     });
+
+    if (courseId.startsWith('cyber-')) {
+      referenceUrlCounts.forEach((count, url) => {
+        if (count > 3) {
+          warnings.push(`Course ${courseId}: reference URL appears on ${count} lessons: ${url}`);
+        }
+      });
+    }
 
     (course.questions || []).forEach((question) => {
       requireValue(lessonIds.has(question.lessonId), `Course ${courseId} question references unknown lesson: ${question.lessonId}`);

@@ -180,6 +180,14 @@ The `careers/` folder is the shared layer for career metadata, screens, and the 
 
 Individual course folders keep the course configuration, wrapper, lesson data, optional lesson extras, and question bank together. For example, the JavaScript course has `javascript-course/course.js`, `JavaScriptCourse.js`, and `data/lessons.js`, `data/lessonExtras.js`, and `data/questions.js`.
 
+## Lesson references and optional videos
+
+Career lesson links live beside each career's content in `links.js`, keyed by stable lesson ID. The shared `shared/lessonLinks.js` helper builds APA-style citation text, describes supplied YouTube videos, and merges link metadata without mutating lesson data or replacing existing values. The shared Lesson screen displays references after activities. Cybersecurity labels its links “Further reading” to avoid implying its lesson copy was sourced from linked pages; future career additions should use the same label. Software Engineering keeps its existing “References” heading and extras.
+
+Only add URLs that genuinely cover the lesson topic. Do not imply the lesson was copied from or authored using the linked source. Do not guess URLs, dates, authors, or video IDs; use a publisher topic landing page if a specific page cannot be confirmed and record any remaining uncertainty as `// VERIFY:`. Videos are optional and should only be included from supplied, verified YouTube details.
+
+`npm run validate:content` validates cybersecurity citations against its allowed domain list, verifies citation and video data, and warns when a source URL is used in more than three lessons in one course. `npm run check:links -- cybersecurity` checks a career's public URLs and supplied video titles online and writes a report to `docs/tasks/progress/link-check-<career-id>.md`. Link checking requires internet access; it verifies availability and video titles, not topical suitability, which still needs a human spot-check.
+
 ## Careers data contract
 
 Career data is authored separately from the UI in `careers/careers.js` and follows this shape:
