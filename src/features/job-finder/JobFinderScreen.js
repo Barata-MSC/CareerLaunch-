@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import googleIcon from '../../assets/google.png';
 import microsoftIcon from '../../assets/microsoft.png';
 import spotifyIcon from '../../assets/Spotify.png';
@@ -375,9 +376,7 @@ function JobFinderContent({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.header}>
-        <AppPressable onPress={handleBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backText}>{'<'}</Text>
-        </AppPressable>
+        <BackButton onPress={handleBack} style={styles.backBtn} />
         <Text style={styles.headerTitle}>{titles[view]}</Text>
         <View style={styles.backBtn} />
       </View>
@@ -402,8 +401,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  backBtn: { width: 32 },
-  backText: { fontSize: 22, color: '#111827' },
+  backBtn: { width: 44 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#111827' },
 
   searchBox: {

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import { getCareerById } from './careers';
 
 export default function CareerDetailScreen({ navigation, route }) {
@@ -12,10 +13,8 @@ export default function CareerDetailScreen({ navigation, route }) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
+          <BackButton onPress={() => navigation.goBack()} />
           <Text style={styles.title}>Career not found</Text>
-          <AppPressable style={styles.primaryButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.primaryButtonText}>Back</Text>
-          </AppPressable>
         </View>
       </SafeAreaView>
     );
@@ -24,13 +23,7 @@ export default function CareerDetailScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <AppPressable
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backText}>{'<'}</Text>
-        </AppPressable>
+        <BackButton onPress={() => navigation.goBack()} style={styles.backButton} />
         <Text style={styles.headerTitle}>Career</Text>
         <View style={styles.spacer} />
       </View>
@@ -116,13 +109,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 8,
   },
-  backButton: {
-    width: 32,
-  },
-  backText: {
-    fontSize: 24,
-    color: '#111827',
-  },
+  backButton: { width: 44 },
   headerTitle: {
     fontSize: 17,
     fontWeight: '700',

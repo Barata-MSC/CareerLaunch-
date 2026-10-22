@@ -38,6 +38,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 | Feature module | Purpose |
 |---|---|
 | `auth/` | Authentication-related screens and flows. |
+| `career-assessment/` | Local-first RIASEC interest assessment, career matching, result worksheet, and optional account persistence. |
 | `dashboard/` | Main dashboard experience. |
 | `interview-coach/` | Common interview questions, typed answers with local heuristic feedback, simulated voice feedback, and a session summary. |
 | `job-finder/` | Job discovery and listing experience. |
@@ -62,11 +63,11 @@ The Learning Hub now has a career-first flow: learners choose a career, select o
 | Lawyer | Lawyer Path (8); Paralegal and Legal Support (6) | 14 | 140 | 140 | Available in the app; expert review sign-off is still incomplete. |
 | **Added by brief 03** | **7 tracks** | **51** | **510** | **510** | **Four career folders are registered.** |
 
-Each listed course has 10 lessons and a 10-question quiz bank; a course quiz attempt uses 10 questions. The complete shared registry currently validates 10 tracks and 68 courses across the seeded career catalog, including the existing Software Engineering content. Software Engineering's UI/UX roadmap still has steps without course content; those steps remain detail-only rather than complete courses.
+Each listed course has 10 lessons and a 10-question quiz bank; a course quiz attempt uses 10 questions. The complete shared registry validates 18 tracks and 119 courses across the seeded career catalog, including the existing Software Engineering content. Software Engineering's UI/UX roadmap still has steps without course content; those steps remain detail-only rather than complete courses.
 
 **Review and availability caveats:** Lawyer is available in the app; expert review sign-off is still incomplete. Its review notes are not evidence of completed expert review. Teacher and Nursing review notes record team review and approval, though some reviewer-name/date fields remain placeholders. Doctor and Marine are marked coming soon and must not be shown as available before expert review. Nursing content is educational orientation, not clinical training; Lawyer content is introductory career orientation, not legal advice. Cybersecurity content is conceptual and defensive, not operational attack guidance.
 
-The Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine career specs exist in [`docs/tasks/specs/`](docs/tasks/specs/), but their Learning Hub content folders are not built; all five are marked `coming-soon` in `src/features/learning-hub/careers/careers.js`. See [`docs/tasks/progress/`](docs/tasks/progress/) for the build checkpoints and [`src/features/learning-hub/README.md`](src/features/learning-hub/README.md) for the course data contract and pathway details.
+Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine all have Learning Hub content folders. Accountancy, Civil Engineering, Doctor, and Marine remain `coming-soon` pending their respective review requirements; Hospitality & Tourism is available. See [`src/features/learning-hub/careers/careers.js`](src/features/learning-hub/careers/careers.js) for current career status and [`docs/tasks/progress/`](docs/tasks/progress/) for build checkpoints.
 
 ### Other implemented briefs
 
@@ -77,12 +78,13 @@ The Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine ca
 | `04-guest-gating.md` | `useAccountTier`, `AccountGate`, and the shared `requireFullAccount` Edge Function helper support gating full-account features. | Human-test guest and upgraded-account flows. Server-side enforcement depends on each Edge Function using the helper. |
 | `06-job-tracker-persistence.md` | Application Tracker reads/writes per-user snapshots through Supabase; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021232700_job_applications.sql` and validate two-user RLS, offline rollback, and persistence against the live project. |
 | `09-resume-persistence.md` | Resume Builder loads and autosaves one resume per user, supports retry and deletion, and keeps derived completeness feedback out of storage; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021230700_resumes.sql` and validate RLS, account switching, offline retries, and deletion against the live project. Profile photos remain in memory only. |
+| `10-career-assessment.md` | 36-item local RIASEC assessment with saved drafts/results, career matching, worksheet text sharing, and optional account storage for full accounts. Guests and signed-out users use on-device storage; account upgrades require an explicit save action. | A human must apply `supabase/migrations/20261023003000_career_assessment_results.sql`, verify two-user RLS and account-upgrade consent, and test restart/resume, offline fallback, career links, and worksheet sharing on real devices. |
 
-The two migrations are checked-in proposals; this repository cannot establish whether they have been applied to the connected Supabase project. Until the human database and RLS checks are complete, describe these features as implemented in the client with persistence contingent on migration setup—not as verified live persistence.
+These migrations are checked-in proposals; this repository cannot establish whether they have been applied to the connected Supabase project. Until the human database and RLS checks are complete, describe these features as implemented in the client with persistence contingent on migration setup—not as verified live persistence.
 
 ### Validation snapshot
 
-On 2026-10-22, `npm run validate:content` passed for the registered Learning Hub content: 10 careers, 10 tracks, and 68 courses. It reported one answer-index skew warning: 60% of correct answers in the existing `data-visualization` course use the same answer index. No automated app test script is configured. This validation does not replace lint/build checks, manual device testing, expert content review, or live Supabase/RLS testing.
+On 2026-10-23, `npm run validate:content` passed for the registered Learning Hub content: 10 careers, 18 tracks, and 119 courses. The `npm run validate:assessment` script checks the 36-item RIASEC bank, scoring, matching, fit coverage, and navigation registration. These validators do not replace lint/build checks, manual device testing, expert content review, or live Supabase/RLS testing.
 
 ## Technology Stack
 
@@ -367,6 +369,10 @@ npx expo start -c
 ### ESLint
 
 The repository contains `eslint.config.js`. Use the lint script defined in `package.json` if one exists. If no lint script is configured, check the project's ESLint setup before inventing a command or adding configuration.
+
+### Learning content and career assessment
+
+Run `npm run validate:content` for the shared Learning Hub registry and `npm run validate:assessment` for assessment data, scoring, matching, career coverage, and route registration. Neither command requires Expo or a device.
 
 ### Testing
 

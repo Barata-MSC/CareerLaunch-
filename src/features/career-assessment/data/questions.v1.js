@@ -1,0 +1,50 @@
+export const ASSESSMENT_VERSION = 'v1';
+
+export const ASSESSMENT_ITEMS = [
+  { id: 'R1', type: 'R', text: 'Fixing a broken appliance or gadget' },
+  { id: 'R2', type: 'R', text: 'Working outdoors with tools or equipment' },
+  { id: 'R3', type: 'R', text: 'Building something with your hands' },
+  { id: 'R4', type: 'R', text: 'Operating machines or vehicles' },
+  { id: 'R5', type: 'R', text: 'Setting up or repairing electronics or a network' },
+  { id: 'R6', type: 'R', text: 'Doing physically active work instead of desk work' },
+  { id: 'I1', type: 'I', text: 'Figuring out why an experiment or system failed' },
+  { id: 'I2', type: 'I', text: 'Reading about how the human body or nature works' },
+  { id: 'I3', type: 'I', text: 'Analyzing data to find patterns' },
+  { id: 'I4', type: 'I', text: 'Solving difficult logic puzzles or math problems' },
+  { id: 'I5', type: 'I', text: 'Researching a question until you find a solid answer' },
+  { id: 'I6', type: 'I', text: 'Testing ideas to see if they actually work' },
+  { id: 'A1', type: 'A', text: 'Designing posters, videos or social media content' },
+  { id: 'A2', type: 'A', text: 'Writing stories, scripts or songs' },
+  { id: 'A3', type: 'A', text: 'Coming up with creative ways to present an idea' },
+  { id: 'A4', type: 'A', text: 'Performing in front of an audience' },
+  { id: 'A5', type: 'A', text: 'Decorating or styling a space' },
+  { id: 'A6', type: 'A', text: 'Working without strict rules so you can express yourself' },
+  { id: 'S1', type: 'S', text: 'Helping a classmate understand a hard lesson' },
+  { id: 'S2', type: 'S', text: 'Caring for someone who is sick or struggling' },
+  { id: 'S3', type: 'S', text: "Listening to people's problems and offering support" },
+  { id: 'S4', type: 'S', text: 'Volunteering for a community project' },
+  { id: 'S5', type: 'S', text: 'Teaching or coaching a group' },
+  { id: 'S6', type: 'S', text: 'Working in a team where everyone helps each other' },
+  { id: 'E1', type: 'E', text: 'Leading a group to finish a project' },
+  { id: 'E2', type: 'E', text: 'Convincing others to try your idea' },
+  { id: 'E3', type: 'E', text: 'Starting a small business or selling online' },
+  { id: 'E4', type: 'E', text: 'Negotiating a deal or debating a point' },
+  { id: 'E5', type: 'E', text: 'Taking risks to reach a big goal' },
+  { id: 'E6', type: 'E', text: 'Organizing and promoting an event' },
+  { id: 'C1', type: 'C', text: 'Keeping records or spreadsheets accurate' },
+  { id: 'C2', type: 'C', text: 'Following clear step-by-step procedures' },
+  { id: 'C3', type: 'C', text: 'Managing a budget or tracking expenses' },
+  { id: 'C4', type: 'C', text: 'Checking documents for mistakes' },
+  { id: 'C5', type: 'C', text: 'Planning schedules and keeping things on time' },
+  { id: 'C6', type: 'C', text: 'Working in a structured, predictable environment' },
+];
+
+export const ANSWER_OPTIONS = [
+  { value: 1, label: 'Strongly dislike' },
+  { value: 2, label: 'Dislike' },
+  { value: 3, label: 'Neutral' },
+  { value: 4, label: 'Like' },
+  { value: 5, label: 'Strongly like' },
+];
+
+export const QUESTION_STEM = 'How much would you enjoy…';

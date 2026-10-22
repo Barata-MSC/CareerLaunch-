@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 import React, { useState } from 'react';
 import {
   View,
@@ -273,13 +274,11 @@ export default function RegisterScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <AppPressable
+          <BackButton
             style={styles.backButton}
             onPress={() => navigation?.goBack()}
             disabled={loading}
-          >
-            <Text style={styles.backArrow}>‹</Text>
-          </AppPressable>
+          />
 
           <Text style={styles.title}>Create account</Text>
           <Text style={styles.subtitle}>Tell us a bit about yourself</Text>

@@ -1,4 +1,5 @@
 import AppPressable from '@components/AppPressable';
+import BackButton from '@components/BackButton';
 // src/components/GuestNotice.js
 // Full-screen "you're using a guest account" notice, styled like the guest
 // card on ProfileScreen. Shown instead of a feature when the user is a guest.
@@ -63,9 +64,7 @@ export default function GuestNotice({ navigation, title }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <View style={styles.headerRow}>
-        <AppPressable style={styles.backButton} onPress={() => navigation?.goBack()}>
-          <Text style={styles.backArrow}>‹</Text>
-        </AppPressable>
+        <BackButton onPress={() => navigation?.goBack()} style={styles.backButton} />
         <Text style={styles.headerTitle}>{title}</Text>
         <View style={styles.backButton} />
       </View>
@@ -104,8 +103,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
   },
-  backButton: { width: 32, height: 32, justifyContent: 'center' },
-  backArrow: { fontSize: 26, color: '#111111', fontWeight: '400' },
+  backButton: { width: 44 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#111111' },
   content: { flex: 1, paddingHorizontal: 20, paddingTop: 12 },
   guestCard: {

@@ -22,30 +22,32 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `00-careers-layer.md` | Careers screen above the tracks | Implemented; career picker and shared registry are in use. |
 | `01-animation.md` | Motion and screen transitions | Ready (run after 02) |
 | `02-sfx.md` | Tap, lesson-complete, and quiz-pass sounds | Implemented; source/license verification and human audio checks remain. |
-| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Cybersecurity, Teacher, Nursing, and Lawyer are built and registered. Lawyer is available in the app; expert review sign-off is still incomplete. Teacher and Nursing review notes record completed team review. The Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine specs exist, but their content folders are not built and `careers.js` marks them `coming-soon`. |
+| `03-career-content-template.md` + `specs/` | One career per run, content in `learning-hub/<career-id>/` | Career content folders exist for Accountancy, Civil Engineering, Cybersecurity, Doctor, Hospitality & Tourism, Lawyer, Marine, Nursing, and Teacher. Hospitality & Tourism is available; Accountancy, Civil Engineering, Doctor, and Marine remain `coming-soon`. Lawyer is available in the app, though expert review sign-off remains incomplete. Teacher and Nursing review notes record completed team review. |
 | `04-guest-gating.md` | Lock Resume Builder, Job Finder, Application Tracker, and Interview Coach for guests | Implemented; guest/upgraded-account flow and server enforcement still need human verification. |
 | `05-job-finder-api.md` | Philippine job listings through an Edge Function | Blocked; latest coverage run on 2026-10-22 failed (0 of 6 usable queries; all returned HTTP 404). |
 | `06-job-tracker-persistence.md` | Save the Application Tracker to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain. |
 | `07-ai-coach.md` | AI evaluation of typed interview answers | Ready (needs an AI key and a privacy decision) |
 | `08-voice-interview-coach.md` | Speech-to-text input for the Interview Coach (needs a development build) | Run after 07 (needs one new dependency approved) |
 | `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain (run after 04). |
+| `10-career-assessment.md` | Free local-first Holland Code career-interest assessment | Implemented with 36 original items, deterministic local scoring/matching, device drafts/results, worksheet sharing, and an owner-only migration; migration application, RLS, account-upgrade, and device verification remain. |
 
-Briefs 06 and 09 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
+Briefs 06, 09, and 10 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
-Not written yet: Learning Hub content folders and courses for Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine. Their career specs exist in `docs/tasks/specs/`, and all five are marked `coming-soon` in `src/features/learning-hub/careers/careers.js`. Resume export to a file is also not written yet.
+Not written yet: Learning Hub content beyond the current seeded career catalog. Resume export to a file is also not written yet.
 
 ## Recommended order and dependencies
 
 1. **00 Careers layer** first. It is small, and 03 depends on it.
 2. **04 Guest gating** early. Briefs 05, 06, and 07 reuse its hook, lock screen, and server helper.
 3. **02 SFX, then 01 Animation.** SFX creates the shared `AppPressable` wrapper; Animation adds press feedback inside it. Merge 02 before starting 01.
-4. **06, then 05, then 07, then 08.** 06 can run any time after 04 and works with the sample listings. 05 needs the coverage test. 07 needs a key. 08 needs 07 and a development build. **09** (Resume Builder saving) only needs 04 and can run any time after it.
+4. **06, then 05, then 07, then 08.** 06 can run any time after 04 and works with the sample listings. 05 needs the coverage test. 07 needs a key. 08 needs 07 and a development build. **09** (Resume Builder saving) only needs 04 and can run any time after it. **10** uses the 00 career registry, 04 guest-account detection, and the 09 local/Supabase persistence pattern; the 07 Coach hand-off is optional and was skipped because brief 07 is not implemented.
 5. **03 Career content**: one career per branch, and each career's content goes in its own folder under `src/features/learning-hub/` (for example `learning-hub/cybersecurity/`), next to `software-engineering/`. `careers/` holds only the shared layer (career metadata, screens, and the registry). The shared registry and validator were introduced with Cybersecurity; future career runs should extend them instead of creating replacements. Merge `00` before career work, and merge a career before starting another to avoid registry conflicts.
 
 ## Files outside the briefs
 
 - `specs/<career-id>.md`: the Career Spec for each career (binding input for brief 03).
 - `scripts/validate-learning-content.mjs`: shared integrity validator for all registered careers; run it with `npm run validate:content` after content or registry changes.
+- `scripts/validate-assessment.mjs`: no-device validation for assessment items, scoring, matching, career coverage, and route registration; run it with `npm run validate:assessment`.
 - `scripts/job-api-coverage-test.mjs`: dev-only script that checks whether the job API returns usable Philippine listings. Keep your key in your shell, never in a file.
 - `progress/`: created by runs. Checkpoints for career builds and the coverage report. Commit them; they are the resume point if a run stops early.
 - `src/features/learning-hub/careers/registry.js`: shared career track/course registry. Add future career modules here through their `index.js`; do not duplicate Software Engineering or Cybersecurity track/course wiring.
@@ -53,13 +55,14 @@ Not written yet: Learning Hub content folders and courses for Accountancy, Civil
 
 ## Merge-conflict hotspots
 
-`src/navigation/AppNavigator.js`, `src/features/learning-hub/shared/styles.js`, the careers registry and roadmap files, `supabase/migrations/` (briefs 05, 06, 07, and 09 each add one), `app.config.js` (brief 08), `CLAUDE.md`, and the READMEs. Avoid having two briefs edit the same hotspot at the same time, and merge the small briefs first.
+`src/navigation/AppNavigator.js`, `src/features/learning-hub/LearningHubScreen/LearningHubScreen.js`, `src/features/learning-hub/shared/styles.js`, the careers registry and roadmap files, `supabase/migrations/` (briefs 05, 06, 07, 09, and 10 each add one), `app.config.js` (brief 08), `CLAUDE.md`, and the READMEs. Avoid having two briefs edit the same hotspot at the same time, and merge the small briefs first.
 
 ## Human-only steps
 
 - Before any real launch, turn email confirmation back on or configure custom SMTP.
 - Adding and licensing audio files. Before any real launch, fill in verified attribution for `tap.mp3`, `error.mp3`, `success.mp3`, `lesson-complete.mp3`, and `quiz-pass.mp3` in `src/assets/sounds/CREDITS.md` (author/source unknown and license unverified until a human confirms them).
 - Creating API keys and storing them as Supabase secrets; applying migrations; deploying Supabase Edge Functions (the lead dev).
+- Applying `supabase/migrations/20261023003000_career_assessment_results.sql`, running its two-user RLS checks, and testing assessment completion, restart/resume, account upgrade consent, offline fallback, career links, and worksheet sharing on real devices.
 - Running the job API coverage test.
 - Lawyer is available in the app; expert review sign-off is still incomplete. Obtain and record its expert review. Doctor and Marine must not be shown as available before expert review. Teacher and Nursing are available; their review notes record completed team review.
 - Approving the new voice dependency and building a development build for voice testing (brief 08).
