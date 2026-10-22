@@ -31,7 +31,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain (run after 04). |
 | `10-career-assessment.md` | Free local-first Holland Code career-interest assessment | Implemented with 36 original items, deterministic local scoring/matching, device drafts/results, worksheet sharing, and an owner-only migration; migration application, RLS, account-upgrade, and device verification remain. |
 | `11-onboarding-walkthrough.md` | Short post-login tutorial modal | Implemented as a skippable, versioned, per-user local walkthrough with Profile replay; storage-error, guest, login, and device interaction checks need human verification. |
-| `12-lesson-references.md` | Further reading and optional supplied videos for career lessons | Cybersecurity, Teacher, Nursing, Doctor, and Lawyer references implemented; Marine deck and Hospitality & Tourism remain. Link availability must be checked per career and sources spot-checked for topic fit. |
+| `12-lesson-references.md` | Further reading and optional supplied videos for career lessons | Cybersecurity, Teacher, Nursing, Doctor, Lawyer, and Marine Deck references implemented; Hospitality & Tourism remains. Link availability must be checked per career and sources spot-checked for topic fit. |
 
 Briefs 06, 09, and 10 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
