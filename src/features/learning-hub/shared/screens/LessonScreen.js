@@ -1,11 +1,47 @@
 import AppPressable from '@components/AppPressable';
+import Pop from '@components/motion/Pop';
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
+import { Animated, View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import LessonActivities from '../components/LessonActivities';
 import LessonReferences from '../components/LessonReferences';
 import LessonVideo from '../components/LessonVideo';
 import common, { PURPLE, LIGHT_PURPLE, GREEN } from '../styles';
+import useReduceMotion from '@components/motion/useReduceMotion';
+import { durations } from '@components/motion/motionTokens';
+
+const useNativeDriver = Platform.OS !== 'web';
+
+function AnimatedProgressFill({ progress }) {
+  const reduceMotion = useReduceMotion();
+  const progressValue = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    const animation = Animated.timing(progressValue, {
+      toValue: progress,
+      duration: reduceMotion ? 0 : durations.progress,
+      useNativeDriver,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [progress, progressValue, reduceMotion]);
+
+  return (
+    <View style={styles.smallProgressBackground}>
+      <Animated.View
+        style={[
+          styles.smallProgressFill,
+          {
+            width: progressValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            }),
+          },
+        ]}
+      />
+    </View>
+  );
+}
 
 export default function LessonScreen({
   course,
@@ -35,14 +71,7 @@ export default function LessonScreen({
             Lesson {lessonNumber} of {lessons.length}
           </Text>
 
-          <View style={styles.smallProgressBackground}>
-            <View
-              style={[
-                styles.smallProgressFill,
-                { width: `${(lessonNumber / lessons.length) * 100}%` },
-              ]}
-            />
-          </View>
+          <AnimatedProgressFill progress={lessonNumber / lessons.length} />
         </View>
 
         <Text style={styles.bigLessonTitle}>{lesson.title}</Text>
@@ -86,17 +115,19 @@ export default function LessonScreen({
         <LessonActivities key={lesson.id} activities={lesson.activities} />
         <LessonReferences references={lesson.references} />
 
-        <AppPressable
-          style={styles.completeCard}
-          onPress={() => onToggleComplete(lesson.id)}
-          activeOpacity={0.8}
-          sound="none"
-        >
-          <View style={[styles.radioCircle, isDone && styles.radioDone]}>
-            {isDone && <Text style={styles.radioCheck}>✓</Text>}
-          </View>
-          <Text style={styles.completeText}>{isDone ? 'Completed' : 'Mark as completed'}</Text>
-        </AppPressable>
+        <Pop value={isDone}>
+          <AppPressable
+            style={styles.completeCard}
+            onPress={() => onToggleComplete(lesson.id)}
+            activeOpacity={0.8}
+            sound="none"
+          >
+            <View style={[styles.radioCircle, isDone && styles.radioDone]}>
+              {isDone && <Text style={styles.radioCheck}>✓</Text>}
+            </View>
+            <Text style={styles.completeText}>{isDone ? 'Completed' : 'Mark as completed'}</Text>
+          </AppPressable>
+        </Pop>
 
         <View style={common.buttonRow}>
           <AppPressable

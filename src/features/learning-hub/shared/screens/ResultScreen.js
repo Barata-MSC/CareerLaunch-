@@ -1,8 +1,46 @@
 import AppPressable from '@components/AppPressable';
+import Float from '@components/motion/Float';
+import Pop from '@components/motion/Pop';
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Animated, View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import CourseHeader from '../components/CourseHeader';
 import common, { GREEN, RED } from '../styles';
+import useReduceMotion from '@components/motion/useReduceMotion';
+import { durations } from '@components/motion/motionTokens';
+
+const useNativeDriver = Platform.OS !== 'web';
+
+function ScoreCount({ finalValue }) {
+  const reduceMotion = useReduceMotion();
+  const animated = React.useRef(new Animated.Value(reduceMotion ? finalValue : 0)).current;
+  const [displayValue, setDisplayValue] = React.useState(reduceMotion ? finalValue : 0);
+
+  React.useEffect(() => {
+    if (reduceMotion) {
+      animated.setValue(finalValue);
+      setDisplayValue(finalValue);
+      return undefined;
+    }
+
+    const animation = Animated.timing(animated, {
+      toValue: finalValue,
+      duration: durations.progress,
+      useNativeDriver,
+    });
+
+    const listener = animated.addListener(({ value }) => {
+      setDisplayValue(Math.round(value));
+    });
+
+    animation.start();
+    return () => {
+      listener.remove();
+      animation.stop();
+    };
+  }, [animated, finalValue, reduceMotion]);
+
+  return <Text style={styles.scoreText}>{displayValue}%</Text>;
+}
 
 export default function ResultScreen({
   course,
@@ -46,12 +84,24 @@ export default function ResultScreen({
         contentContainerStyle={styles.resultContainer}
       >
         <View style={[styles.scoreCircle, passed ? styles.scorePassed : styles.scoreFailed]}>
-          <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
-            {percentage}%
-          </Text>
+          {passed ? (
+            <Pop value={passed}>
+              <Float phaseOffset={0} amplitude={6} duration={2200}>
+                <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
+                  <ScoreCount finalValue={percentage} />
+                </Text>
+              </Float>
+            </Pop>
+          ) : (
+            <Text style={[styles.scoreText, passed ? styles.scoreTextPassed : styles.scoreTextFailed]}>
+              <ScoreCount finalValue={percentage} />
+            </Text>
+          )}
         </View>
 
-        <Text style={styles.resultTitle}>{passed ? 'Great job!' : 'Almost there!'}</Text>
+        <Pop value={passed}>
+          <Text style={styles.resultTitle}>{passed ? 'Great job!' : 'Almost there!'}</Text>
+        </Pop>
         <Text style={styles.resultSubtitle}>
           {passed
             ? `You passed the ${course.title} quiz.`

@@ -22,6 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AppPressable from '@components/AppPressable';
 import AnimatedStage from '@components/motion/AnimatedStage';
 import FadeSlideIn from '@components/motion/FadeSlideIn';
+import Float from '@components/motion/Float';
 import PressScale from '@components/motion/PressScale';
 import useReduceMotion from '@components/motion/useReduceMotion';
 import { COURSES, TRACKS } from '../careers/registry';
@@ -287,9 +288,11 @@ export default function LearningHubScreen({ navigation, route }) {
                     style={[styles.card, !isAvailable && !hasPreview && styles.cardMuted]}
                     onPress={() => openCareer(career)}
                   >
-                    <View style={[styles.icon, { backgroundColor: career.color }]}>
-                      <Text style={styles.iconEmoji}>{career.icon}</Text>
-                    </View>
+                    <Float phaseOffset={index * 600} style={styles.iconFloatWrap}>
+                      <View style={[styles.icon, { backgroundColor: career.color }]}>
+                        <Text style={styles.iconEmoji}>{career.icon}</Text>
+                      </View>
+                    </Float>
 
                     <View style={styles.cardBody}>
                       <Text style={styles.cardTitle}>{career.title}</Text>
@@ -365,9 +368,11 @@ export default function LearningHubScreen({ navigation, route }) {
                     disabled={comingSoon}
                     onPress={() => openTrack(track)}
                   >
-                    <View style={[styles.icon, { backgroundColor: meta.color }]}>
-                      <Text style={styles.iconEmoji}>{meta.icon}</Text>
-                    </View>
+                    <Float phaseOffset={index * 700} style={styles.iconFloatWrap}>
+                      <View style={[styles.icon, { backgroundColor: meta.color }]}>
+                        <Text style={styles.iconEmoji}>{meta.icon}</Text>
+                      </View>
+                    </Float>
 
                     <View style={styles.cardBody}>
                       <Text style={styles.cardTitle}>{track.title || track.name}</Text>
@@ -591,6 +596,7 @@ const styles = StyleSheet.create({
   chevron: { fontSize: 22, color: '#C7C7CC' },
 
   // Track icon (emoji on a colored square)
+  iconFloatWrap: { alignSelf: 'flex-start' },
   icon: {
     width: 44,
     height: 44,
