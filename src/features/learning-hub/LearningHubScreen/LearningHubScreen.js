@@ -327,7 +327,9 @@ export default function LearningHubScreen({ navigation, route }) {
                   ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
                   : currentCareer?.id === 'accountancy'
                     ? 'Preview only: this Accountancy learning content is awaiting expert review. It is educational orientation, not accounting, tax, or financial advice.'
-                    : 'Preview only: this career learning content is awaiting expert review.'}
+                    : currentCareer?.id === 'civil-engineering'
+                      ? 'Preview only: this Civil Engineering learning content is awaiting expert review. It is educational orientation, not engineering design guidance.'
+                      : 'Preview only: this career learning content is awaiting expert review.'}
             </Text>
           </View>
         )}
@@ -427,7 +429,9 @@ export default function LearningHubScreen({ navigation, route }) {
                   ? 'Preview only: the Marine Deck Officer content is awaiting maritime expert review. It is educational orientation, not professional or safety training.'
                   : currentCareer?.id === 'accountancy'
                     ? 'Preview only: this Accountancy learning content is awaiting expert review. It is educational orientation, not accounting, tax, or financial advice.'
-                    : 'Preview only: this career learning content is awaiting expert review.'}
+                    : currentCareer?.id === 'civil-engineering'
+                      ? 'Preview only: this Civil Engineering learning content is awaiting expert review. It is educational orientation, not engineering design guidance.'
+                      : 'Preview only: this career learning content is awaiting expert review.'}
             </Text>
           </View>
         )}
