@@ -18,6 +18,7 @@ import { getLawyerLessons } from '../lawyer/courseLessons';
 import { getMarineLessons } from '../marine/courseLessons';
 import { getAccountancyLessons } from '../accountancy/courseLessons';
 import { getCivilEngineeringLessons } from '../civil-engineering/courseLessons';
+import { getHospitalityTourismLessons } from '../hospitality-tourism/courseLessons';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -52,7 +53,9 @@ export default function CourseRunner({ course, navigation }) {
                     ? getAccountancyLessons(course.lessons)
                     : course.id.startsWith('civ-')
                       ? getCivilEngineeringLessons(course.lessons)
-                      : course.lessons,
+                      : course.id.startsWith('ht-')
+                        ? getHospitalityTourismLessons(course.lessons)
+                        : course.lessons,
         progress.completedLessonIds,
       ),
     [course.id, course.lessons, progress.completedLessonIds],

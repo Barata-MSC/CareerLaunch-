@@ -55,6 +55,14 @@ const civilEngineeringCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/civil-engineering/courseLessons.js',
 );
+const hospitalityTourismLinksPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/hospitality-tourism/links.js',
+);
+const hospitalityTourismCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/hospitality-tourism/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -136,6 +144,12 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'ched.gov.ph',
     'prc.gov.ph',
     'pice.org.ph',
+  ],
+  'hospitality-tourism': [
+    'tourism.gov.ph',
+    'ched.gov.ph',
+    'tesda.gov.ph',
+    'untourism.int',
   ],
 };
 
@@ -288,6 +302,8 @@ function validateRegistry(registry, careers) {
   const { getAccountancyLessons } = loadSourceModule(accountancyCourseLessonsPath);
   const civilEngineeringLinks = loadSourceModule(civilEngineeringLinksPath).LESSON_LINKS;
   const { getCivilEngineeringLessons } = loadSourceModule(civilEngineeringCourseLessonsPath);
+  const hospitalityTourismLinks = loadSourceModule(hospitalityTourismLinksPath).LESSON_LINKS;
+  const { getHospitalityTourismLessons } = loadSourceModule(hospitalityTourismCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -523,6 +539,31 @@ function validateRegistry(registry, careers) {
     `Civil Engineering runtime link coverage: ${civilEngineeringLessonIds.size} lesson ids, ${Object.keys(civilEngineeringLinks).length} link entries.`,
   );
 
+  const hospitalityTourismLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('ht-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(hospitalityTourismLinks).forEach((lessonId) => {
+    requireValue(
+      hospitalityTourismLessonIds.has(lessonId),
+      `Hospitality & Tourism lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  hospitalityTourismLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(hospitalityTourismLinks, lessonId),
+      `Hospitality & Tourism lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(hospitalityTourismLinks).length === hospitalityTourismLessonIds.size,
+    `Hospitality & Tourism lesson link count does not match real lesson ids: ${Object.keys(hospitalityTourismLinks).length} entries for ${hospitalityTourismLessonIds.size} lessons`,
+  );
+  console.log(
+    `Hospitality & Tourism runtime link coverage: ${hospitalityTourismLessonIds.size} lesson ids, ${Object.keys(hospitalityTourismLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
     const referenceCareerId = courseId.startsWith('cyber-')
       ? 'cybersecurity'
@@ -540,6 +581,8 @@ function validateRegistry(registry, careers) {
                   ? 'accountancy'
                 : courseId.startsWith('civ-')
                   ? 'civil-engineering'
+                  : courseId.startsWith('ht-')
+                    ? 'hospitality-tourism'
                 : null;
     const lessons = referenceCareerId === 'teacher'
       ? getTeacherLessons(course.lessons || [])
@@ -555,6 +598,8 @@ function validateRegistry(registry, careers) {
                 ? getAccountancyLessons(course.lessons || [])
                 : referenceCareerId === 'civil-engineering'
                   ? getCivilEngineeringLessons(course.lessons || [])
+                  : referenceCareerId === 'hospitality-tourism'
+                    ? getHospitalityTourismLessons(course.lessons || [])
               : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
@@ -593,7 +638,8 @@ function validateRegistry(registry, careers) {
           referenceCareerId === 'lawyer' ||
           referenceCareerId === 'marine' ||
           referenceCareerId === 'accountancy' ||
-          referenceCareerId === 'civil-engineering'
+          referenceCareerId === 'civil-engineering' ||
+          referenceCareerId === 'hospitality-tourism'
         ) {
           requireValue(
             lesson.referencesHeading === 'Further reading',
