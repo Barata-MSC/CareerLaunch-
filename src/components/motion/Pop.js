@@ -5,10 +5,10 @@ import useReduceMotion from './useReduceMotion';
 
 const useNativeDriver = Platform.OS !== 'web';
 
-export default function Pop({ children, value, style }) {
+export default function Pop({ children, value, style, playOnMount = false }) {
   const reduceMotion = useReduceMotion();
   const scale = useRef(new Animated.Value(1)).current;
-  const previousValue = useRef(value);
+  const previousValue = useRef(playOnMount ? false : value);
 
   useEffect(() => {
     if (value && !previousValue.current && !reduceMotion) {
