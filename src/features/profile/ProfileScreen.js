@@ -324,6 +324,16 @@ export default function ProfileScreen({ navigation }) {
             </AppPressable>
           </View>
 
+          <AppPressable
+            accessibilityRole="button"
+            accessibilityLabel="Replay tutorial"
+            style={styles.replayButton}
+            onPress={() => navigation.navigate('Dashboard', { replayWalkthrough: true })}
+            sound="tap"
+          >
+            <Text style={styles.replayText}>Replay tutorial</Text>
+          </AppPressable>
+
           <AppPressable style={styles.logoutButton} onPress={handleLogout} sound="tap">
             <Text style={styles.logoutButtonText}>Log Out</Text>
           </AppPressable>
@@ -538,6 +548,17 @@ export default function ProfileScreen({ navigation }) {
             />
           </View>
 
+          <AppPressable
+            accessibilityRole="button"
+            accessibilityLabel="Replay tutorial"
+            style={styles.replayButton}
+            onPress={() => navigation.navigate('Dashboard', { replayWalkthrough: true })}
+            disabled={loading}
+            sound="tap"
+          >
+            <Text style={styles.replayText}>Replay tutorial</Text>
+          </AppPressable>
+
           {/* LOGOUT BUTTON */}
           <AppPressable
             style={styles.logoutButton}
@@ -631,6 +652,17 @@ const styles = StyleSheet.create({
   },
   settingsTitle: { fontSize: 15, fontWeight: '700', color: '#111111' },
   settingsHint: { fontSize: 12, color: '#666666', marginTop: 2 },
+  replayButton: {
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D9CCFF',
+    borderRadius: 12,
+    marginTop: 14,
+    paddingHorizontal: 16,
+  },
+  replayText: { color: PURPLE, fontSize: 14, fontWeight: '700' },
   logoutButton: {
     backgroundColor: '#FFF',
     borderWidth: 1,

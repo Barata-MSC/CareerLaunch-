@@ -39,6 +39,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 |---|---|
 | `auth/` | Authentication-related screens and flows. |
 | `career-assessment/` | Local-first RIASEC interest assessment, career matching, result worksheet, and optional account persistence. |
+| `onboarding/` | Short post-login walkthrough with a per-user local preference and Profile replay. |
 | `dashboard/` | Main dashboard experience. |
 | `interview-coach/` | Common interview questions, typed answers with local heuristic feedback, simulated voice feedback, and a session summary. |
 | `job-finder/` | Job discovery and listing experience. |
@@ -79,12 +80,13 @@ Accountancy, Civil Engineering, Doctor, Hospitality & Tourism, and Marine all ha
 | `06-job-tracker-persistence.md` | Application Tracker reads/writes per-user snapshots through Supabase; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021232700_job_applications.sql` and validate two-user RLS, offline rollback, and persistence against the live project. |
 | `09-resume-persistence.md` | Resume Builder loads and autosaves one resume per user, supports retry and deletion, and keeps derived completeness feedback out of storage; the owner-only RLS migration is present. | A human must apply `supabase/migrations/20261021230700_resumes.sql` and validate RLS, account switching, offline retries, and deletion against the live project. Profile photos remain in memory only. |
 | `10-career-assessment.md` | 36-item local RIASEC assessment with saved drafts/results, career matching, worksheet text sharing, and optional account storage for full accounts. Guests and signed-out users use on-device storage; account upgrades require an explicit save action. | A human must apply `supabase/migrations/20261023003000_career_assessment_results.sql`, verify two-user RLS and account-upgrade consent, and test restart/resume, offline fallback, career links, and worksheet sharing on real devices. |
+| `11-onboarding-walkthrough.md` | Versioned, skippable post-login modal tour with a per-user local preference and a Replay tutorial action in Profile. | Human verification of guest/full-account login, persistence across logout/relaunch, replay, and accessibility/device behavior remains. The preference is local only and has no migration. |
 
 These migrations are checked-in proposals; this repository cannot establish whether they have been applied to the connected Supabase project. Until the human database and RLS checks are complete, describe these features as implemented in the client with persistence contingent on migration setup—not as verified live persistence.
 
 ### Validation snapshot
 
-On 2026-10-23, `npm run validate:content` passed for the registered Learning Hub content: 10 careers, 18 tracks, and 119 courses. The `npm run validate:assessment` script checks the 36-item RIASEC bank, scoring, matching, fit coverage, and navigation registration. These validators do not replace lint/build checks, manual device testing, expert content review, or live Supabase/RLS testing.
+On 2026-10-23, `npm run validate:content` passed for the registered Learning Hub content: 10 careers, 18 tracks, and 119 courses. `npm run validate:assessment` checks the 36-item RIASEC bank, scoring, matching, fit coverage, and navigation registration; `npm run validate:walkthrough` checks walkthrough data and preference logic. These validators do not replace lint/build checks, manual device testing, expert content review, or live Supabase/RLS testing.
 
 ## Technology Stack
 
@@ -372,7 +374,7 @@ The repository contains `eslint.config.js`. Use the lint script defined in `pack
 
 ### Learning content and career assessment
 
-Run `npm run validate:content` for the shared Learning Hub registry and `npm run validate:assessment` for assessment data, scoring, matching, career coverage, and route registration. Neither command requires Expo or a device.
+Run `npm run validate:content` for the shared Learning Hub registry, `npm run validate:assessment` for assessment data/scoring/matching, and `npm run validate:walkthrough` for walkthrough content and preference logic. These commands do not require Expo or a device.
 
 ### Testing
 
