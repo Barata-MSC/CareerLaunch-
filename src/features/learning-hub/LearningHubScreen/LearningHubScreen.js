@@ -84,11 +84,6 @@ export default function LearningHubScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      setView('careers');
-      setSelectedTrack(null);
-      setSelectedCareerId(null);
-      setQuery('');
-      setFilter('all');
       setProgressLoaded(false);
       refresh().finally(() => setProgressLoaded(true));
     }, [refresh]),
