@@ -52,14 +52,15 @@ export const CAREERS = [
   {
     id: 'doctor',
     title: 'Doctor',
-    subtitle: 'Diagnose conditions, plan care, and support long-term health.',
+    subtitle: 'Explore medical science, communication, and professional responsibilities.',
     icon: '🧑‍⚕️',
     color: '#EF4444',
     status: 'coming-soon',
-    trackIds: [],
+    trackIds: ['med-path'],
     overview:
-      'Doctors combine medical knowledge, patient communication, and clinical judgment to evaluate health concerns and guide safe treatment decisions.',
-    skillsPreview: ['Clinical reasoning', 'Empathy', 'Problem solving'],
+      'This introductory pathway explores the profession, science foundations, communication, and broad routes to continued learning. It is educational orientation, not medical advice or clinical training.',
+    skillsPreview: ['Scientific curiosity', 'Communication', 'Empathy'],
+    educationalNote: 'Educational orientation, not medical advice.',
   },
   {
     id: 'lawyer',

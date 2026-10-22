@@ -64,10 +64,30 @@ export default function CareerDetailScreen({ navigation, route }) {
 
         {career.status !== 'available' ? (
           <View style={styles.noticeCard}>
-            <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
-            <Text style={styles.noticeText}>
-              This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
-            </Text>
+            {career.trackIds?.length ? (
+              <>
+                <Text style={styles.noticeTitle}>Preview Doctor lessons</Text>
+                <Text style={styles.noticeText}>
+                  The learning path and lessons are available as an educational preview while expert review is pending. This content is not medical advice or clinical training.
+                </Text>
+                <AppPressable
+                  accessibilityRole="button"
+                  style={styles.primaryButton}
+                  onPress={() =>
+                    navigation.navigate('LearningHub', { careerId: career.id })
+                  }
+                >
+                  <Text style={styles.primaryButtonText}>Open track and lessons</Text>
+                </AppPressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.noticeTitle}>Courses for this career are coming soon.</Text>
+                <Text style={styles.noticeText}>
+                  This career is listed for exploration, but complete tracks, courses, and practice content are not yet available here.
+                </Text>
+              </>
+            )}
           </View>
         ) : null}
       </ScrollView>

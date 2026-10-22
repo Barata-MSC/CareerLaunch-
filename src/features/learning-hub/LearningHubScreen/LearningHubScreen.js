@@ -3,7 +3,7 @@
 //   view 'courses' -> the courses of the track the user tapped
 // Tapping a course opens that course's own lessons screen (CourseRunner),
 // so nothing about the lessons changes.
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -70,13 +70,26 @@ const BUTTON_LABEL = {
   completed: 'Review',
 };
 
-export default function LearningHubScreen({ navigation }) {
+export default function LearningHubScreen({ navigation, route }) {
   const [view, setView] = useState('careers'); // 'careers' | 'tracks' | 'courses'
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedCareerId, setSelectedCareerId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [progressLoaded, setProgressLoaded] = useState(false);
+
+  useEffect(() => {
+    const careerId = route?.params?.careerId;
+    const career = careerId ? getCareerById(careerId) : null;
+    if (!career?.trackIds?.length) return;
+
+    setSelectedCareerId(career.id);
+    setSelectedTrack(null);
+    setQuery('');
+    setFilter('all');
+    setView('tracks');
+    navigation.setParams({ careerId: undefined });
+  }, [navigation, route?.params?.careerId]);
 
   // Saved progress. Reload whenever the screen is focused, so it also updates
   // after the user comes back from a course.
@@ -244,6 +257,7 @@ export default function LearningHubScreen({ navigation }) {
         ) : (
           filteredCareers.map((career) => {
             const isAvailable = career.status === 'available';
+            const hasPreview = !isAvailable && (career.trackIds || []).length > 0;
             const careerCourseIds = (career.trackIds || [])
               .map((trackId) => TRACKS[trackId])
               .filter(Boolean)
@@ -256,8 +270,8 @@ export default function LearningHubScreen({ navigation }) {
               <AppPressable
                 key={career.id}
                 accessibilityRole="button"
-                accessibilityLabel={`${career.title}, ${career.status}`}
-                style={[styles.card, !isAvailable && styles.cardMuted]}
+                accessibilityLabel={`${career.title}, ${isAvailable ? 'available' : hasPreview ? 'lessons preview available' : career.status}`}
+                style={[styles.card, !isAvailable && !hasPreview && styles.cardMuted]}
                 onPress={() => openCareer(career)}
               >
                 <View style={[styles.icon, { backgroundColor: career.color }]}>
@@ -266,10 +280,16 @@ export default function LearningHubScreen({ navigation }) {
 
                 <View style={styles.cardBody}>
                   <Text style={styles.cardTitle}>{career.title}</Text>
-                  <Text style={styles.meta}>{isAvailable ? `${career.trackIds.length} tracks` : 'Coming soon'}</Text>
+                  <Text style={styles.meta}>
+                    {isAvailable
+                      ? `${career.trackIds.length} tracks`
+                      : hasPreview
+                        ? 'Preview lessons'
+                        : 'Coming soon'}
+                  </Text>
                   <Text style={styles.desc} numberOfLines={2}>{career.subtitle}</Text>
 
-                  {isAvailable ? (
+                  {isAvailable || hasPreview ? (
                     <View style={styles.progressRow}>
                       {renderProgress(percent)}
                     </View>
@@ -280,7 +300,7 @@ export default function LearningHubScreen({ navigation }) {
                   )}
                 </View>
 
-                {isAvailable && <Text style={styles.chevron}>›</Text>}
+                {(isAvailable || hasPreview) && <Text style={styles.chevron}>›</Text>}
               </AppPressable>
             );
           })
@@ -298,6 +318,13 @@ export default function LearningHubScreen({ navigation }) {
     return (
       <ScrollView style={styles.flex} contentContainerStyle={styles.listContent}>
         <Text style={styles.intro}>Pick a track to see its courses.</Text>
+        {currentCareer?.status !== 'available' && (
+          <View style={styles.previewNotice}>
+            <Text style={styles.previewNoticeText}>
+              Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
+            </Text>
+          </View>
+        )}
 
         {careerTracks.length === 0 ? (
           <Text style={styles.empty}>No tracks match this career yet.</Text>
@@ -385,6 +412,13 @@ export default function LearningHubScreen({ navigation }) {
 
     return (
       <View style={styles.flex}>
+        {currentCareer?.status !== 'available' && (
+          <View style={styles.previewNotice}>
+            <Text style={styles.previewNoticeText}>
+              Preview only: this Doctor learning content is awaiting expert review. It is educational orientation, not medical advice or clinical training.
+            </Text>
+          </View>
+        )}
         <View style={styles.searchBox}>
           <TextInput
             style={styles.searchInput}
@@ -559,6 +593,17 @@ const styles = StyleSheet.create({
   progressText: { fontSize: 11, fontWeight: '600', color: '#6B7280', marginLeft: 8 },
   progressLoading: { fontSize: 11, color: '#6B7280' },
   progressError: { fontSize: 11, color: '#DC2626' },
+  previewNotice: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#FCD34D',
+    borderRadius: 12,
+    backgroundColor: '#FFFBEB',
+  },
+  previewNoticeText: { color: '#92400E', fontSize: 12, lineHeight: 18 },
 
   actionBtn: {
     backgroundColor: PURPLE,
