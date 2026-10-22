@@ -10,6 +10,7 @@ import {
   courseRoutes as nursingCourseRoutes,
 } from '../nursing';
 import { tracks as teacherTracks, courses as teacherCourses } from '../teacher';
+import { tracks as doctorTracks, courses as doctorCourses } from '../doctor';
 
 import cssCourse from '../software-engineering/css-course/course';
 import CSSCourseScreen from '../software-engineering/css-course/CSSCourse';
@@ -112,6 +113,11 @@ export const CAREER_CONTENT = [
     careerId: 'teacher',
     tracks: teacherTracks,
     courses: teacherCourses,
+  },
+  {
+    careerId: 'doctor',
+    tracks: doctorTracks,
+    courses: doctorCourses,
   },
 ];
 
