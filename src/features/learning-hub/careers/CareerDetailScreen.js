@@ -66,9 +66,13 @@ export default function CareerDetailScreen({ navigation, route }) {
           <View style={styles.noticeCard}>
             {career.trackIds?.length ? (
               <>
-                <Text style={styles.noticeTitle}>Preview Doctor lessons</Text>
+                <Text style={styles.noticeTitle}>Preview {career.title} lessons</Text>
                 <Text style={styles.noticeText}>
-                  The learning path and lessons are available as an educational preview while expert review is pending. This content is not medical advice or clinical training.
+                  {career.id === 'doctor'
+                    ? 'The learning path and lessons are available as an educational preview while expert review is pending. This content is not medical advice or clinical training.'
+                    : career.id === 'accountancy'
+                      ? 'The learning path and lessons are available as an educational preview while accountancy expert review is pending. This content is not accounting, tax, or financial advice.'
+                      : 'The learning path and lessons are available as an educational preview while expert review is pending.'}
                 </Text>
                 <AppPressable
                   accessibilityRole="button"

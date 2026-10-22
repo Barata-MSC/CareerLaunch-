@@ -1,6 +1,6 @@
 # Career Spec: Accountancy
 
-Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: plan`, have an accountancy student, CPA, or accountancy instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the accountancy profession and its foundations**, not tax, audit, or financial advice and not board exam review. Content goes in `src/features/learning-hub/accountancy/`.
+Run with `docs/tasks/03-career-content-template.md`. This career has `review_required: true`: run once with `run_mode: build`, have an accountancy student, CPA, or accountancy instructor review the outline, then run `build`. The career stays `coming-soon` until a human flips it after review. The content is an **orientation to the accountancy profession and its foundations**, not tax, audit, or financial advice and not board exam review. Content goes in `src/features/learning-hub/accountancy/`.
 
 > **Draft.** The tracks and course lists below are proposals. Have a teammate or an accountancy student review them before running.
 
