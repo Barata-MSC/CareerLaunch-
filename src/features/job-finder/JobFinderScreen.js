@@ -209,35 +209,63 @@ function JobFinderContent({ navigation }) {
       setFetchedAt(null);
 
       try {
-        const { data, error } = await supabase.functions.invoke('job-search', {
-          body: { category },
-        });
-        if (error) throw error;
-        if (!Array.isArray(data?.jobs)) throw new Error('Invalid job-search response.');
+        const requestedCategories =
+          category === 'All' ? CATEGORIES.filter((item) => item !== 'All') : [category];
+        const results = await Promise.all(
+          requestedCategories.map(async (requestedCategory) => {
+            try {
+              const { data, error } = await supabase.functions.invoke('job-search', {
+                body: { category: requestedCategory },
+              });
+              if (error || !Array.isArray(data?.jobs)) {
+                return { jobs: [], fetchedAt: null, failed: true };
+              }
 
-        if (data.jobs.length === 0 && data.quotaExhausted) {
+              const providerJobs = data.jobs.map((job) => ({
+                ...job,
+                id: String(job.externalId),
+                source: 'jsearch',
+                externalId: String(job.externalId),
+                category: requestedCategory,
+                type: job.employmentType || 'Not specified',
+                link: job.applyUrl,
+                salary: null,
+                color: '#2563EB',
+                logo: null,
+              }));
+
+              return {
+                jobs: providerJobs,
+                fetchedAt: data.fetchedAt || null,
+                failed: Boolean(data.error) || Boolean(data.quotaExhausted && !providerJobs.length),
+              };
+            } catch {
+              return { jobs: [], fetchedAt: null, failed: true };
+            }
+          }),
+        );
+
+        const uniqueJobs = new Map();
+        results.flatMap((result) => result.jobs).forEach((job) => {
+          uniqueJobs.set(`${job.source}:${job.externalId}`, job);
+        });
+        const providerJobs = Array.from(uniqueJobs.values());
+
+        if (!providerJobs.length && results.some((result) => result.failed)) {
           setSampleFallback();
           return;
         }
 
-        const providerJobs = data.jobs.map((job) => ({
-          ...job,
-          id: String(job.externalId),
-          source: 'jsearch',
-          externalId: String(job.externalId),
-          category,
-          type: job.employmentType || 'Not specified',
-          link: job.applyUrl,
-          salary: null,
-          color: '#2563EB',
-          logo: null,
-        }));
-
         if (!active) return;
         setJobs(providerJobs);
         setShowingSamples(false);
-        setRefreshFailed(Boolean(data.error));
-        setFetchedAt(data.fetchedAt || null);
+        setRefreshFailed(results.some((result) => result.failed));
+        const timestamps = results
+          .map((result) => result.fetchedAt)
+          .filter(Boolean)
+          .map((value) => new Date(value).getTime())
+          .filter(Number.isFinite);
+        setFetchedAt(timestamps.length ? new Date(Math.min(...timestamps)).toISOString() : null);
       } catch {
         setSampleFallback();
       } finally {
@@ -255,11 +283,16 @@ function JobFinderContent({ navigation }) {
     const q = query.trim().toLowerCase();
     return jobs.filter((job) => {
       const matchesCategory = category === 'All' || job.category === category;
-      const matchesQuery =
-        !q ||
-        job.title.toLowerCase().includes(q) ||
-        job.company.toLowerCase().includes(q) ||
-        job.category.toLowerCase().includes(q);
+      const matchesQuery = !q ||
+        [
+          job.title,
+          job.company,
+          job.category,
+          job.location,
+          job.publisher,
+          job.type,
+          job.description,
+        ].some((field) => String(field || '').toLowerCase().includes(q));
       return matchesCategory && matchesQuery;
     });
   }, [jobs, query, category]);
