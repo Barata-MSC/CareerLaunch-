@@ -124,6 +124,8 @@ src/features/learning-hub/
   nursing/
     index.js                        Nursing track, course, and route exports
     tracks.js                       Nursing Student Path and ordered course steps
+    links.js                        Further-reading references keyed by stable lesson ID
+    courseLessons.js                Shared lesson-link merge used by CourseRunner
     REVIEW_NOTES.md                 Team review record and future revision guidance
     <course>-course/                Nursing course data and runner screens
   doctor/
@@ -186,7 +188,7 @@ Career lesson links live beside each career's content in `links.js`, keyed by st
 
 Only add URLs that genuinely cover the lesson topic. Do not imply the lesson was copied from or authored using the linked source. Do not guess URLs, dates, authors, or video IDs; use a publisher topic landing page if a specific page cannot be confirmed and record any remaining uncertainty as `// VERIFY:`. Videos are optional and should only be included from supplied, verified YouTube details.
 
-`npm run validate:content` validates Cybersecurity and Teacher citations against their allowed domain lists, verifies citation and video data, and warns when a source URL is used in more than three lessons in one course. `npm run check:links -- <career-id>` checks a career's public URLs and supplied video titles online and writes a report to `docs/tasks/progress/link-check-<career-id>.md`. HTTP 403, HTTP 429, and request timeouts are reported as unverified for manual checking, not as failures. Link checking requires internet access; it verifies availability and video titles, not topical suitability, which still needs a human spot-check.
+Teacher and Nursing references are merged by their shared `courseLessons.js` helper at the `CourseRunner` lesson-loading point, so the lessons passed to `LessonScreen` contain the linked references. `npm run validate:content` checks reference domains and shape for Cybersecurity, Teacher, and Nursing; for Teacher and Nursing it also verifies the actual runtime merge and exact lesson-ID coverage. It warns when a source URL is used in more than three lessons in one course. `npm run check:links -- <career-id>` checks a career's public URLs and supplied video titles online and writes a report to `docs/tasks/progress/link-check-<career-id>.md`. HTTP 403, HTTP 429, and request timeouts are reported as unverified for manual checking, not as failures. Link checking requires internet access; it verifies availability and video titles, not topical suitability, which still needs a human spot-check.
 
 ## Careers data contract
 

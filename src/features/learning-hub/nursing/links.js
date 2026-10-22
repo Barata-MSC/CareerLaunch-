@@ -1,0 +1,285 @@
+import { ref } from '../shared/lessonLinks';
+
+const source = (organization, title, url, site = organization) =>
+  ref(organization, title, url, site);
+
+const SOURCES = {
+  anatomy: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: Introduction to the Human Body',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/1-introduction',
+  ),
+  cells: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Cellular Level of Organization',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/3-introduction',
+  ),
+  tissues: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Tissue Level of Organization',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/4-introduction',
+  ),
+  integumentary: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Integumentary System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/5-introduction',
+  ),
+  bones: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: Bone Tissue and the Skeletal System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/6-introduction',
+  ),
+  muscles: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: Muscle Tissue',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/10-introduction',
+  ),
+  muscularSystem: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Muscular System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/11-introduction',
+  ),
+  nervousSystem: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Nervous System and Nervous Tissue',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/12-introduction',
+  ),
+  endocrine: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Endocrine System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/17-introduction',
+  ),
+  blood: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Cardiovascular System: Blood',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/18-introduction',
+  ),
+  heart: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Cardiovascular System: The Heart',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/19-introduction',
+  ),
+  vessels: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Cardiovascular System: Blood Vessels and Circulation',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/20-introduction',
+  ),
+  immune: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Lymphatic and Immune System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/21-introduction',
+  ),
+  respiratory: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Respiratory System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/22-introduction',
+  ),
+  digestive: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Digestive System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/23-introduction',
+  ),
+  urinary: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Urinary System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/25-introduction',
+  ),
+  reproductive: source(
+    'OpenStax',
+    'Anatomy and Physiology 2e: The Reproductive System',
+    'https://openstax.org/books/anatomy-and-physiology-2e/pages/27-introduction',
+  ),
+  nursing: source(
+    'World Health Organization',
+    'Nursing and midwifery',
+    'https://www.who.int/health-topics/nursing',
+    'WHO',
+  ),
+  workforce: source(
+    'World Health Organization',
+    'Health workforce',
+    'https://www.who.int/health-topics/health-workforce',
+    'WHO',
+  ),
+  healthPromotion: source(
+    'World Health Organization',
+    'Health promotion',
+    'https://www.who.int/health-topics/health-promotion',
+    'WHO',
+  ),
+  mentalHealth: source(
+    'World Health Organization',
+    'Mental health',
+    'https://www.who.int/health-topics/mental-health',
+    'WHO',
+  ),
+  infectionPrevention: source(
+    'World Health Organization',
+    'Infection prevention and control',
+    'https://www.who.int/health-topics/infection-prevention-and-control',
+    'WHO',
+  ),
+  patientSafety: source(
+    'World Health Organization',
+    'Patient safety',
+    'https://www.who.int/health-topics/patient-safety',
+    'WHO',
+  ),
+  healthLiteracy: source(
+    'Centers for Disease Control and Prevention',
+    'About health literacy',
+    'https://www.cdc.gov/health-literacy/php/about/index.html',
+    'CDC',
+  ),
+  infectionControl: source(
+    'Centers for Disease Control and Prevention',
+    'About infection control',
+    'https://www.cdc.gov/infection-control/about/index.html',
+    'CDC',
+  ),
+  nursingEthics: source(
+    'American Nurses Association',
+    'Ethics',
+    'https://www.nursingworld.org/practice-policy/nursing-excellence/ethics/',
+    'ANA',
+  ),
+  codeOfEthics: source(
+    'American Nurses Association',
+    'Code of Ethics for Nurses',
+    'https://codeofethics.ana.org/home',
+    'ANA',
+  ),
+  nursingPractice: source(
+    'American Nurses Association',
+    'Nursing excellence',
+    'https://www.nursingworld.org/practice-policy/nursing-excellence/',
+    'ANA',
+  ),
+  prc: source(
+    'Professional Regulation Commission',
+    'Professional Regulation Commission',
+    'https://www.prc.gov.ph/',
+    'PRC',
+  ),
+  ched: source(
+    'Commission on Higher Education',
+    'Commission on Higher Education',
+    'https://ched.gov.ph/',
+    'CHED',
+  ),
+};
+
+function linksFor(prefix, sourceKeys) {
+  return Object.fromEntries(
+    sourceKeys.map((sourceKey, index) => [
+      `${prefix}-${index + 1}`,
+      {
+        references: [SOURCES[sourceKey]],
+        referencesHeading: 'Further reading',
+      },
+    ]),
+  );
+}
+
+export const LESSON_LINKS = {
+  ...linksFor('nurs-profession-ethics', [
+    'nursing',
+    'nursingPractice',
+    'nursing',
+    'nursingEthics',
+    'codeOfEthics',
+    'nursingEthics',
+    'codeOfEthics',
+    'nursingEthics',
+    'nursingPractice',
+    'nursing',
+  ]),
+  ...linksFor('nurs-body-basics', [
+    'anatomy',
+    'cells',
+    'heart',
+    'respiratory',
+    'digestive',
+    'nervousSystem',
+    'bones',
+    'immune',
+    'endocrine',
+    'anatomy',
+  ]),
+  ...linksFor('nurs-patient-communication', [
+    'healthLiteracy',
+    'healthLiteracy',
+    'healthLiteracy',
+    'nursingEthics',
+    'codeOfEthics',
+    'nursingEthics',
+    'patientSafety',
+    'patientSafety',
+    'nursing',
+    'nursingPractice',
+  ]),
+  ...linksFor('nurs-fundamentals-of-care', [
+    'nursing',
+    'anatomy',
+    'nursingPractice',
+    'codeOfEthics',
+    'nursingEthics',
+    'tissues',
+    'patientSafety',
+    'patientSafety',
+    'infectionControl',
+    'nursing',
+  ]),
+  ...linksFor('nurs-infection-prevention', [
+    'infectionControl',
+    'infectionControl',
+    'infectionControl',
+    'infectionPrevention',
+    'infectionPrevention',
+    'infectionPrevention',
+    'immune',
+    'immune',
+    'immune',
+    'nursing',
+  ]),
+  ...linksFor('nurs-health-promotion', [
+    'healthPromotion',
+    'healthLiteracy',
+    'healthPromotion',
+    'mentalHealth',
+    'workforce',
+    'healthPromotion',
+    'nursing',
+    'healthLiteracy',
+    'healthLiteracy',
+    'workforce',
+  ]),
+  ...linksFor('nurs-safety-documentation', [
+    'patientSafety',
+    'nursingPractice',
+    'nursingEthics',
+    'patientSafety',
+    'patientSafety',
+    'nursingPractice',
+    'nursing',
+    'codeOfEthics',
+    'codeOfEthics',
+    'workforce',
+  ]),
+  ...linksFor('nurs-path-to-practice', [
+    'nursing',
+    'nursingPractice',
+    'ched',
+    'nursing',
+    'prc',
+    'workforce',
+    'nursingEthics',
+    'mentalHealth',
+    'nursingPractice',
+    'nursing',
+  ]),
+  'nurs-path-to-practice-5': {
+    references: [SOURCES.prc, SOURCES.ched],
+    referencesHeading: 'Further reading',
+  },
+};
