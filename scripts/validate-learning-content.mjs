@@ -80,6 +80,7 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'ncsc.gov.uk',
     'cloudflare.com',
     'privacy.gov.ph',
+    'youtu.be',
   ],
   teacher: ['deped.gov.ph', 'ched.gov.ph', 'prc.gov.ph', 'unesco.org', 'edutopia.org'],
   nursing: [

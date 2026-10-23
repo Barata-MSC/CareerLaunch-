@@ -1,4 +1,4 @@
-import { ref } from '../shared/lessonLinks';
+import { ref, ytVideo } from '../shared/lessonLinks';
 
 const cisa = (title, url) =>
   ref('Cybersecurity and Infrastructure Security Agency', title, url, 'CISA');
@@ -129,12 +129,175 @@ const SOURCE_ORDER = {
   'cyber-audit-compliance': [0, 1, 1, 0, 1, 0, 4, 2, 3, 3],
 };
 
+const COURSE_VIDEOS = {
+  'cyber-networking-basics': {
+    id: 'JPYzd2gaoyk',
+    title: 'Learn Computer Networking for Beginners - Full Course',
+    channel: 'Code Geek',
+    year: 2022,
+    lessons: {
+      2: { chapter: 'Intro to Network Devices part 2', start: 434 },
+      4: { chapter: 'Introduction to the DNS Service', start: 2159 },
+      8: { chapter: 'The Importance of Network Segmentation', start: 14472 },
+    },
+  },
+  'cyber-os-fundamentals': {
+    id: 'ROjZy1WbCIA',
+    title: 'Linux Operating System - Crash Course for Beginners',
+    channel: 'freeCodeCamp.org',
+    year: 2022,
+    lessons: {
+      2: { chapter: 'Working with Directories', start: 2965 },
+    },
+  },
+  'cyber-security-fundamentals': {
+    id: 'iAGw4JiyZzA',
+    title: 'Cybersecurity Fundamentals: CIA Triad explained | Confidentiality, Integrity & Availability.',
+    channel: 'Cybersecurity with Linda',
+    year: 2026,
+    lessons: {
+      2: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-cryptography-basics': {
+    id: 'LpqW9b_-Jx0',
+    title: 'Cryptography Explained for Beginners | Encryption, Hashing & Digital Signatures Made Simple',
+    channel: 'Industry Ready Coder',
+    year: 2026,
+    lessons: {
+      3: { chapter: 'Full video', start: 0 },
+      5: { chapter: 'Full video', start: 0 },
+      6: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-web-app-security': {
+    id: 'rRu_bsGpJsk',
+    title: 'OWASP Top 10 Explained for Beginners (2026) #cybersecurity #owasptop10 #websecurity',
+    channel: 'Cyber Scope',
+    year: 2026,
+    lessons: {
+      3: { chapter: 'Full video', start: 0 },
+      5: { chapter: 'Full video', start: 0 },
+      7: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-identity-access': {
+    id: 'ddwKQh1_8rQ',
+    title: 'Identity and Access Management, Explained',
+    channel: 'Group-IB',
+    year: 2026,
+    lessons: {
+      2: { chapter: 'Full video', start: 0 },
+      4: { chapter: 'Full video', start: 0 },
+      5: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-monitoring-detection': {
+    id: '6i6l-ByBXZA',
+    title: 'Crash Course: Linux Log Analysis | Beginner Guide for SOC Analyst | Security Investigation',
+    channel: 'Rajneesh Gupta',
+    year: 2024,
+    lessons: {
+      2: { chapter: 'Linux Log Analysis', start: 854 },
+    },
+  },
+  'cyber-incident-response': {
+    id: '4MGVTpXAAmo',
+    title: 'Incident Response Lifecycle Explained',
+    channel: 'Cyber connect',
+    year: 2025,
+    lessons: {
+      1: { chapter: 'Full video', start: 0 },
+      3: { chapter: 'Full video', start: 0 },
+      7: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-risk-management': {
+    id: 'AGV6fNXH3pQ',
+    title: 'Cybersecurity Risk Management Explained | How it Works for MSPs and IT Teams',
+    channel: 'ConnectWise',
+    year: 2026,
+    lessons: {
+      1: { chapter: 'What is cybersecurity risk management?', start: 23 },
+      4: { chapter: 'Why do risk assessments matter?', start: 102 },
+      6: { chapter: 'How does it work?', start: 61 },
+    },
+  },
+  'cyber-security-policies': {
+    id: 'nbYaMKf90JA',
+    title: 'Security Policies & Procedures Explained',
+    channel: 'Learn with Cisco',
+    year: 2025,
+    lessons: {
+      2: { chapter: 'Why Policies and Procedures Matter', start: 46 },
+      9: { chapter: 'Connecting the Dots: Policies in Action', start: 376 },
+    },
+  },
+  'cyber-data-privacy': {
+    id: 'rZe5tuddQH4',
+    title: 'Introduction to Data Privacy | Workshop',
+    channel: 'Velma K. Waters Library',
+    year: 2025,
+    lessons: {
+      1: { chapter: 'Why Should You Care About Data Privacy?', start: 90 },
+      2: { chapter: 'Basic Data Hygiene', start: 138 },
+      10: { chapter: 'Privacy vs. Security', start: 219 },
+    },
+  },
+  'cyber-business-continuity': {
+    id: 'USCaj46GDPc',
+    title: 'What is the Difference Between Business Continuity and Disaster Recovery?',
+    channel: 'Simplex-IT',
+    year: 2022,
+    lessons: {
+      1: { chapter: 'Full video', start: 0 },
+    },
+  },
+  'cyber-audit-compliance': {
+    id: 'WXZY_2MWGOM',
+    title: 'What Is an IT Audit? IT Audit Explained | Types, Controls & Career Path!',
+    channel: 'Audit Decoded by Mayuri',
+    year: 2025,
+    lessons: {
+      1: { chapter: 'What Exactly is an IT Audit?', start: 59 },
+      3: { chapter: 'What IT Auditors Aim to Achieve', start: 170 },
+      10: { chapter: 'A Rewarding Path', start: 478 },
+    },
+  },
+};
+
+function videoReference(video, year) {
+  return {
+    text: `${video.channel}. (${year}). ${video.title} [Video]. YouTube.`,
+    url: `https://youtu.be/${video.id}`,
+  };
+}
+
 export const LESSON_LINKS = Object.fromEntries(
   Object.entries(courseReferences).flatMap(([courseId, references]) => {
     const lessonPrefix = courseId.replace(/^cyber-/, '');
-    return SOURCE_ORDER[courseId].map((referenceIndex, index) => [
-      `${lessonPrefix}-${index + 1}`,
-      { references: [references[referenceIndex]] },
-    ]);
+    const courseVideo = COURSE_VIDEOS[courseId];
+    return SOURCE_ORDER[courseId].map((referenceIndex, index) => {
+      const chapter = courseVideo?.lessons[index + 1];
+      const video = chapter
+        ? ytVideo(
+            courseVideo.id,
+            chapter.start,
+            chapter.chapter,
+            courseVideo.title,
+            courseVideo.channel,
+          )
+        : undefined;
+      return [
+        `${lessonPrefix}-${index + 1}`,
+        {
+          references: [
+            references[referenceIndex],
+            ...(video ? [videoReference(video, courseVideo.year)] : []),
+          ],
+          ...(video ? { video } : {}),
+        },
+      ];
+    });
   }),
 );
