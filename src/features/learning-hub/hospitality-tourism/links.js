@@ -1,4 +1,4 @@
-import { ref } from '../shared/lessonLinks';
+import { ref, ytVideo } from '../shared/lessonLinks';
 
 const DOT = 'Department of Tourism';
 const CHED = 'Commission on Higher Education';
@@ -76,7 +76,7 @@ function linksForCourse(courseId, sourceKeys) {
   );
 }
 
-export const LESSON_LINKS = {
+const lessonLinks = {
   ...linksForCourse('ht-hospitality-industry', [
     'about', 'glossary', 'tesdaPrograms', 'dot',
     'tesdaStandards', 'glossary', 'about', 'tesdaPrograms',
@@ -142,3 +142,89 @@ export const LESSON_LINKS = {
     referencesHeading: 'Further reading',
   },
 };
+
+function addVideo(lessonId, id, title, channel) {
+  lessonLinks[lessonId] = {
+    ...lessonLinks[lessonId],
+    video: ytVideo(id, 0, 'Full video', title, channel),
+    references: [
+      ...lessonLinks[lessonId].references,
+      ref(channel, title, `https://youtu.be/${id}`, channel),
+    ],
+  };
+}
+
+addVideo(
+  'ht-hospitality-industry-1',
+  '0POQpL8DjuY',
+  'Introduction of the Hospitality and Tourism Industry |  What is Hospitality? | What is Tourism?',
+  "TN's Hospitality Insights",
+);
+addVideo(
+  'ht-hospitality-industry-3',
+  'qYyk2TjCPM0',
+  'Hotel Departments and their functions I Core Areas I Supportive department I Hotel Management I',
+  'Hospitality Broadcast',
+);
+addVideo(
+  'ht-hospitality-industry-7',
+  'zioy-RozBhU',
+  'Guest Service Agent Job Responsibilities || How To Work In Luxurious Hotels || Job Interview',
+  'Job Intelligence Global',
+);
+addVideo(
+  'ht-guest-service-3',
+  'btWlBHE0pe4',
+  'How to communicate clearly',
+  'TED-Ed',
+);
+addVideo(
+  'ht-guest-service-6',
+  'TgewHNBz3U8',
+  'How to Answer Customer Questions & Concerns',
+  'Get Schooled',
+);
+addVideo(
+  'ht-guest-service-7',
+  'tWnaKsmQ6k8',
+  'The Right Words at the Right Time - Customer Service Recovery for Hospitality Industry',
+  'Atana',
+);
+addVideo(
+  'ht-front-office-2',
+  '8jNnj15i6gk',
+  'Introduction to Front Office Operations',
+  'TOURISM HUT',
+);
+addVideo(
+  'ht-front-office-5',
+  'nx_fcuIhXhY',
+  'Introduction to Housekeeping/Housekeeping sections/functions and responsibilities of housekeeping',
+  'Hospitality Broadcast',
+);
+addVideo(
+  'ht-hospitality-business-2',
+  'bwcyXcOpWVs',
+  'The Secret Ingredients of Great Hospitality | Will Guidara | TED',
+  'TED',
+);
+addVideo(
+  'ht-hospitality-business-7',
+  'bwcyXcOpWVs',
+  'The Secret Ingredients of Great Hospitality | Will Guidara | TED',
+  'TED',
+);
+addVideo(
+  'ht-tourism-industry-1',
+  'X5uxoBv-myU',
+  'What is Tourism?',
+  'Tourism Roadmap',
+);
+addVideo(
+  'ht-tourism-industry-3',
+  'X5uxoBv-myU',
+  'What is Tourism?',
+  'Tourism Roadmap',
+);
+
+export const LESSON_LINKS = lessonLinks;
