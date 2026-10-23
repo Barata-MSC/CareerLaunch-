@@ -112,6 +112,7 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'officialgazette.gov.ph',
     'congress.gov.ph',
     'senate.gov.ph',
+    'youtu.be',
   ],
   marine: [
     'marina.gov.ph',
