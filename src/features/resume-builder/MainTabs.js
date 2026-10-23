@@ -41,7 +41,11 @@ export default function MainTabs() {
       />
       <Tab.Screen name="ResumeBuilder" component={ResumeBuilderScreen} />
       <Tab.Screen name="JobFinder" component={JobFinderScreen} />
-      <Tab.Screen name="LearningHub" component={LearningHubScreen} />
+      <Tab.Screen
+        name="LearningHub"
+        component={LearningHubScreen}
+        options={{ tabBarStyle: { display: 'none' } }}
+      />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

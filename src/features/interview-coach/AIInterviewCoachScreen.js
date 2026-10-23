@@ -22,7 +22,7 @@ import { usePractice } from '../../context/PracticeContext';
 import useVoiceInput, { MAX_ANSWER_LENGTH } from './useVoiceInput';
 
 const MIC_ICON = require('@assets/mic-icon.png');
-const AI_PRIVACY_KEY_PREFIX = 'careerlaunch:interview-ai-privacy:v1';
+const INTERVIEW_PRIVACY_KEY_PREFIX = 'careerlaunch:interview-privacy:v1';
 
 const PURPLE = '#5B21F5';
 const PURPLE_DARK = '#3D14C4';
@@ -52,6 +52,69 @@ const TEXT_SUGGESTIONS = [
   'Watch out for double spaces or accidentally repeated words.',
   'Try breaking a long answer into a few clear, separate sentences.',
 ];
+
+function toDisplayFeedback(rawFeedback) {
+  const overall = Number(rawFeedback?.overall ?? 0);
+  const criteria = rawFeedback?.criteria ?? {};
+  const strengths = Array.isArray(rawFeedback?.strengths) && rawFeedback.strengths.length
+    ? rawFeedback.strengths
+    : ['Clear and useful answer'];
+  const improvements = Array.isArray(rawFeedback?.improvements) && rawFeedback.improvements.length
+    ? rawFeedback.improvements
+    : ['Add more specific examples.'];
+
+  return {
+    source: 'ai',
+    overall: Math.max(0, Math.min(100, overall)),
+    stars: Math.max(1, Math.min(5, Math.round(overall / 20))),
+    metricAName: 'Relevance',
+    metricAValue: `${Math.max(0, Math.min(10, Number(criteria.relevance ?? 0)))}/10`,
+    metricBName: 'Structure',
+    metricBValue: `${Math.max(0, Math.min(10, Number(criteria.structure ?? 0)))}/10`,
+    suggestion: improvements[0] || strengths[0] || 'Keep practicing with specific examples.',
+    strengths,
+    improvements,
+    suggestedAnswer: rawFeedback?.suggestedAnswer || '',
+    followUpQuestion: rawFeedback?.followUpQuestion || '',
+    criteria,
+  };
+}
+
+async function getInterviewFunctionFailure(error, responseData) {
+  let payload = responseData;
+  const response = error?.context;
+
+  if (!payload && typeof response?.clone === 'function') {
+    try {
+      payload = await response.clone().json();
+    } catch {
+      payload = null;
+    }
+  }
+
+  const status = Number(response?.status) || 0;
+  const code = payload?.error?.code || payload?.code || '';
+
+  if (code === 'daily_limit_reached' || status === 429) {
+    return 'AI daily limit reached. Basic feedback is shown instead.';
+  }
+  if (code === 'guest_account' || status === 403) {
+    return 'AI feedback requires a full account. Basic feedback is shown instead.';
+  }
+  if (code === 'not_authenticated' || status === 401) {
+    return 'Your sign-in could not be verified. Sign in again to use AI feedback; basic feedback is shown instead.';
+  }
+  if (code === 'usage_unavailable' || code === 'server_not_configured') {
+    return 'The AI feedback service is not ready right now. Basic feedback is shown instead.';
+  }
+  if (code === 'ai_unavailable' || code === 'evaluation_failed' || status >= 500) {
+    return 'The AI service could not evaluate this answer right now. Basic feedback is shown instead.';
+  }
+  if (error && status === 0) {
+    return 'Could not connect to the AI feedback service. Check your connection; basic feedback is shown instead.';
+  }
+  return 'AI feedback is unavailable right now. Basic feedback is shown instead.';
+}
 
 function generateTextFeedback(answerText) {
   const trimmed = answerText.trim();
@@ -93,52 +156,6 @@ function generateTextFeedback(answerText) {
   };
 }
 
-function toDisplayFeedback(rawFeedback) {
-  const source = rawFeedback?.source === 'ai' ? 'ai' : 'local';
-  const overall = Number(rawFeedback?.overall ?? rawFeedback?.stars ?? 0);
-  const criteria = rawFeedback?.criteria ?? {};
-
-  if (source === 'ai') {
-    const strengths = Array.isArray(rawFeedback?.strengths) && rawFeedback.strengths.length
-      ? rawFeedback.strengths
-      : ['Clear and useful answer'];
-    const improvements = Array.isArray(rawFeedback?.improvements) && rawFeedback.improvements.length
-      ? rawFeedback.improvements
-      : ['Add more specific examples.'];
-    const fallbackSuggestion = improvements[0] || strengths[0] || 'Keep practicing with more specific examples.';
-
-    return {
-      source,
-      overall: Math.max(0, Math.min(100, overall || 75)),
-      stars: Math.max(1, Math.min(5, Math.round((overall || 75) / 20))),
-      metricAName: 'Relevance',
-      metricAValue: `${Math.max(0, Math.min(10, Number(criteria.relevance ?? 7)))}/10`,
-      metricBName: 'Structure',
-      metricBValue: `${Math.max(0, Math.min(10, Number(criteria.structure ?? 7)))}/10`,
-      suggestion: fallbackSuggestion,
-      strengths,
-      improvements,
-      suggestedAnswer: rawFeedback?.suggestedAnswer || '',
-      followUpQuestion: rawFeedback?.followUpQuestion || '',
-    };
-  }
-
-  return {
-    source,
-    overall: Math.max(0, Math.min(100, overall || 70)),
-    stars: Math.max(1, Math.min(5, Number(rawFeedback?.stars ?? 3))),
-    metricAName: rawFeedback?.metricAName || 'Feedback',
-    metricAValue: rawFeedback?.metricAValue || 'Good',
-    metricBName: rawFeedback?.metricBName || 'Next step',
-    metricBValue: rawFeedback?.metricBValue || 'Keep going',
-    suggestion: rawFeedback?.suggestion || 'Keep practicing with a clearer example.',
-    strengths: rawFeedback?.strengths || ['Good effort'],
-    improvements: rawFeedback?.improvements || ['Add more structure and examples'],
-    suggestedAnswer: rawFeedback?.suggestedAnswer || '',
-    followUpQuestion: rawFeedback?.followUpQuestion || '',
-  };
-}
-
 function StarRow({ count, size = 20 }) {
   return (
     <View style={styles.starRow}>
@@ -152,7 +169,7 @@ function StarRow({ count, size = 20 }) {
 }
 
 function getPrivacyKey(userId) {
-  return userId ? `${AI_PRIVACY_KEY_PREFIX}:${userId}` : AI_PRIVACY_KEY_PREFIX;
+  return userId ? `${INTERVIEW_PRIVACY_KEY_PREFIX}:${userId}` : INTERVIEW_PRIVACY_KEY_PREFIX;
 }
 
 function AIInterviewCoachContent({ navigation }) {
@@ -164,7 +181,7 @@ function AIInterviewCoachContent({ navigation }) {
   const [answerText, setAnswerText] = useState('');
   const [answers, setAnswers] = useState([]);
   const [pastResults, setPastResults] = useState([]);
-  const [aiNoticeAccepted, setAiNoticeAccepted] = useState(false);
+  const [privacyNoticeAccepted, setPrivacyNoticeAccepted] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [savingHistory, setSavingHistory] = useState(false);
   const [saveHistoryError, setSaveHistoryError] = useState('');
@@ -173,13 +190,13 @@ function AIInterviewCoachContent({ navigation }) {
   const userId = session?.user?.id;
   const currentQuestion = QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === QUESTIONS.length - 1;
-  const voiceInput = useVoiceInput({ active: isFocused && view === 'question', maxLength: MAX_ANSWER_LENGTH });
+  const voiceInput = useVoiceInput({
+    active: isFocused && view === 'question',
+    maxLength: MAX_ANSWER_LENGTH,
+    onTranscript: setAnswerText,
+  });
   const canSubmit =
     answerText.trim().length > 0 && !voiceInput.listening && !voiceInput.starting && !voiceInput.processing;
-
-  useEffect(() => {
-    setAnswerText(voiceInput.transcript);
-  }, [voiceInput.transcript]);
 
   useEffect(() => {
     let active = true;
@@ -187,10 +204,10 @@ function AIInterviewCoachContent({ navigation }) {
 
     AsyncStorage.getItem(getPrivacyKey(userId))
       .then((stored) => {
-        if (active) setAiNoticeAccepted(stored === '1');
+        if (active) setPrivacyNoticeAccepted(stored === '1');
       })
       .catch(() => {
-        if (active) setAiNoticeAccepted(false);
+        if (active) setPrivacyNoticeAccepted(false);
       });
 
     return () => {
@@ -205,11 +222,11 @@ function AIInterviewCoachContent({ navigation }) {
 
   const persistPrivacyNotice = async () => {
     if (!userId) {
-      setAiNoticeAccepted(true);
+      setPrivacyNoticeAccepted(true);
       return;
     }
     await AsyncStorage.setItem(getPrivacyKey(userId), '1');
-    setAiNoticeAccepted(true);
+    setPrivacyNoticeAccepted(true);
   };
 
   const handleAcceptPrivacyNotice = async () => {
@@ -280,16 +297,17 @@ function AIInterviewCoachContent({ navigation }) {
   const handleSubmitAnswer = async () => {
     if (!canSubmit) return;
 
-    if (!aiNoticeAccepted) {
-      setStatusMessage('Please review and accept the AI feedback notice before submitting.');
+    if (!privacyNoticeAccepted) {
+      setStatusMessage('Please review and accept the AI feedback privacy notice before submitting.');
       return;
     }
 
     setView('analyzing');
     setStatusMessage('');
 
+    let feedbackResult;
+    let fallbackMessage = '';
     try {
-      let feedbackResult;
       const { data, error } = await supabase.functions.invoke('interview-coach', {
         body: {
           question: currentQuestion.prompt,
@@ -298,79 +316,35 @@ function AIInterviewCoachContent({ navigation }) {
         },
       });
 
-      const fallbackErrorMessage = error?.message || data?.error?.message || '';
-      const hasDailyLimit = data?.error?.code === 'daily_limit_reached' || fallbackErrorMessage.toLowerCase().includes('limit reached');
-
-      if (hasDailyLimit) {
-        setStatusMessage('AI daily limit reached. Basic feedback is shown instead.');
-        feedbackResult = runLocalFeedback();
-      } else if (data?.evaluation && typeof data.evaluation === 'object') {
-        feedbackResult = toDisplayFeedback({ ...data.evaluation, source: 'ai' });
-      } else if (error) {
-        const messageText = String(error?.message || '');
-        const networkWarning = messageText.toLowerCase().includes('fetch') || messageText.toLowerCase().includes('network') || messageText.toLowerCase().includes('offline');
-        if (networkWarning) {
-          setStatusMessage('You are offline, so the basic local feedback is being used instead.');
-        } else if (messageText.toLowerCase().includes('429') || messageText.toLowerCase().includes('limit')) {
-          setStatusMessage('AI feedback is temporarily limited. Basic feedback is being used instead.');
-        } else {
-          setStatusMessage('AI feedback is unavailable right now. Basic feedback is being used instead.');
-        }
-        feedbackResult = runLocalFeedback();
-      } else if (data?.fallback) {
-        setStatusMessage('AI feedback is unavailable right now. Basic feedback is being used instead.');
-        feedbackResult = runLocalFeedback();
+      if (!error && data?.evaluation && typeof data.evaluation === 'object') {
+        feedbackResult = toDisplayFeedback(data.evaluation);
       } else {
+        fallbackMessage = await getInterviewFunctionFailure(error, data);
         feedbackResult = runLocalFeedback();
       }
+    } catch (error) {
+      fallbackMessage = await getInterviewFunctionFailure(error);
+      feedbackResult = runLocalFeedback();
+    }
 
-      const normalizedAnswer = {
-        question: currentQuestion,
-        answerText,
-        source: feedbackResult.source === 'ai' ? 'ai' : 'local',
+    const normalizedAnswer = {
+      question: currentQuestion,
+      answerText,
+      ...feedbackResult,
+      evaluation: {
         overall: Number(feedbackResult.overall || 0),
-        stars: Number(feedbackResult.stars || 0),
-        metricAName: feedbackResult.metricAName,
-        metricAValue: feedbackResult.metricAValue,
-        metricBName: feedbackResult.metricBName,
-        metricBValue: feedbackResult.metricBValue,
-        suggestion: feedbackResult.suggestion,
+        input: voiceInput.didRecognizeSpeech ? 'voice' : 'text',
+        criteria: feedbackResult.criteria || {},
         strengths: feedbackResult.strengths || [],
         improvements: feedbackResult.improvements || [],
-        evaluation: {
-          overall: Number(feedbackResult.overall || 0),
-          input: voiceInput.didRecognizeSpeech ? 'voice' : 'text',
-          criteria: {
-            relevance: Number(feedbackResult?.criteria?.relevance ?? 7),
-            structure: Number(feedbackResult?.criteria?.structure ?? 7),
-            clarity: Number(feedbackResult?.criteria?.clarity ?? 7),
-            specificity: Number(feedbackResult?.criteria?.specificity ?? 7),
-            professionalism: Number(feedbackResult?.criteria?.professionalism ?? 7),
-          },
-          strengths: feedbackResult.strengths || [],
-          improvements: feedbackResult.improvements || [],
-          suggestedAnswer: feedbackResult.suggestedAnswer || '',
-          followUpQuestion: feedbackResult.followUpQuestion || '',
-        },
-      };
+        suggestedAnswer: feedbackResult.suggestedAnswer || '',
+        followUpQuestion: feedbackResult.followUpQuestion || '',
+      },
+    };
 
-      setAnswers((prev) => [...prev, normalizedAnswer]);
-      setView('feedback');
-    } catch (error) {
-      const message = error?.message || 'Unexpected feedback error';
-      setStatusMessage(message);
-      setAnswers((prev) => [
-        ...prev,
-        {
-          question: currentQuestion,
-          answerText,
-          ...runLocalFeedback(),
-          evaluation: { input: voiceInput.didRecognizeSpeech ? 'voice' : 'text' },
-          source: 'local',
-        },
-      ]);
-      setView('feedback');
-    }
+    setAnswers((prev) => [...prev, normalizedAnswer]);
+    setStatusMessage(fallbackMessage);
+    setView('feedback');
   };
 
   const handleNextQuestion = () => {
@@ -436,15 +410,15 @@ function AIInterviewCoachContent({ navigation }) {
       <View style={styles.introIconWrap}>
         <Image source={MIC_ICON} style={styles.introIcon} resizeMode="contain" />
       </View>
-      <Text style={styles.introTitle}>Practice with the AI Interview Coach</Text>
+      <Text style={styles.introTitle}>Practice with the Interview Coach</Text>
       <Text style={styles.introBody}>
         Answer {QUESTIONS.length} common interview questions by typing or speaking. On supported
-        development builds, speech is transcribed into editable text and evaluated like a typed answer.
+        platforms, speech is transcribed into editable text and checked like a typed answer.
       </Text>
 
       <View style={styles.noticeBox}>
         <Text style={styles.noticeText}>
-          AI feedback is guidance, not a hiring verdict. It can be wrong, so use it to improve your answers.
+          AI feedback evaluates your answer and offers suggestions. Treat it as practice guidance, not a hiring decision.
         </Text>
       </View>
 
@@ -487,13 +461,13 @@ function AIInterviewCoachContent({ navigation }) {
       </View>
       <Text style={styles.questionText}>{currentQuestion.prompt}</Text>
 
-      {!aiNoticeAccepted && (
+      {!privacyNoticeAccepted && (
         <View style={styles.privacyNoticeBox}>
-          <Text style={styles.privacyNoticeTitle}>AI feedback notice</Text>
+          <Text style={styles.privacyNoticeTitle}>Answer privacy notice</Text>
           <Text style={styles.privacyNoticeText}>
-            Your answer text is sent to an AI service for feedback and may be saved to your account.
-            Speech is transcribed by your device's speech service; audio handling depends on your device
-            and its settings. Avoid personal or sensitive details.
+            Your answer text is sent to the Interview Coach AI service for feedback and may be saved
+            to your account. Speech is transcribed by your browser or device speech service; audio
+            handling depends on that service and its settings. Avoid personal or sensitive details.
           </Text>
           <AppPressable
             style={styles.noticeButton}
@@ -542,7 +516,7 @@ function AIInterviewCoachContent({ navigation }) {
       </View>
       <Text style={styles.micHint} accessibilityLiveRegion="polite" accessibilityRole="text">
         {voiceInput.requestingPermission
-          ? 'Requesting microphone and speech permission…'
+          ? voiceInput.permissionRequestMessage
           : voiceInput.starting
           ? 'Starting speech recognition…'
           : voiceInput.processing
@@ -551,10 +525,16 @@ function AIInterviewCoachContent({ navigation }) {
           ? 'Listening… tap Stop to finish.'
           : voiceInput.error || voiceInput.availabilityMessage || 'Tap the microphone to speak, or type your answer.'}
       </Text>
+      {voiceInput.listening ? (
+        <View style={styles.listeningStatus}>
+          <Text style={styles.listeningStatusText}>Listening… Speak your answer now.</Text>
+        </View>
+      ) : null}
       {voiceInput.available ? (
         <Text style={styles.voicePrivacyText}>
-          Speech is converted to text by your device's speech service. Audio handling depends on your
-          device and settings; the transcript is sent to the AI service for feedback.
+          Speech is converted to text by your browser or device speech service. Audio handling depends
+          on that service and its settings. The transcript is sent to the AI service for feedback; the
+          app does not store audio.
         </Text>
       ) : null}
       <Text style={styles.answerLimitHint}>Maximum {MAX_ANSWER_LENGTH.toLocaleString()} characters.</Text>
@@ -564,23 +544,16 @@ function AIInterviewCoachContent({ navigation }) {
       <AppPressable
         style={[
           styles.primaryButton,
-          (!canSubmit || !aiNoticeAccepted) && styles.primaryButtonDisabled,
+          (!canSubmit || !privacyNoticeAccepted) && styles.primaryButtonDisabled,
         ]}
         activeOpacity={0.85}
-        disabled={!canSubmit || !aiNoticeAccepted}
+        disabled={!canSubmit || !privacyNoticeAccepted}
         onPress={handleSubmitAnswer}
         accessibilityRole="button"
       >
         <Text style={styles.primaryButtonText}>Submit Answer</Text>
       </AppPressable>
     </ScrollView>
-  );
-
-  const renderAnalyzing = () => (
-    <View style={styles.centerFill}>
-      <ActivityIndicator size="large" color={PURPLE} />
-      <Text style={styles.analyzingText}>Analyzing your answer…</Text>
-    </View>
   );
 
   const renderFeedback = () => {
@@ -596,6 +569,7 @@ function AIInterviewCoachContent({ navigation }) {
     return (
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.progressLabel}>Feedback · Question {currentIndex + 1} of {QUESTIONS.length}</Text>
+        {statusMessage ? <Text style={styles.statusText}>{statusMessage}</Text> : null}
 
         <View style={styles.feedbackCard}>
           <View style={styles.feedbackRowTop}>
@@ -690,13 +664,18 @@ function AIInterviewCoachContent({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <View style={styles.header}>
         <BackButton onPress={handleExit} style={styles.backButton} />
-        <Text style={styles.headerTitle}>AI Interview Coach</Text>
+        <Text style={styles.headerTitle}>Interview Coach</Text>
         <View style={styles.backButton} />
       </View>
 
       {view === 'intro' && renderIntro()}
       {view === 'question' && renderQuestion()}
-      {view === 'analyzing' && renderAnalyzing()}
+      {view === 'analyzing' && (
+        <View style={styles.centerFill}>
+          <ActivityIndicator size="large" color={PURPLE} />
+          <Text style={styles.analyzingText}>Getting feedback…</Text>
+        </View>
+      )}
       {view === 'feedback' && renderFeedback()}
       {view === 'results' && renderResults()}
     </SafeAreaView>
@@ -716,6 +695,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#111111' },
   scrollContent: { paddingHorizontal: 24, paddingBottom: 40, alignItems: 'center' },
   centerFill: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  analyzingText: { marginTop: 14, fontSize: 14, color: '#6B6B85' },
   introIconWrap: {
     width: 88,
     height: 88,
@@ -810,6 +790,15 @@ const styles = StyleSheet.create({
   micIcon: { width: 32, height: 32 },
   micButtonLabel: { fontSize: 10, fontWeight: '700', color: PURPLE },
   micHint: { fontSize: 13, color: '#8E8E93', marginBottom: 16, textAlign: 'center' },
+  listeningStatus: {
+    width: '100%',
+    borderRadius: 10,
+    backgroundColor: '#FFF1F2',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  listeningStatusText: { color: '#BE123C', fontSize: 14, fontWeight: '700', textAlign: 'center' },
   answerInputRow: { width: '100%', flexDirection: 'row', alignItems: 'stretch', gap: 10 },
   textAnswerInput: {
     flex: 1,
@@ -865,7 +854,6 @@ const styles = StyleSheet.create({
   suggestionText: { fontSize: 13, color: '#4B4B63', lineHeight: 19, marginTop: 4 },
   suggestedAnswerText: { fontSize: 12.5, color: '#374151', lineHeight: 18, marginTop: 10 },
   reminderText: { color: '#4B5563', fontSize: 12, lineHeight: 18, marginBottom: 12, textAlign: 'center' },
-  analyzingText: { marginTop: 14, fontSize: 14, color: '#6B6B85' },
   resultsScoreWrap: { alignItems: 'center', marginTop: 12, marginBottom: 8 },
   resultsScoreValue: { fontSize: 44, fontWeight: '800', color: PURPLE },
   resultsScoreLabel: { fontSize: 14, color: '#6B6B85', marginTop: 4 },
@@ -904,7 +892,7 @@ const styles = StyleSheet.create({
 export default function AIInterviewCoachScreen(props) {
   return (
     <AccountGate
-      featureName="AI Interview Coach"
+      featureName="Interview Coach"
       description="Build confidence with practice responses and feedback. Complete your account to unlock this feature and keep your progress saved."
       navigation={props.navigation}
     >

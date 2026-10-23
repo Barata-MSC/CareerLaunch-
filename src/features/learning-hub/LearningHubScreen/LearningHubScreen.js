@@ -488,17 +488,16 @@ export default function LearningHubScreen({ navigation, route }) {
     }
 
     return (
-      <View style={styles.flex}>
-        <FlatList
-          data={visibleCourses}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCourseCard}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
-          }
-        />
-      </View>
+      <FlatList
+        style={styles.scrollFlex}
+        data={visibleCourses}
+        keyExtractor={(item) => item.id}
+        renderItem={renderCourseCard}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No courses match your search. Try another keyword or status.</Text>
+        }
+      />
     );
   };
 
@@ -566,7 +565,7 @@ export default function LearningHubScreen({ navigation, route }) {
 
         <AnimatedStage
           stageKey={view}
-          style={styles.scrollFlex}
+          style={styles.stage}
           direction={
             VIEW_ORDER[view] > VIEW_ORDER[previousViewRef.current]
               ? 'forward'
@@ -581,15 +580,17 @@ export default function LearningHubScreen({ navigation, route }) {
         </AnimatedStage>
 
         {view === 'courses' && currentTrack && (
-          <AppPressable
-            style={styles.primaryBtn}
-            onPress={() => navigation.navigate('CareerRoadmap', {
-              goal: selectedTrack,
-              careerTrackIds: currentCareer?.trackIds,
-            })}
-          >
-            <Text style={styles.primaryBtnText}>View Roadmap</Text>
-          </AppPressable>
+          <View style={styles.roadmapFooter}>
+            <AppPressable
+              style={styles.primaryBtn}
+              onPress={() => navigation.navigate('CareerRoadmap', {
+                goal: selectedTrack,
+                careerTrackIds: currentCareer?.trackIds,
+              })}
+            >
+              <Text style={styles.primaryBtnText}>View Roadmap</Text>
+            </AppPressable>
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -605,6 +606,7 @@ const styles = StyleSheet.create({
   },
   flex: { flex: 1 },
   scrollFlex: { flex: 1, minHeight: 0 },
+  stage: { flex: 1, minHeight: 0, overflow: 'hidden' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -733,10 +735,16 @@ const styles = StyleSheet.create({
   actionText: { color: '#fff', fontSize: 12, fontWeight: '600' },
   actionTextDone: { color: PURPLE },
 
+  roadmapFooter: {
+    flexShrink: 0,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
+  },
   primaryBtn: {
     backgroundColor: PURPLE,
-    marginHorizontal: 16,
-    marginVertical: 12,
+    width: '100%',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',

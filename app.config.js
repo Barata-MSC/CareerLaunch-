@@ -11,7 +11,10 @@ module.exports = {
         {
           microphonePermission: "Allow CareerLaunch! to use the microphone when you choose voice input for interview answers.",
           speechRecognitionPermission: "Allow CareerLaunch! to transcribe your spoken interview answers.",
-          androidSpeechServicePackages: ["com.google.android.googlequicksearchbox"]
+          androidSpeechServicePackages: [
+            "com.google.android.googlequicksearchbox",
+            "com.google.android.tts"
+          ]
         }
       ]
     ],
@@ -22,6 +25,7 @@ module.exports = {
       supportsTablet: true
     },
     android: {
+      package: "com.JavaRice.careerlaunch",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./src/assets/rocket-icon.png"
@@ -29,6 +33,11 @@ module.exports = {
     },
     web: {
       output: "single"
+    },
+    extra: {
+      eas: {
+        projectId: "bc6dfca5-2003-48df-858c-a43b699876f4"
+      }
     },
     experiments: {
       baseUrl: "/CareerLaunch-/"

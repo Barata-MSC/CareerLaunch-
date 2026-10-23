@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 const PracticeContext = createContext(null);
 
-// Remembers whether the user has finished at least one AI Interview Coach
+// Remembers whether the user has finished at least one Interview Coach
 // session. Kept in memory only, so it resets when the app is restarted.
 export function PracticeProvider({ children }) {
   const [hasPracticed, setHasPracticed] = useState(false);
