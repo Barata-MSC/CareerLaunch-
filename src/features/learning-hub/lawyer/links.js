@@ -1,4 +1,4 @@
-import { ref } from '../shared/lessonLinks';
+import { ref, ytVideo } from '../shared/lessonLinks';
 
 const source = (organization, title, url, site = organization) =>
   ref(organization, title, url, site);
@@ -102,7 +102,7 @@ function linksFor(courseId, sourceKeys) {
   );
 }
 
-export const LESSON_LINKS = {
+const lessonLinks = {
   ...linksFor('law-profession-ethics', [
     'upLaw',
     'ibpResources',
@@ -271,4 +271,97 @@ export const LESSON_LINKS = {
     'privacyAct',
     'lawphilDisclaimer',
   ]),
+};
+
+const legalResearchVideo = ytVideo(
+  'yqteIDakNHY',
+  120,
+  'The legal research framework (overview)',
+  'Legal Research for Beginners: A Step-by-Step Framework (Primary + Secondary Sources)',
+  'Rowena Maxwell',
+);
+const legalWritingVideo = ytVideo(
+  'O7G-y6vepos',
+  0,
+  'Full video',
+  'IRAC Method',
+  'Learn Law Better',
+);
+const constitutionalBasicsVideo = ytVideo(
+  '_882Xztbh5Q',
+  0,
+  'Full video',
+  'What is the Separation of Powers?',
+  'Civics Academy SA',
+);
+const civilCriminalOverviewVideo = ytVideo(
+  'Zg5ex8WZUao',
+  0,
+  'Full video',
+  'What is the difference between civil cases and criminal cases?',
+  'LegalYou',
+);
+const legalTechRecordsVideo = ytVideo(
+  '1biHm0Xb5-M',
+  150,
+  'Identifying Your Records and Responsibilities',
+  'Introduction to Records Management',
+  'Odyssey Learning Project',
+);
+
+function withVideo(lessonId, video, year) {
+  const lesson = lessonLinks[lessonId];
+
+  return {
+    ...lesson,
+    references: [
+      ...lesson.references,
+      {
+        text: `${video.channel}. (${year}). ${video.title} [Video]. YouTube.`,
+        url: `https://youtu.be/${video.id}`,
+      },
+    ],
+    video,
+  };
+}
+
+const videoLessonEntries = [
+  [
+    'law-legal-research-1',
+    ytVideo(
+      legalResearchVideo.id,
+      120,
+      'The legal research framework (overview)',
+      legalResearchVideo.title,
+      legalResearchVideo.channel,
+    ),
+    2025,
+  ],
+  [
+    'law-legal-research-2',
+    ytVideo(
+      legalResearchVideo.id,
+      42,
+      'Primary vs secondary sources',
+      legalResearchVideo.title,
+      legalResearchVideo.channel,
+    ),
+    2025,
+  ],
+  ['law-legal-writing-2', legalWritingVideo, 2017],
+  ['law-constitutional-basics-2', constitutionalBasicsVideo, 2020],
+  ['law-civil-criminal-overview-1', civilCriminalOverviewVideo, 2015],
+  ['law-civil-criminal-overview-2', civilCriminalOverviewVideo, 2015],
+  ['law-civil-criminal-overview-5', civilCriminalOverviewVideo, 2015],
+  ['law-legal-tech-records-10', legalTechRecordsVideo, 2023],
+];
+
+export const LESSON_LINKS = {
+  ...lessonLinks,
+  ...Object.fromEntries(
+    videoLessonEntries.map(([lessonId, video, year]) => [
+      lessonId,
+      withVideo(lessonId, video, year),
+    ]),
+  ),
 };
