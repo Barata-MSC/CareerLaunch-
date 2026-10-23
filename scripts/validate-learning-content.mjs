@@ -153,6 +153,7 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'ched.gov.ph',
     'tesda.gov.ph',
     'untourism.int',
+    'youtu.be',
   ],
 };
 
