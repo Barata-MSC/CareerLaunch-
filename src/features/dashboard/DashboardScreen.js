@@ -34,7 +34,7 @@ let cachedSessionTip = null;
 const QUICK_ACTIONS = [
   { id: '1', label: 'Resume Editor', icon: '💼', color: '#6C4CE0' },
   { id: '2', label: 'Job Finder', icon: '🔍', color: '#C24CDE' },
-  { id: '3', label: 'AI Coach', icon: '🤖', color: '#33C46A' },
+  { id: '3', label: 'Interview Coach', icon: '🤖', color: '#33C46A' },
   { id: '4', label: 'Learning Hub', icon: '📖', color: '#F0637D' },
 ];
 
@@ -135,11 +135,13 @@ function AnimatedProgressFill({ progress }) {
 
 export default function DashboardScreen({ navigation, route }) {
   const [pressedId, setPressedId] = useState(null);
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const { profile, isGuest, session, loading: profileLoading } = useProfile();
   const { hasPracticed } = usePractice();
   const { applications } = useApplications();
   const { resumeData } = useResume();
   const userId = session?.user?.id;
+  const avatarUrl = profile?.avatar_url;
   const dashboardReady = Boolean(userId && !profileLoading && profile?.id === userId);
   const walkthrough = useWalkthrough(userId, dashboardReady);
   const sessionCacheKey = getSessionTipCacheKey(session);
@@ -148,6 +150,10 @@ export default function DashboardScreen({ navigation, route }) {
       ? cachedSessionTip.tip
       : DAILY_TIPS[0],
   );
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [avatarUrl]);
 
   useEffect(() => {
     const {
@@ -207,7 +213,7 @@ export default function DashboardScreen({ navigation, route }) {
       navigation.navigate('LearningHub');
     } else if (action.label === 'Job Finder') {
       navigation.navigate('JobFinder');
-    } else if (action.label === 'AI Coach') {
+    } else if (action.label === 'Interview Coach') {
       navigation.navigate('AIInterviewCoach');
     } else if (action.label === 'Resume Editor') {
       navigation.navigate('ResumeBuilder');
@@ -253,12 +259,9 @@ export default function DashboardScreen({ navigation, route }) {
             </View>
             <Float phaseOffset={0}>
               <Image
-                source={
-                  profile?.avatar_url
-                    ? { uri: profile.avatar_url }
-                    : AVATAR_PLACEHOLDER
-                }
+                source={avatarUrl && !avatarLoadFailed ? { uri: avatarUrl } : AVATAR_PLACEHOLDER}
                 style={styles.avatar}
+                onError={() => setAvatarLoadFailed(true)}
               />
             </Float>
           </DashboardPressable>
@@ -293,7 +296,7 @@ export default function DashboardScreen({ navigation, route }) {
                     <Float phaseOffset={index * 500}>
                       <Text style={styles.quickActionIcon}>{action.icon}</Text>
                     </Float>
-                    {isGuest && ['Resume Editor', 'Job Finder', 'AI Coach'].includes(action.label) ? (
+                    {isGuest && ['Resume Editor', 'Job Finder', 'Interview Coach'].includes(action.label) ? (
                       <View style={styles.lockBadge} accessibilityRole="image" accessibilityLabel="Locked feature">
                         <Text style={styles.lockBadgeText}>🔒</Text>
                       </View>
