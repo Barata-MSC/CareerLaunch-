@@ -28,13 +28,13 @@ function ScoreCount({ finalValue }) {
       useNativeDriver,
     });
 
-    const listener = animated.addListener(({ value }) => {
+    const listenerId = animated.addListener(({ value }) => {
       setDisplayValue(Math.round(value));
     });
 
     animation.start();
     return () => {
-      listener.remove();
+      animated.removeListener(listenerId);
       animation.stop();
     };
   }, [animated, finalValue, reduceMotion]);

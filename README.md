@@ -41,7 +41,7 @@ The current `src/features/` tree contains the following feature areas. Their exa
 | `career-assessment/` | Local-first RIASEC interest assessment, career matching, result worksheet, and optional account persistence. |
 | `onboarding/` | Short post-login walkthrough with a per-user local preference and Profile replay. |
 | `dashboard/` | Main dashboard experience. |
-| `interview-coach/` | Common interview questions, typed or speech-to-text answers, AI evaluation with local fallback, and a session summary. Voice input requires a supported native development build; Expo Go and web use typed answers. |
+| `interview-coach/` | Common interview questions, typed or speech-to-text answers, AI evaluation through a Supabase Edge Function with local fallback, and a session summary. Browser speech recognition works only where the Web Speech API is supported; Android voice requires the EAS development build. Expo Go remains typed-only. |
 | `job-finder/` | Job discovery and listing experience. |
 | `job-tracker/` | Job application tracking. |
 | `learning-hub/` | Career picker, shared career/track/course registry, course navigation, lessons, quizzes, and learning progress. Career content lives in sibling folders such as `software-engineering/`, `cybersecurity/`, `teacher/`, `nursing/`, and `lawyer/`. |
@@ -357,13 +357,26 @@ Tunnel mode can be slower and may require additional setup depending on your net
 
 ### Testing voice input
 
-Interview Coach voice input uses `expo-speech-recognition` and requires a native development build; Expo Go and the web preview do not provide this native module. After installing dependencies or changing the plugin configuration, build and install the app with:
+On web, speech recognition uses the browser's Web Speech API. Chrome is supported where the API is available; Edge support depends on its speech component and browser version. Firefox does not implement the API, so the app shows an unsupported-browser message and typing remains available. The web app must be served from a secure context such as HTTPS or localhost. Browser speech services may process audio according to their own service and settings; the app does not store audio.
+
+For Android voice, install a custom development build; Expo Go does not contain the speech-recognition native module. The project includes an EAS `development` profile that creates an internally distributed APK. From the project folder:
 
 ```powershell
-npx expo run:android
+npm install
+npm install -g eas-cli
+eas login
+eas build --profile development --platform android
 ```
 
-Use `npx expo run:ios` on a Mac with Xcode for iOS. The first microphone tap requests permission. Speech is converted to editable text by the device's speech service; audio handling depends on the device and its settings. Only the transcript is submitted to the app's AI feedback service. Speech recognition availability and results vary by device and settings.
+For first-time EAS setup, run `eas build:configure` if EAS prompts you to link/configure the project. Install the APK from the build page on your Android phone, then start the app server with:
+
+```powershell
+npx expo start --dev-client
+```
+
+If the Android speech-recognition plugin configuration changes, create and install a fresh development APK; restarting Metro does not update native permissions or speech-service visibility. Android voice also depends on a compatible speech-recognition service being installed and enabled on the device.
+
+Tap **Speak** to trigger the Android microphone permission request. Denied permissions can be changed in Android app settings. Speech recognition converts speech to editable text; when submitted, the transcript follows the same AI evaluation flow as typed answers, with local feedback as a fallback if the AI service is unavailable. No audio is stored by the app, and speech recognition availability/results vary by browser, device, speech service, and settings.
 
 ## Code Quality and Troubleshooting
 
