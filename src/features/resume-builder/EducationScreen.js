@@ -1,6 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
-import React, { useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
+import { ResumeEmptyState, ResumeEntry, useResumeEntryRemoval } from './ResumeMotion';
 
 const PURPLE = '#5B21F5';
 
@@ -19,6 +22,9 @@ export default function EducationScreen({ navigation }) {
   // Pull data maps and array updating tools from global context
   const { resumeData, updateResumeData } = useResume();
   const educationList = resumeData.education || [];
+  const educationListRef = useRef(educationList);
+  educationListRef.current = educationList;
+  const [newlyAddedId, setNewlyAddedId] = useState(null);
 
   // Local component state to track text field values
   const [school, setSchool] = useState('');
@@ -41,8 +47,10 @@ export default function EducationScreen({ navigation }) {
       year: trimmedYear,
     };
 
-    const updatedList = [...educationList, newEducationItem];
+    const updatedList = [...educationListRef.current, newEducationItem];
+    educationListRef.current = updatedList;
     updateResumeData('education', updatedList);
+    setNewlyAddedId(newEducationItem.id);
 
     // Clear local inputs to refresh input row forms
     setSchool('');
@@ -52,9 +60,12 @@ export default function EducationScreen({ navigation }) {
 
   // Filters out specific data nodes when user triggers delete action
   const handleRemoveEducation = (itemId) => {
-    const updatedList = educationList.filter((item) => item.id !== itemId);
+    const updatedList = educationListRef.current.filter((item) => item.id !== itemId);
+    educationListRef.current = updatedList;
     updateResumeData('education', updatedList);
   };
+  const { removingKeys, requestRemoval, completeRemoval } =
+    useResumeEntryRemoval(handleRemoveEducation);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -70,11 +81,14 @@ export default function EducationScreen({ navigation }) {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.sectionSubtitle}>
-            Add details about your high school, college, or university degree milestones.
-          </Text>
+          <FadeSlideIn>
+            <Text style={styles.sectionSubtitle}>
+              Add details about your high school, college, or university degree milestones.
+            </Text>
+          </FadeSlideIn>
 
           {/* Form Entry Field Modules Deck */}
+          <FadeSlideIn>
           <View style={styles.formCard}>
             <Text style={styles.formTitle}>Add New Academic Record</Text>
             
@@ -111,51 +125,72 @@ export default function EducationScreen({ navigation }) {
               />
             </View>
 
-            <AppPressable 
-              style={styles.addButton} 
-              activeOpacity={0.8} 
-              onPress={handleAddEducation}
-            >
-              <Text style={styles.addButtonText}>+ Add Academic History</Text>
-            </AppPressable>
+            <PressScale>
+              <AppPressable
+                style={styles.addButton}
+                activeOpacity={0.8}
+                onPress={handleAddEducation}
+              >
+                <Text style={styles.addButtonText}>+ Add Academic History</Text>
+              </AppPressable>
+            </PressScale>
           </View>
+          </FadeSlideIn>
 
           {/* Render List Array Output Cards Section */}
           <Text style={styles.listLabel}>Your History ({educationList.length})</Text>
 
-          {educationList.length === 0 ? (
+          <ResumeEmptyState visible={educationList.length === 0}>
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No education history entries compiled yet.</Text>
             </View>
-          ) : (
+          </ResumeEmptyState>
+          {educationList.length > 0 && (
             <View style={styles.historyContainer}>
-              {educationList.map((item) => (
-                <View key={item.id} style={styles.historyCard}>
+              {educationList.map((item, index) => {
+                const isRemoving = removingKeys.includes(item.id);
+                return (
+                <ResumeEntry
+                  key={item.id}
+                  entryKey={item.id}
+                  isNew={newlyAddedId === item.id}
+                  removing={isRemoving}
+                  onRemoveComplete={completeRemoval}
+                  delay={Math.min(index * 25, 400)}
+                >
+                <View style={styles.historyCard}>
                   <View style={styles.historyCardLeft}>
                     <Text style={styles.cardSchool}>{item.school}</Text>
                     <Text style={styles.cardDegree}>{item.degree}</Text>
                     <Text style={styles.cardYear}>{item.year}</Text>
                   </View>
-                  <AppPressable 
-                    onPress={() => handleRemoveEducation(item.id)}
-                    style={styles.deleteButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Text style={styles.deleteButtonText}>✕</Text>
-                  </AppPressable>
+                  <PressScale>
+                    <AppPressable
+                      onPress={() => requestRemoval(item.id)}
+                      disabled={isRemoving}
+                      style={styles.deleteButton}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text style={styles.deleteButtonText}>✕</Text>
+                    </AppPressable>
+                  </PressScale>
                 </View>
-              ))}
+                </ResumeEntry>
+                );
+              })}
             </View>
           )}
 
           {/* Close Section Global Button */}
-          <AppPressable
-            style={styles.saveButton}
-            activeOpacity={0.85}
-            onPress={() => navigation?.goBack()}
-          >
-            <Text style={styles.saveButtonText}>Done</Text>
-          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.saveButton}
+              activeOpacity={0.85}
+              onPress={() => navigation?.goBack()}
+            >
+              <Text style={styles.saveButtonText}>Done</Text>
+            </AppPressable>
+          </PressScale>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

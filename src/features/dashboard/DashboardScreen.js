@@ -135,11 +135,13 @@ function AnimatedProgressFill({ progress }) {
 
 export default function DashboardScreen({ navigation, route }) {
   const [pressedId, setPressedId] = useState(null);
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const { profile, isGuest, session, loading: profileLoading } = useProfile();
   const { hasPracticed } = usePractice();
   const { applications } = useApplications();
   const { resumeData } = useResume();
   const userId = session?.user?.id;
+  const avatarUrl = profile?.avatar_url;
   const dashboardReady = Boolean(userId && !profileLoading && profile?.id === userId);
   const walkthrough = useWalkthrough(userId, dashboardReady);
   const sessionCacheKey = getSessionTipCacheKey(session);
@@ -148,6 +150,10 @@ export default function DashboardScreen({ navigation, route }) {
       ? cachedSessionTip.tip
       : DAILY_TIPS[0],
   );
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [avatarUrl]);
 
   useEffect(() => {
     const {
@@ -253,12 +259,9 @@ export default function DashboardScreen({ navigation, route }) {
             </View>
             <Float phaseOffset={0}>
               <Image
-                source={
-                  profile?.avatar_url
-                    ? { uri: profile.avatar_url }
-                    : AVATAR_PLACEHOLDER
-                }
+                source={avatarUrl && !avatarLoadFailed ? { uri: avatarUrl } : AVATAR_PLACEHOLDER}
                 style={styles.avatar}
+                onError={() => setAvatarLoadFailed(true)}
               />
             </Float>
           </DashboardPressable>

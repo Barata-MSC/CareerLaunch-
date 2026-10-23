@@ -1,6 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
-import React, { useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
+import { ResumeEmptyState, ResumeEntry, useResumeEntryRemoval } from './ResumeMotion';
 
 const PURPLE = '#5B21F5';
 
@@ -19,6 +22,9 @@ export default function ExperienceScreen({ navigation }) {
   // Extract state records and global updaters from our provider context
   const { resumeData, updateResumeData } = useResume();
   const experienceList = resumeData.experience || [];
+  const experienceListRef = useRef(experienceList);
+  experienceListRef.current = experienceList;
+  const [newlyAddedId, setNewlyAddedId] = useState(null);
 
   // Local component form field trackers
   const [company, setCompany] = useState('');
@@ -59,8 +65,10 @@ export default function ExperienceScreen({ navigation }) {
       description: description.trim(),
     };
 
-    const updatedList = [...experienceList, newExperienceItem];
+    const updatedList = [...experienceListRef.current, newExperienceItem];
+    experienceListRef.current = updatedList;
     updateResumeData('experience', updatedList);
+    setNewlyAddedId(newExperienceItem.id);
 
     // Refresh and clear input modules local cache state
     setCompany('');
@@ -71,9 +79,12 @@ export default function ExperienceScreen({ navigation }) {
 
   // Safely slices selected history nodes away from the main array index map
   const handleRemoveExperience = (itemId) => {
-    const updatedList = experienceList.filter((item) => item.id !== itemId);
+    const updatedList = experienceListRef.current.filter((item) => item.id !== itemId);
+    experienceListRef.current = updatedList;
     updateResumeData('experience', updatedList);
   };
+  const { removingKeys, requestRemoval, completeRemoval } =
+    useResumeEntryRemoval(handleRemoveExperience);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -89,12 +100,15 @@ export default function ExperienceScreen({ navigation }) {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.sectionSubtitle}>
-            This section is optional. Add jobs, internships, or freelance roles to show your professional
-            background. Fields marked * are required for each entry.
-          </Text>
+          <FadeSlideIn>
+            <Text style={styles.sectionSubtitle}>
+              This section is optional. Add jobs, internships, or freelance roles to show your professional
+              background. Fields marked * are required for each entry.
+            </Text>
+          </FadeSlideIn>
 
           {/* Form Entry Field Modules Deck */}
+          <FadeSlideIn>
           <View style={styles.formCard}>
             <Text style={styles.formTitle}>Add New Work History</Text>
             
@@ -171,26 +185,40 @@ export default function ExperienceScreen({ navigation }) {
               </Text>
             ) : null}
 
-            <AppPressable 
-              style={styles.addButton} 
-              activeOpacity={0.8} 
-              onPress={handleAddExperience}
-            >
-              <Text style={styles.addButtonText}>+ Add Work Experience</Text>
-            </AppPressable>
+            <PressScale>
+              <AppPressable
+                style={styles.addButton}
+                activeOpacity={0.8}
+                onPress={handleAddExperience}
+              >
+                <Text style={styles.addButtonText}>+ Add Work Experience</Text>
+              </AppPressable>
+            </PressScale>
           </View>
+          </FadeSlideIn>
 
           {/* Render List Array Output Cards Section */}
           <Text style={styles.listLabel}>Your History ({experienceList.length})</Text>
 
-          {experienceList.length === 0 ? (
+          <ResumeEmptyState visible={experienceList.length === 0}>
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No professional work experience items added yet.</Text>
             </View>
-          ) : (
+          </ResumeEmptyState>
+          {experienceList.length > 0 && (
             <View style={styles.historyContainer}>
-              {experienceList.map((item) => (
-                <View key={item.id} style={styles.historyCard}>
+              {experienceList.map((item, index) => {
+                const isRemoving = removingKeys.includes(item.id);
+                return (
+                <ResumeEntry
+                  key={item.id}
+                  entryKey={item.id}
+                  isNew={newlyAddedId === item.id}
+                  removing={isRemoving}
+                  onRemoveComplete={completeRemoval}
+                  delay={Math.min(index * 25, 400)}
+                >
+                <View style={styles.historyCard}>
                   <View style={styles.historyCardLeft}>
                     <Text style={styles.cardCompany}>{item.company}</Text>
                     <Text style={styles.cardRole}>{item.role}</Text>
@@ -199,26 +227,33 @@ export default function ExperienceScreen({ navigation }) {
                       <Text style={styles.cardDesc}>{item.description}</Text>
                     ) : null}
                   </View>
-                  <AppPressable 
-                    onPress={() => handleRemoveExperience(item.id)}
-                    style={styles.deleteButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Text style={styles.deleteButtonText}>✕</Text>
-                  </AppPressable>
+                  <PressScale>
+                    <AppPressable
+                      onPress={() => requestRemoval(item.id)}
+                      disabled={isRemoving}
+                      style={styles.deleteButton}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text style={styles.deleteButtonText}>✕</Text>
+                    </AppPressable>
+                  </PressScale>
                 </View>
-              ))}
+                </ResumeEntry>
+                );
+              })}
             </View>
           )}
 
           {/* Safe Dismiss Save Panel View Button */}
-          <AppPressable
-            style={styles.saveButton}
-            activeOpacity={0.85}
-            onPress={() => navigation?.goBack()}
-          >
-            <Text style={styles.saveButtonText}>Done</Text>
-          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.saveButton}
+              activeOpacity={0.85}
+              onPress={() => navigation?.goBack()}
+            >
+              <Text style={styles.saveButtonText}>Done</Text>
+            </AppPressable>
+          </PressScale>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

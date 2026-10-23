@@ -14,6 +14,55 @@ const registryPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/registry.js',
 );
+const teacherLinksPath = path.join(projectRoot, 'src/features/learning-hub/teacher/links.js');
+const teacherCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/teacher/courseLessons.js',
+);
+const nursingLinksPath = path.join(projectRoot, 'src/features/learning-hub/nursing/links.js');
+const nursingCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/nursing/courseLessons.js',
+);
+const doctorLinksPath = path.join(projectRoot, 'src/features/learning-hub/doctor/links.js');
+const doctorCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/doctor/courseLessons.js',
+);
+const lawyerLinksPath = path.join(projectRoot, 'src/features/learning-hub/lawyer/links.js');
+const lawyerCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/lawyer/courseLessons.js',
+);
+const marineLinksPath = path.join(projectRoot, 'src/features/learning-hub/marine/links.js');
+const marineCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/marine/courseLessons.js',
+);
+const accountancyLinksPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/accountancy/links.js',
+);
+const accountancyCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/accountancy/courseLessons.js',
+);
+const civilEngineeringLinksPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/civil-engineering/links.js',
+);
+const civilEngineeringCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/civil-engineering/courseLessons.js',
+);
+const hospitalityTourismLinksPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/hospitality-tourism/links.js',
+);
+const hospitalityTourismCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/hospitality-tourism/courseLessons.js',
+);
 const careersPath = path.join(
   projectRoot,
   'src/features/learning-hub/careers/careers.js',
@@ -23,6 +72,86 @@ const issues = [];
 const warnings = [];
 const moduleCache = new Map();
 globalThis.__DEV__ = false;
+const REFERENCE_ALLOWED_DOMAINS = {
+  cybersecurity: [
+    'nist.gov',
+    'cisa.gov',
+    'owasp.org',
+    'ncsc.gov.uk',
+    'cloudflare.com',
+    'privacy.gov.ph',
+  ],
+  teacher: ['deped.gov.ph', 'ched.gov.ph', 'prc.gov.ph', 'unesco.org', 'edutopia.org'],
+  nursing: [
+    'openstax.org',
+    'who.int',
+    'cdc.gov',
+    'nursingworld.org',
+    'ana.org',
+    'prc.gov.ph',
+    'ched.gov.ph',
+  ],
+  doctor: [
+    'who.int',
+    'doh.gov.ph',
+    'medlineplus.gov',
+    'ncbi.nlm.nih.gov',
+    'khanacademy.org',
+    'openstax.org',
+    'cdc.gov',
+    'prc.gov.ph',
+    'ched.gov.ph',
+  ],
+  lawyer: [
+    'lawphil.net',
+    'ibp.ph',
+    'law.upd.edu.ph',
+    'privacy.gov.ph',
+    'officialgazette.gov.ph',
+    'congress.gov.ph',
+    'senate.gov.ph',
+  ],
+  marine: [
+    'marina.gov.ph',
+    'imo.org',
+    'ched.gov.ph',
+    'prc.gov.ph',
+    'noaa.gov',
+    'pagasa.dost.gov.ph',
+  ],
+  accountancy: [
+    'openstax.org',
+    'bir.gov.ph',
+    'prc.gov.ph',
+    'ched.gov.ph',
+    'ifrs.org',
+    'aicpa-cima.com',
+    'coso.org',
+    'sba.gov',
+  ],
+  'civil-engineering': [
+    'asce.org',
+    'nspe.org',
+    'nist.gov',
+    'khanacademy.org',
+    'fhwa.dot.gov',
+    'fema.gov',
+    'epa.gov',
+    'usgs.gov',
+    'noaa.gov',
+    'osha.gov',
+    'dpwh.gov.ph',
+    'ched.gov.ph',
+    'prc.gov.ph',
+    'pice.org.ph',
+  ],
+  'hospitality-tourism': [
+    'tourism.gov.ph',
+    'ched.gov.ph',
+    'tesda.gov.ph',
+    'untourism.int',
+  ],
+};
 
 const ReactMock = {
   createElement: () => null,
@@ -159,6 +288,22 @@ function validateRegistry(registry, careers) {
   const trackIds = new Set();
   const careerIds = new Set();
   const staticRoutes = collectStaticStackRouteNames(fs.readFileSync(navigatorPath, 'utf8'));
+  const teacherLinks = loadSourceModule(teacherLinksPath).LESSON_LINKS;
+  const { getTeacherLessons } = loadSourceModule(teacherCourseLessonsPath);
+  const nursingLinks = loadSourceModule(nursingLinksPath).LESSON_LINKS;
+  const { getNursingLessons } = loadSourceModule(nursingCourseLessonsPath);
+  const doctorLinks = loadSourceModule(doctorLinksPath).LESSON_LINKS;
+  const { getDoctorLessons } = loadSourceModule(doctorCourseLessonsPath);
+  const lawyerLinks = loadSourceModule(lawyerLinksPath).LESSON_LINKS;
+  const { getLawyerLessons } = loadSourceModule(lawyerCourseLessonsPath);
+  const marineLinks = loadSourceModule(marineLinksPath).LESSON_LINKS;
+  const { getMarineLessons } = loadSourceModule(marineCourseLessonsPath);
+  const accountancyLinks = loadSourceModule(accountancyLinksPath).LESSON_LINKS;
+  const { getAccountancyLessons } = loadSourceModule(accountancyCourseLessonsPath);
+  const civilEngineeringLinks = loadSourceModule(civilEngineeringLinksPath).LESSON_LINKS;
+  const { getCivilEngineeringLessons } = loadSourceModule(civilEngineeringCourseLessonsPath);
+  const hospitalityTourismLinks = loadSourceModule(hospitalityTourismLinksPath).LESSON_LINKS;
+  const { getHospitalityTourismLessons } = loadSourceModule(hospitalityTourismCourseLessonsPath);
 
   careers.forEach((career) => {
     requireValue(!careerIds.has(career.id), `Duplicate career id: ${career.id}`);
@@ -219,13 +364,250 @@ function validateRegistry(registry, careers) {
     'matchPairs',
   ]);
 
+  const teacherLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('teach-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(teacherLinks).forEach((lessonId) => {
+    requireValue(
+      teacherLessonIds.has(lessonId),
+      `Teacher lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  teacherLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(teacherLinks, lessonId),
+      `Teacher lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(teacherLinks).length === teacherLessonIds.size,
+    `Teacher lesson link count does not match real lesson ids: ${Object.keys(teacherLinks).length} entries for ${teacherLessonIds.size} lessons`,
+  );
+  console.log(
+    `Teacher runtime link coverage: ${teacherLessonIds.size} lesson ids, ${Object.keys(teacherLinks).length} link entries.`,
+  );
+
+  const nursingLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('nurs-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(nursingLinks).forEach((lessonId) => {
+    requireValue(
+      nursingLessonIds.has(lessonId),
+      `Nursing lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  nursingLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(nursingLinks, lessonId),
+      `Nursing lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(nursingLinks).length === nursingLessonIds.size,
+    `Nursing lesson link count does not match real lesson ids: ${Object.keys(nursingLinks).length} entries for ${nursingLessonIds.size} lessons`,
+  );
+  console.log(
+    `Nursing runtime link coverage: ${nursingLessonIds.size} lesson ids, ${Object.keys(nursingLinks).length} link entries.`,
+  );
+
+  const doctorLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('med-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(doctorLinks).forEach((lessonId) => {
+    requireValue(
+      doctorLessonIds.has(lessonId),
+      `Doctor lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  doctorLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(doctorLinks, lessonId),
+      `Doctor lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(doctorLinks).length === doctorLessonIds.size,
+    `Doctor lesson link count does not match real lesson ids: ${Object.keys(doctorLinks).length} entries for ${doctorLessonIds.size} lessons`,
+  );
+  console.log(
+    `Doctor runtime link coverage: ${doctorLessonIds.size} lesson ids, ${Object.keys(doctorLinks).length} link entries.`,
+  );
+
+  const lawyerLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('law-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(lawyerLinks).forEach((lessonId) => {
+    requireValue(
+      lawyerLessonIds.has(lessonId),
+      `Lawyer lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  lawyerLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(lawyerLinks, lessonId),
+      `Lawyer lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(lawyerLinks).length === lawyerLessonIds.size,
+    `Lawyer lesson link count does not match real lesson ids: ${Object.keys(lawyerLinks).length} entries for ${lawyerLessonIds.size} lessons`,
+  );
+  console.log(
+    `Lawyer runtime link coverage: ${lawyerLessonIds.size} lesson ids, ${Object.keys(lawyerLinks).length} link entries.`,
+  );
+
+  const marineLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('mar-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(marineLinks).forEach((lessonId) => {
+    requireValue(
+      marineLessonIds.has(lessonId),
+      `Marine lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  marineLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(marineLinks, lessonId),
+      `Marine lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(marineLinks).length === marineLessonIds.size,
+    `Marine lesson link count does not match real lesson ids: ${Object.keys(marineLinks).length} entries for ${marineLessonIds.size} lessons`,
+  );
+  console.log(
+    `Marine runtime link coverage: ${marineLessonIds.size} lesson ids, ${Object.keys(marineLinks).length} link entries.`,
+  );
+
+  const accountancyLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('acct-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(accountancyLinks).forEach((lessonId) => {
+    requireValue(
+      accountancyLessonIds.has(lessonId),
+      `Accountancy lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  accountancyLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(accountancyLinks, lessonId),
+      `Accountancy lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(accountancyLinks).length === accountancyLessonIds.size,
+    `Accountancy lesson link count does not match real lesson ids: ${Object.keys(accountancyLinks).length} entries for ${accountancyLessonIds.size} lessons`,
+  );
+  console.log(
+    `Accountancy runtime link coverage: ${accountancyLessonIds.size} lesson ids, ${Object.keys(accountancyLinks).length} link entries.`,
+  );
+
+  const civilEngineeringLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('civ-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(civilEngineeringLinks).forEach((lessonId) => {
+    requireValue(
+      civilEngineeringLessonIds.has(lessonId),
+      `Civil Engineering lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  civilEngineeringLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(civilEngineeringLinks, lessonId),
+      `Civil Engineering lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(civilEngineeringLinks).length === civilEngineeringLessonIds.size,
+    `Civil Engineering lesson link count does not match real lesson ids: ${Object.keys(civilEngineeringLinks).length} entries for ${civilEngineeringLessonIds.size} lessons`,
+  );
+  console.log(
+    `Civil Engineering runtime link coverage: ${civilEngineeringLessonIds.size} lesson ids, ${Object.keys(civilEngineeringLinks).length} link entries.`,
+  );
+
+  const hospitalityTourismLessonIds = new Set(
+    Array.from(courseById.entries())
+      .filter(([courseId]) => courseId.startsWith('ht-'))
+      .flatMap(([, { course }]) => (course.lessons || []).map((lesson) => lesson.id)),
+  );
+  Object.keys(hospitalityTourismLinks).forEach((lessonId) => {
+    requireValue(
+      hospitalityTourismLessonIds.has(lessonId),
+      `Hospitality & Tourism lesson links contain an unknown lesson id: ${lessonId}`,
+    );
+  });
+  hospitalityTourismLessonIds.forEach((lessonId) => {
+    requireValue(
+      Object.hasOwn(hospitalityTourismLinks, lessonId),
+      `Hospitality & Tourism lesson has no link entry: ${lessonId}`,
+    );
+  });
+  requireValue(
+    Object.keys(hospitalityTourismLinks).length === hospitalityTourismLessonIds.size,
+    `Hospitality & Tourism lesson link count does not match real lesson ids: ${Object.keys(hospitalityTourismLinks).length} entries for ${hospitalityTourismLessonIds.size} lessons`,
+  );
+  console.log(
+    `Hospitality & Tourism runtime link coverage: ${hospitalityTourismLessonIds.size} lesson ids, ${Object.keys(hospitalityTourismLinks).length} link entries.`,
+  );
+
   courseById.forEach(({ course }, courseId) => {
+    const referenceCareerId = courseId.startsWith('cyber-')
+      ? 'cybersecurity'
+      : courseId.startsWith('teach-')
+        ? 'teacher'
+        : courseId.startsWith('nurs-')
+          ? 'nursing'
+          : courseId.startsWith('med-')
+            ? 'doctor'
+            : courseId.startsWith('law-')
+              ? 'lawyer'
+              : courseId.startsWith('mar-')
+                ? 'marine'
+                : courseId.startsWith('acct-')
+                  ? 'accountancy'
+                : courseId.startsWith('civ-')
+                  ? 'civil-engineering'
+                  : courseId.startsWith('ht-')
+                    ? 'hospitality-tourism'
+                : null;
+    const lessons = referenceCareerId === 'teacher'
+      ? getTeacherLessons(course.lessons || [])
+      : referenceCareerId === 'nursing'
+        ? getNursingLessons(course.lessons || [])
+        : referenceCareerId === 'doctor'
+          ? getDoctorLessons(course.lessons || [])
+          : referenceCareerId === 'lawyer'
+            ? getLawyerLessons(course.lessons || [])
+            : referenceCareerId === 'marine'
+              ? getMarineLessons(course.lessons || [])
+              : referenceCareerId === 'accountancy'
+                ? getAccountancyLessons(course.lessons || [])
+                : referenceCareerId === 'civil-engineering'
+                  ? getCivilEngineeringLessons(course.lessons || [])
+                  : referenceCareerId === 'hospitality-tourism'
+                    ? getHospitalityTourismLessons(course.lessons || [])
+              : course.lessons || [];
     const lessonIds = new Set();
     const questionsByLesson = new Map();
     const questionTexts = new Set();
     const correctCounts = [0, 0, 0, 0];
+    const referenceUrlCounts = new Map();
 
-    (course.lessons || []).forEach((lesson) => {
+    lessons.forEach((lesson) => {
       requireValue(Boolean(lesson.id), `Course ${courseId} has a lesson with no id`);
       requireValue(!lessonIds.has(lesson.id), `Course ${courseId} has duplicate lesson id: ${lesson.id}`);
       lessonIds.add(lesson.id);
@@ -242,7 +624,86 @@ function validateRegistry(registry, careers) {
           `Course ${courseId}, lesson ${lesson.id} has unsupported activity type: ${activity.type}`,
         );
       });
+
+      if (referenceCareerId) {
+        const references = Array.isArray(lesson.references) ? lesson.references : [];
+        requireValue(
+          references.length > 0,
+          `Course ${courseId}, lesson ${lesson.id} has no references`,
+        );
+        if (
+          referenceCareerId === 'teacher' ||
+          referenceCareerId === 'nursing' ||
+          referenceCareerId === 'doctor' ||
+          referenceCareerId === 'lawyer' ||
+          referenceCareerId === 'marine' ||
+          referenceCareerId === 'accountancy' ||
+          referenceCareerId === 'civil-engineering' ||
+          referenceCareerId === 'hospitality-tourism'
+        ) {
+          requireValue(
+            lesson.referencesHeading === 'Further reading',
+            `Course ${courseId}, lesson ${lesson.id} has no Further reading heading`,
+          );
+        }
+        const lessonUrls = new Set();
+        references.forEach((reference) => {
+          requireValue(
+            typeof reference.text === 'string' && reference.text.trim().length > 0,
+            `Course ${courseId}, lesson ${lesson.id} has a reference with no text`,
+          );
+          requireValue(
+            typeof reference.url === 'string' && reference.url.startsWith('https://'),
+            `Course ${courseId}, lesson ${lesson.id} has a reference without an https URL`,
+          );
+          if (typeof reference.url !== 'string') return;
+
+          let hostname = '';
+          try {
+            hostname = new URL(reference.url).hostname.toLowerCase();
+          } catch {
+            issues.push(`Course ${courseId}, lesson ${lesson.id} has an invalid reference URL: ${reference.url}`);
+          }
+          requireValue(
+            REFERENCE_ALLOWED_DOMAINS[referenceCareerId].some(
+              (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+            ),
+            `Course ${courseId}, lesson ${lesson.id} uses a domain outside the ${referenceCareerId} allowlist: ${reference.url}`,
+          );
+          requireValue(
+            !lessonUrls.has(reference.url),
+            `Course ${courseId}, lesson ${lesson.id} has a duplicate reference URL: ${reference.url}`,
+          );
+          lessonUrls.add(reference.url);
+          referenceUrlCounts.set(reference.url, (referenceUrlCounts.get(reference.url) || 0) + 1);
+        });
+
+        if (lesson.video) {
+          requireValue(
+            typeof lesson.video.id === 'string' && /^[\w-]{11}$/.test(lesson.video.id),
+            `Course ${courseId}, lesson ${lesson.id} has an invalid YouTube video id`,
+          );
+          requireValue(
+            Number.isInteger(lesson.video.start) && lesson.video.start >= 0,
+            `Course ${courseId}, lesson ${lesson.id} has an invalid video start time`,
+          );
+          ['chapter', 'title', 'channel'].forEach((field) => {
+            requireValue(
+              typeof lesson.video[field] === 'string' && lesson.video[field].trim().length > 0,
+              `Course ${courseId}, lesson ${lesson.id} has no video ${field}`,
+            );
+          });
+        }
+      }
     });
+
+    if (referenceCareerId) {
+      referenceUrlCounts.forEach((count, url) => {
+        if (count > 3) {
+          warnings.push(`Course ${courseId}: reference URL appears on ${count} lessons: ${url}`);
+        }
+      });
+    }
 
     (course.questions || []).forEach((question) => {
       requireValue(lessonIds.has(question.lessonId), `Course ${courseId} question references unknown lesson: ${question.lessonId}`);

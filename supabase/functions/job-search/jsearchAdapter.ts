@@ -11,6 +11,13 @@ export type NormalizedJob = {
   publisher: string | null;
 };
 
+export type JSearchFilters = {
+	employmentTypes: string[];
+	remoteOnly: boolean;
+	datePosted: string;
+	jobRequirements: string[];
+};
+
 type ProviderJob = {
   job_uid?: unknown;
   job_id?: unknown;
@@ -100,12 +107,25 @@ export function normalizeJSearchResponse(payload: unknown): NormalizedJob[] {
   });
 }
 
-export async function fetchJSearchJobs(query: string, apiKey: string): Promise<NormalizedJob[]> {
+export async function fetchJSearchJobs(
+	query: string,
+	apiKey: string,
+	filters: JSearchFilters,
+): Promise<NormalizedJob[]> {
   const url = new URL('https://jsearch.p.rapidapi.com/search-v2');
   url.searchParams.set('query', query);
   url.searchParams.set('num_pages', '1');
   url.searchParams.set('country', 'ph');
-  url.searchParams.set('date_posted', 'all');
+  url.searchParams.set('date_posted', filters.datePosted);
+  if (filters.employmentTypes.length) {
+    url.searchParams.set('employment_types', filters.employmentTypes.join(','));
+  }
+  if (filters.remoteOnly) {
+    url.searchParams.set('remote_jobs_only', 'true');
+  }
+  if (filters.jobRequirements.length) {
+    url.searchParams.set('job_requirements', filters.jobRequirements.join(','));
+  }
 
   let response: Response;
   try {

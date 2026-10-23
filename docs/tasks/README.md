@@ -31,6 +31,7 @@ This file is only an index for the briefs. It does not replace the project's roo
 | `09-resume-persistence.md` | Save the Resume Builder to Supabase (new migration) | Implemented in the client with a migration; human application and RLS/device validation remain (run after 04). |
 | `10-career-assessment.md` | Free local-first Holland Code career-interest assessment | Implemented with 36 original items, deterministic local scoring/matching, device drafts/results, worksheet sharing, and an owner-only migration; migration application, RLS, account-upgrade, and device verification remain. |
 | `11-onboarding-walkthrough.md` | Short post-login tutorial modal | Implemented as a skippable, versioned, per-user local walkthrough with Profile replay; storage-error, guest, login, and device interaction checks need human verification. |
+| `12-lesson-references.md` | Further reading and optional supplied videos for career lessons | Cybersecurity, Teacher, Nursing, Doctor, Lawyer, Marine Deck, Accountancy, Civil Engineering, and Hospitality & Tourism references implemented. Link availability must be checked per career and sources spot-checked for topic fit. |
 
 Briefs 06, 09, and 10 are implemented in the repository, but their migrations still need a human to apply and verify in Supabase. Do not infer that persistence is live from the presence of client code or migration files.
 
@@ -50,6 +51,7 @@ Not written yet: Learning Hub content beyond the current seeded career catalog. 
 - `scripts/validate-learning-content.mjs`: shared integrity validator for all registered careers; run it with `npm run validate:content` after content or registry changes.
 - `scripts/validate-assessment.mjs`: no-device validation for assessment items, scoring, matching, career coverage, and route registration; run it with `npm run validate:assessment`.
 - `scripts/validate-walkthrough.mjs`: no-device validation for walkthrough copy, versioning, preference decisions, session guard behavior, and stored-value shape; run it with `npm run validate:walkthrough`.
+- `scripts/check-lesson-links.mjs`: online, dev-only URL and optional YouTube oEmbed title check; run `npm run check:links -- <career-id>`. It writes `progress/link-check-<career-id>.md`; HTTP 403, HTTP 429, and timeouts are unverified and require manual checking, not failures. It does not judge source suitability or lesson accuracy.
 - `scripts/job-api-coverage-test.mjs`: dev-only script that checks whether the job API returns usable Philippine listings. Keep your key in your shell, never in a file.
 - `progress/`: created by runs. Checkpoints for career builds and the coverage report. Commit them; they are the resume point if a run stops early.
 - `src/features/learning-hub/careers/registry.js`: shared career track/course registry. Add future career modules here through their `index.js`; do not duplicate Software Engineering or Cybersecurity track/course wiring.

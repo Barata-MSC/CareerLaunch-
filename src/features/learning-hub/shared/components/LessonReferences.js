@@ -4,12 +4,12 @@ import React from 'react';
 import { View, Text, Linking, StyleSheet } from 'react-native';
 import { PURPLE } from '../styles';
 
-export default function LessonReferences({ references }) {
+export default function LessonReferences({ references, title = 'References' }) {
   if (!references?.length) return null;
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>References</Text>
+      <Text style={styles.title}>{title}</Text>
       {references.map((ref) => (
         <AppPressable
           key={ref.url}

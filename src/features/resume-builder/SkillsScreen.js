@@ -1,6 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
-import React, { useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
+import { ResumeEmptyState, ResumeEntry, useResumeEntryRemoval } from './ResumeMotion';
 
 const PURPLE = '#5B21F5';
 
@@ -19,9 +22,12 @@ export default function SkillsScreen({ navigation }) {
   // Grab global data arrays and state engine hooks from context
   const { resumeData, updateResumeData } = useResume();
   const currentSkills = resumeData.skills || [];
+  const currentSkillsRef = useRef(currentSkills);
+  currentSkillsRef.current = currentSkills;
 
   // Local state to capture the currently typed skill string input
   const [skillInput, setSkillInput] = useState('');
+  const [newlyAddedSkill, setNewlyAddedSkill] = useState(null);
 
   // Appends a valid new skill entry into your global data tracker array
   const handleAddSkill = () => {
@@ -29,21 +35,26 @@ export default function SkillsScreen({ navigation }) {
     if (!trimmedSkill) return;
 
     // Prevent duplicate entries from cluttering the data collection
-    if (currentSkills.includes(trimmedSkill)) {
+    if (currentSkillsRef.current.includes(trimmedSkill)) {
       setSkillInput('');
       return;
     }
 
-    const updatedSkills = [...currentSkills, trimmedSkill];
+    const updatedSkills = [...currentSkillsRef.current, trimmedSkill];
+    currentSkillsRef.current = updatedSkills;
     updateResumeData('skills', updatedSkills);
+    setNewlyAddedSkill(trimmedSkill);
     setSkillInput('');
   };
 
   // Filters out specific string badges dynamically when the user clicks 'X'
   const handleRemoveSkill = (skillToRemove) => {
-    const updatedSkills = currentSkills.filter((skill) => skill !== skillToRemove);
+    const updatedSkills = currentSkillsRef.current.filter((skill) => skill !== skillToRemove);
+    currentSkillsRef.current = updatedSkills;
     updateResumeData('skills', updatedSkills);
   };
+  const { removingKeys, requestRemoval, completeRemoval } =
+    useResumeEntryRemoval(handleRemoveSkill);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -59,11 +70,14 @@ export default function SkillsScreen({ navigation }) {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.sectionSubtitle}>
-            Add key professional capabilities, frameworks, and core technologies that highlight your strengths.
-          </Text>
+          <FadeSlideIn>
+            <Text style={styles.sectionSubtitle}>
+              Add key professional capabilities, frameworks, and core technologies that highlight your strengths.
+            </Text>
+          </FadeSlideIn>
 
           {/* Interactive Entry Input Row */}
+          <FadeSlideIn>
           <View style={styles.inputRow}>
             <TextInput
               style={styles.input}
@@ -73,46 +87,68 @@ export default function SkillsScreen({ navigation }) {
               onChangeText={setSkillInput}
               onSubmitEditing={handleAddSkill} // Allows adding via keyboard "Return" button
             />
-            <AppPressable 
-              style={styles.addButton} 
-              activeOpacity={0.8} 
-              onPress={handleAddSkill}
-            >
-              <Text style={styles.addButtonText}>Add</Text>
-            </AppPressable>
+            <PressScale>
+              <AppPressable
+                style={styles.addButton}
+                activeOpacity={0.8}
+                onPress={handleAddSkill}
+              >
+                <Text style={styles.addButtonText}>Add</Text>
+              </AppPressable>
+            </PressScale>
           </View>
+          </FadeSlideIn>
 
           <Text style={styles.listLabel}>Your Skills ({currentSkills.length})</Text>
 
           {/* Dynamic Chip Flex Layout Matrix Container */}
-          {currentSkills.length === 0 ? (
+          <ResumeEmptyState visible={currentSkills.length === 0}>
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No skills added yet. Type a skill above to start building your profile matrix!</Text>
             </View>
-          ) : (
+          </ResumeEmptyState>
+          {currentSkills.length > 0 && (
             <View style={styles.chipsContainer}>
-              {currentSkills.map((skill, index) => (
-                <View key={`${skill}-${index}`} style={styles.chip}>
+              {currentSkills.map((skill, index) => {
+                const key = skill;
+                const isRemoving = removingKeys.includes(key);
+                return (
+                <ResumeEntry
+                  key={key}
+                  entryKey={key}
+                  isNew={newlyAddedSkill === skill && index === currentSkills.length - 1}
+                  removing={isRemoving}
+                  onRemoveComplete={completeRemoval}
+                  delay={Math.min(index * 25, 400)}
+                >
+                <View style={styles.chip}>
                   <Text style={styles.chipText}>{skill}</Text>
-                  <AppPressable 
-                    onPress={() => handleRemoveSkill(skill)}
-                    hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-                  >
-                    <Text style={styles.chipDelete}>×</Text>
-                  </AppPressable>
+                  <PressScale>
+                    <AppPressable
+                      onPress={() => requestRemoval(key)}
+                      disabled={isRemoving}
+                      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+                    >
+                      <Text style={styles.chipDelete}>×</Text>
+                    </AppPressable>
+                  </PressScale>
                 </View>
-              ))}
+                </ResumeEntry>
+                );
+              })}
             </View>
           )}
 
           {/* Complete Flow Block Confirmation Action Button */}
-          <AppPressable
-            style={styles.saveButton}
-            activeOpacity={0.85}
-            onPress={() => navigation?.goBack()}
-          >
-            <Text style={styles.saveButtonText}>Done</Text>
-          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.saveButton}
+              activeOpacity={0.85}
+              onPress={() => navigation?.goBack()}
+            >
+              <Text style={styles.saveButtonText}>Done</Text>
+            </AppPressable>
+          </PressScale>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

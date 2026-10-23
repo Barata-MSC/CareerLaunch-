@@ -1,6 +1,8 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
-import React, { useState } from 'react';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResume } from './ResumeContext';
+import { ResumeEmptyState, ResumeEntry, useResumeEntryRemoval } from './ResumeMotion';
 
 const PURPLE = '#5B21F5';
 
@@ -19,6 +22,9 @@ export default function CertificateScreen({ navigation }) {
   // Extract state records and global updaters from our provider context
   const { resumeData, updateResumeData } = useResume();
   const certificatesList = resumeData.certificates || [];
+  const certificatesListRef = useRef(certificatesList);
+  certificatesListRef.current = certificatesList;
+  const [newlyAddedId, setNewlyAddedId] = useState(null);
 
   // Local component form field trackers
   const [name, setName] = useState('');
@@ -41,8 +47,10 @@ export default function CertificateScreen({ navigation }) {
       year: trimmedYear,
     };
 
-    const updatedList = [...certificatesList, newCertificateItem];
+    const updatedList = [...certificatesListRef.current, newCertificateItem];
+    certificatesListRef.current = updatedList;
     updateResumeData('certificates', updatedList);
+    setNewlyAddedId(newCertificateItem.id);
 
     // Refresh and clear input modules local cache state
     setName('');
@@ -52,9 +60,12 @@ export default function CertificateScreen({ navigation }) {
 
   // Safely slices selected history nodes away from the main array index map
   const handleRemoveCertificate = (itemId) => {
-    const updatedList = certificatesList.filter((item) => item.id !== itemId);
+    const updatedList = certificatesListRef.current.filter((item) => item.id !== itemId);
+    certificatesListRef.current = updatedList;
     updateResumeData('certificates', updatedList);
   };
+  const { removingKeys, requestRemoval, completeRemoval } =
+    useResumeEntryRemoval(handleRemoveCertificate);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -70,11 +81,14 @@ export default function CertificateScreen({ navigation }) {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <Text style={styles.sectionSubtitle}>
-            Add professional credentials, licenses, or online course achievements to verify your expertise.
-          </Text>
+          <FadeSlideIn>
+            <Text style={styles.sectionSubtitle}>
+              Add professional credentials, licenses, or online course achievements to verify your expertise.
+            </Text>
+          </FadeSlideIn>
 
           {/* Form Entry Field Modules Deck */}
+          <FadeSlideIn>
           <View style={styles.formCard}>
             <Text style={styles.formTitle}>Add New Certificate</Text>
             
@@ -111,51 +125,72 @@ export default function CertificateScreen({ navigation }) {
               />
             </View>
 
-            <AppPressable 
-              style={styles.addButton} 
-              activeOpacity={0.8} 
-              onPress={handleAddCertificate}
-            >
-              <Text style={styles.addButtonText}>+ Add Certificate</Text>
-            </AppPressable>
+            <PressScale>
+              <AppPressable
+                style={styles.addButton}
+                activeOpacity={0.8}
+                onPress={handleAddCertificate}
+              >
+                <Text style={styles.addButtonText}>+ Add Certificate</Text>
+              </AppPressable>
+            </PressScale>
           </View>
+          </FadeSlideIn>
 
           {/* Render List Array Output Cards Section */}
           <Text style={styles.listLabel}>Your Certificates ({certificatesList.length})</Text>
 
-          {certificatesList.length === 0 ? (
+          <ResumeEmptyState visible={certificatesList.length === 0}>
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No certificates added yet.</Text>
             </View>
-          ) : (
+          </ResumeEmptyState>
+          {certificatesList.length > 0 && (
             <View style={styles.historyContainer}>
-              {certificatesList.map((item) => (
-                <View key={item.id} style={styles.historyCard}>
+              {certificatesList.map((item, index) => {
+                const isRemoving = removingKeys.includes(item.id);
+                return (
+                <ResumeEntry
+                  key={item.id}
+                  entryKey={item.id}
+                  isNew={newlyAddedId === item.id}
+                  removing={isRemoving}
+                  onRemoveComplete={completeRemoval}
+                  delay={Math.min(index * 25, 400)}
+                >
+                <View style={styles.historyCard}>
                   <View style={styles.historyCardLeft}>
                     <Text style={styles.cardName}>{item.name}</Text>
                     <Text style={styles.cardIssuer}>{item.issuer}</Text>
                     <Text style={styles.cardYear}>{item.year}</Text>
                   </View>
-                  <AppPressable 
-                    onPress={() => handleRemoveCertificate(item.id)}
-                    style={styles.deleteButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Text style={styles.deleteButtonText}>✕</Text>
-                  </AppPressable>
+                  <PressScale>
+                    <AppPressable
+                      onPress={() => requestRemoval(item.id)}
+                      disabled={isRemoving}
+                      style={styles.deleteButton}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text style={styles.deleteButtonText}>✕</Text>
+                    </AppPressable>
+                  </PressScale>
                 </View>
-              ))}
+                </ResumeEntry>
+                );
+              })}
             </View>
           )}
 
           {/* Safe Dismiss Save Panel View Button */}
-          <AppPressable
-            style={styles.saveButton}
-            activeOpacity={0.85}
-            onPress={() => navigation?.goBack()}
-          >
-            <Text style={styles.saveButtonText}>Done</Text>
-          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.saveButton}
+              activeOpacity={0.85}
+              onPress={() => navigation?.goBack()}
+            >
+              <Text style={styles.saveButtonText}>Done</Text>
+            </AppPressable>
+          </PressScale>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

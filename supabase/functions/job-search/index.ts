@@ -7,11 +7,50 @@ import {
 } from './jsearchAdapter.ts';
 
 const CATEGORY_QUERIES: Record<string, string> = {
-	All: 'jobs in Philippines',
-	IT: 'software developer in Philippines',
-	Design: 'graphic designer in Philippines',
-	Finance: 'accountant in Philippines',
-	Marketing: 'marketing specialist in Philippines',
+	All: '',
+	IT: 'software developer',
+	Design: 'graphic designer',
+	Finance: 'accountant',
+	Marketing: 'marketing specialist',
+	'Customer Service / BPO': 'customer service call center BPO',
+	Education: 'teacher education',
+	Healthcare: 'healthcare medical',
+	Engineering: 'engineer',
+	Accounting: 'accountant accounting',
+	'Hospitality & Tourism': 'hospitality tourism hotel travel',
+	'Admin / Office': 'administrative office assistant',
+	Sales: 'sales representative',
+	'Human Resources': 'human resources recruiter',
+	Legal: 'legal paralegal',
+};
+
+const ALLOWED_EMPLOYMENT_TYPES = new Set([
+	'FULLTIME',
+	'CONTRACTOR',
+	'PARTTIME',
+	'INTERN',
+]);
+const ALLOWED_JOB_REQUIREMENTS = new Set([
+	'no_experience',
+	'under_3_years_experience',
+	'more_than_3_years_experience',
+	'no_degree',
+]);
+const ALLOWED_DATE_POSTED = new Set(['all', 'today', '3days', 'week', 'month']);
+const LOCATION_QUERIES: Record<string, string> = {
+	philippines: 'Philippines',
+	metro_manila: 'Metro Manila, Philippines',
+	cebu: 'Cebu, Philippines',
+	davao: 'Davao, Philippines',
+	cavite: 'Cavite, Philippines',
+};
+
+type SearchFilters = {
+	employmentTypes: string[];
+	remoteOnly: boolean;
+	datePosted: string;
+	jobRequirements: string[];
+	location: string;
 };
 
 const DAILY_USER_LIMIT = 5;
@@ -50,6 +89,47 @@ function cacheTtlHours(): number {
 	);
 }
 
+function allowedValues(value: unknown, allowlist: Set<string>): string[] {
+	if (!Array.isArray(value)) return [];
+	return [...new Set(value.filter(
+		(item): item is string => typeof item === 'string' && allowlist.has(item),
+	))];
+}
+
+function readSearchFilters(body: Record<string, unknown>): SearchFilters {
+	const requestedDate = body.datePosted;
+	const requestedLocation = body.location;
+	return {
+		employmentTypes: allowedValues(body.employmentTypes, ALLOWED_EMPLOYMENT_TYPES),
+		remoteOnly: body.remoteOnly === true,
+		datePosted:
+			typeof requestedDate === 'string' && ALLOWED_DATE_POSTED.has(requestedDate)
+				? requestedDate
+				: 'all',
+		jobRequirements: allowedValues(body.jobRequirements, ALLOWED_JOB_REQUIREMENTS),
+		location:
+			typeof requestedLocation === 'string' &&
+			Object.prototype.hasOwnProperty.call(LOCATION_QUERIES, requestedLocation)
+				? requestedLocation
+				: 'philippines',
+	};
+}
+
+function buildSearchQuery(categoryQuery: string, searchText: string, location: string): string {
+	const terms = [searchText, categoryQuery].filter(Boolean).join(' ');
+	return `${terms || 'jobs'} in ${LOCATION_QUERIES[location]}`;
+}
+
+function buildFilterKey(filters: SearchFilters): string {
+	return JSON.stringify({
+		employmentTypes: [...filters.employmentTypes].sort(),
+		remoteOnly: filters.remoteOnly,
+		datePosted: filters.datePosted,
+		jobRequirements: [...filters.jobRequirements].sort(),
+		location: filters.location,
+	});
+}
+
 async function sha256(value: string): Promise<string> {
 	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
 	return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -77,6 +157,7 @@ function staleOrError(
 			source: 'stale',
 			fetchedAt: cache.fetched_at,
 			quotaExhausted,
+			filtersApplied: true,
 			error: { code },
 		});
 	}
@@ -84,6 +165,7 @@ function staleOrError(
 	return jsonResponse(status, {
 		jobs: [],
 		quotaExhausted,
+		filtersApplied: false,
 		error: { code },
 	});
 }
@@ -97,20 +179,34 @@ Deno.serve(async (req) => {
 	const auth = await requireFullAccount(req);
 	if (auth instanceof Response) return auth;
 
-	let body: { category?: unknown; page?: unknown };
+	let body: Record<string, unknown>;
 	try {
-		body = await req.json();
+		const parsedBody: unknown = await req.json();
+		if (!parsedBody || typeof parsedBody !== 'object' || Array.isArray(parsedBody)) {
+			return jsonResponse(400, { error: { code: 'invalid_request_body' } });
+		}
+		body = parsedBody as Record<string, unknown>;
 	} catch {
 		return jsonResponse(400, { error: { code: 'invalid_json' } });
 	}
 
 	const category = typeof body?.category === 'string' ? body.category : '';
-	const query = CATEGORY_QUERIES[category];
-	if (!query) return jsonResponse(400, { error: { code: 'invalid_category' } });
+	const categoryQuery = CATEGORY_QUERIES[category];
+	if (typeof categoryQuery !== 'string') {
+		return jsonResponse(400, { error: { code: 'invalid_category' } });
+	}
+	const searchText = typeof body.searchText === 'string' ? body.searchText.trim() : '';
+	if (searchText.length > 120) {
+		return jsonResponse(400, { error: { code: 'search_text_too_long' } });
+	}
+	const filters = readSearchFilters(body);
+	const query = buildSearchQuery(categoryQuery, searchText, filters.location);
 
 	// This version deliberately ignores page and returns only the first page (up to 10 listings) per category.
 	const page = 1;
-	const queryKey = await sha256(`${query.trim().toLowerCase()}\n${page}`);
+	const queryKey = await sha256(
+		`${query.trim().toLowerCase()}\n${buildFilterKey(filters)}\n${page}`,
+	);
 
 	const supabaseUrl = Deno.env.get('SUPABASE_URL');
 	const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -140,6 +236,7 @@ Deno.serve(async (req) => {
 			source: 'cache',
 			fetchedAt: cache.fetched_at,
 			quotaExhausted: false,
+			filtersApplied: true,
 		});
 	}
 
@@ -177,7 +274,7 @@ Deno.serve(async (req) => {
 		// Each uncached refresh costs one credit; the free plan allows 200/month, with
 		// about 19 already used in testing. A 150 cap leaves headroom under the plan.
 		// About 6 calls/day across 8 categories with a 72-hour TTL is roughly 80 refreshes/month.
-		const jobs = await fetchJSearchJobs(query, apiKey);
+		const jobs = await fetchJSearchJobs(query, apiKey, filters);
 		const fetchedAt = new Date().toISOString();
 		const expiresAt = new Date(Date.now() + cacheTtlHours() * 60 * 60 * 1000).toISOString();
 		const { error: cacheWriteError } = await serviceClient.from('job_search_cache').upsert(
@@ -199,6 +296,7 @@ Deno.serve(async (req) => {
 			source: 'live',
 			fetchedAt,
 			quotaExhausted: false,
+			filtersApplied: true,
 		});
 	} catch (error) {
 		if (error instanceof JSearchProviderError) {

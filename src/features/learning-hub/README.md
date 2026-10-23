@@ -37,10 +37,10 @@ Shared motion primitives live in `src/components/motion/` and are used for the d
 | Lawyer | Available in the app; expert review sign-off is still incomplete | Lawyer Path (8 courses); Paralegal and Legal Support (6 courses) |
 | Marine (Seafarer / Marine Engineering) | Coming soon (maritime expert review pending; Deck lessons available as an educational preview) | Deck Officer (Marine Transportation) (7 courses) |
 | Accountancy | Coming soon (expert review pending; lessons available as a draft preview) | Accounting Foundations (6 courses); Accounting in Practice (6 courses) |
-| Civil Engineering | Coming soon | None |
+| Civil Engineering | Coming soon | Structures and Construction (6 courses); Infrastructure and Environment (6 courses) |
 | Hospitality & Tourism | Available | Hospitality Operations (6 courses); Tourism and Travel (6 courses) |
 
-The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher, Nursing, Lawyer, Doctor, Marine, Hospitality & Tourism, and Accountancy content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, Nursing, Lawyer, and Hospitality & Tourism are available with tracks and courses; Doctor, Marine, and Accountancy have registered preview content while their careers remain `coming-soon` pending expert review. Marine currently exposes only the Deck Officer track; its Marine Engineer track remains unregistered. Other seeded careers have no registered courses yet.
+The folder name `software-engineering/` is the existing content folder for the Software Engineering career: it contains courses for its three tracks, including data analysis and design. Do not infer that every course in that folder belongs to the Software Engineer track. Teacher, Nursing, Lawyer, Doctor, Marine, Hospitality & Tourism, Accountancy, and Civil Engineering content are stored in sibling folders. "Careers" is the top level of the learner journey, while "tracks" is the second level. Software Engineering, Cybersecurity, Teacher, Nursing, Lawyer, and Hospitality & Tourism are available with tracks and courses; Doctor, Marine, Accountancy, and Civil Engineering have registered content while their careers remain `coming-soon` pending expert review. Marine currently exposes only the Deck Officer track; its Marine Engineer track remains unregistered. Other seeded careers have no registered courses yet.
 
 | Career track | Current roadmap order | Current course coverage |
 |---|---|---|
@@ -124,6 +124,8 @@ src/features/learning-hub/
   nursing/
     index.js                        Nursing track, course, and route exports
     tracks.js                       Nursing Student Path and ordered course steps
+    links.js                        Further-reading references keyed by stable lesson ID
+    courseLessons.js                Shared lesson-link merge used by CourseRunner
     REVIEW_NOTES.md                 Team review record and future revision guidance
     <course>-course/                Nursing course data and runner screens
   doctor/
@@ -138,13 +140,24 @@ src/features/learning-hub/
     index.js                        Accountancy tracks and course-route exports
     tracks.js                       Accounting Foundations and Accounting in Practice
     data/                           Authored lesson objectives, examples, and quiz data
+    links.js                        Further-reading sources keyed by lesson ID
+    courseLessons.js                Runtime reference merger for Accountancy lessons
     REVIEW_NOTES.md                 Subject-expert review checklist; review pending
     acct-<course-id>-course/        Accountancy course configs and thin runner wrappers
+  civil-engineering/
+    index.js                        Civil Engineering tracks and course-route exports
+    tracks.js                       Structures and Construction; Infrastructure and Environment
+    data/                           Authored lesson objectives, examples, and quiz data
+    links.js                        Further-reading sources keyed by stable lesson ID
+    courseLessons.js                Runtime reference merger for Civil Engineering lessons
+    civ-<course-id>-course/         Course configs and thin runner wrappers
   marine/
     index.js                        Marine track and course exports
     tracks.js                       Deck Officer course order
     REVIEW_NOTES.md                 Maritime expert review checklist; review pending
     data/deckCourses.js             Authored Deck lesson, activity, and quiz data
+    links.js                        Further-reading sources keyed by Deck lesson ID
+    courseLessons.js                Runtime reference merger for Marine Deck lessons
     mar-<course-id>-course/
       course.js                     Course config
       <CourseName>Course.js         Thin screen wrapper around CourseRunner
@@ -167,7 +180,7 @@ The `careers/` folder is the shared layer for career metadata, screens, and the 
 - `teacher/` contains the Elementary Teacher and Secondary Teacher pathways, with 15 courses registered through the same shared registry.
 - `lawyer/` contains Lawyer Path and Paralegal and Legal Support, with 14 introductory courses registered through the same shared registry.
 - `doctor/` contains Pre-Medicine and Medical Path, with eight educational-orientation courses available as a draft preview. The career remains `coming-soon`; expert review is required before availability.
-- `accountancy/` contains Accounting Foundations and Accounting in Practice, with 12 introductory courses available as an educational preview. The career remains `coming-soon`; subject-expert review is required before availability. The material is not accounting, tax, or financial advice and is not board exam review.
+- `accountancy/` contains Accounting Foundations and Accounting in Practice, with 12 introductory courses available as an educational preview. Lesson links are merged at the shared `CourseRunner` loading point and validated against the registered lesson IDs. The career remains `coming-soon`; subject-expert review is required before availability. The material is not accounting, tax, or financial advice and is not board exam review.
 - `marine/` contains the seven-course Deck Officer (Marine Transportation) preview. The career remains `coming-soon` pending maritime expert review; the Marine Engineer track is planned but not registered. Marine content is educational orientation, not professional or safety training, and its displayed track estimate is an app study-time label only.
 - `hospitality-tourism/` contains the Hospitality Operations and Tourism and Travel tracks, with six introductory courses each. The career is available; its four-month track estimates are app study-time labels, and lessons are educational orientation, not operating or certification training.
 - `shared/CourseRunner.js` owns the course-level state machine and combines course data with `useCourseProgress`. The current stages are course lesson overview, an individual lesson, lesson list/review, quiz introduction, quiz, and results. It also handles in-course back behavior, Android hardware back behavior, answer navigation, scoring, and saving quiz attempts. It plays the lesson-complete cue only after a successful mark-complete save, not on unmark or rollback, and plays the quiz-pass cue once for each passing attempt.
@@ -179,6 +192,16 @@ The `careers/` folder is the shared layer for career metadata, screens, and the 
 - `shared/styles.js` centralizes the current course palette and common spacing, typography, and button styles.
 
 Individual course folders keep the course configuration, wrapper, lesson data, optional lesson extras, and question bank together. For example, the JavaScript course has `javascript-course/course.js`, `JavaScriptCourse.js`, and `data/lessons.js`, `data/lessonExtras.js`, and `data/questions.js`.
+
+## Lesson references and optional videos
+
+Career lesson links live beside each career's content in `links.js`, keyed by stable lesson ID. The shared `shared/lessonLinks.js` helper builds APA-style citation text, describes supplied YouTube videos, and merges link metadata without mutating lesson data or replacing existing values. The shared Lesson screen displays references after activities. Careers outside Software Engineering label their links “Further reading” to avoid implying lesson copy was sourced from linked pages. Software Engineering keeps its existing “References” heading and extras.
+
+Only add URLs that genuinely cover the lesson topic. Do not imply the lesson was copied from or authored using the linked source. Do not guess URLs, dates, authors, or video IDs; use a publisher topic landing page if a specific page cannot be confirmed and record any remaining uncertainty as `// VERIFY:`. Videos are optional and should only be included from supplied, verified YouTube details.
+
+Teacher, Nursing, Doctor, Lawyer, Marine, Accountancy, Civil Engineering, and Hospitality & Tourism references are merged by their per-career `courseLessons.js` helper at the `CourseRunner` lesson-loading point, so the lessons passed to `LessonScreen` contain the linked references. The validator checks runtime merging and exact link-key coverage for these careers. Marine references cover the seven registered Deck courses only; the planned Engine track remains unregistered and Marine remains `coming-soon` pending maritime expert review. Accountancy and Civil Engineering references cover their 12 registered courses each; both careers remain `coming-soon` pending expert review. Hospitality & Tourism references cover all 12 registered courses.
+
+`npm run validate:content` checks reference shape, allowed domains, runtime merging, and exact lesson-ID coverage for Teacher, Nursing, Doctor, Lawyer, Marine, Accountancy, Civil Engineering, and Hospitality & Tourism. It also warns when a source URL is used in more than three lessons in one course. `npm run check:links -- <career-id>` checks current URL reachability and supplied video titles, then writes a report to `docs/tasks/progress/link-check-<career-id>.md`. HTTP 403, HTTP 429, and request timeouts are reported as unverified for manual checking, not as failures. Link checking requires internet access and does not replace a human review of topic suitability.
 
 ## Careers data contract
 

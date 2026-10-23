@@ -1,5 +1,7 @@
 import AppPressable from '@components/AppPressable';
 import BackButton from '@components/BackButton';
+import FadeSlideIn from '@components/motion/FadeSlideIn';
+import PressScale from '@components/motion/PressScale';
 import React, { useState } from 'react';
 import {
   View,
@@ -108,22 +110,27 @@ export default function PersonalInfoScreen({ navigation }) {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <Text style={styles.sectionSubtitle}>
-            This section is required. Enter your contact details to display at the top of your resume.
-            Fields marked * must be filled in.
-          </Text>
- 
+          <FadeSlideIn>
+            <Text style={styles.sectionSubtitle}>
+              This section is required. Enter your contact details to display at the top of your resume.
+              Fields marked * must be filled in.
+            </Text>
+          </FadeSlideIn>
+
           {/* Profile Photo (optional) */}
+          <FadeSlideIn delay={30}>
           <View style={styles.photoSection}>
-            <AppPressable activeOpacity={0.8} onPress={handlePickPhoto}>
-              {info.photo ? (
-                <Image source={{ uri: info.photo }} style={styles.photo} />
-              ) : (
-                <View style={[styles.photo, styles.photoPlaceholder]}>
-                  <Text style={styles.photoPlus}>+</Text>
-                </View>
-              )}
-            </AppPressable>
+            <PressScale>
+              <AppPressable activeOpacity={0.8} onPress={handlePickPhoto}>
+                {info.photo ? (
+                  <Image source={{ uri: info.photo }} style={styles.photo} />
+                ) : (
+                  <View style={[styles.photo, styles.photoPlaceholder]}>
+                    <Text style={styles.photoPlus}>+</Text>
+                  </View>
+                )}
+              </AppPressable>
+            </PressScale>
             <View style={styles.photoActions}>
               <AppPressable onPress={handlePickPhoto} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <Text style={styles.photoActionText}>{info.photo ? 'Change photo' : 'Add photo'}</Text>
@@ -137,6 +144,7 @@ export default function PersonalInfoScreen({ navigation }) {
               )}
             </View>
           </View>
+          </FadeSlideIn>
  
           {/* Full Name Input */}
           <View style={styles.inputGroup}>
@@ -213,13 +221,15 @@ export default function PersonalInfoScreen({ navigation }) {
           </View>
  
           {/* Save & Return Button */}
-          <AppPressable
-            style={styles.saveButton}
-            activeOpacity={0.85}
-            onPress={handleSave}
-          >
-            <Text style={styles.saveButtonText}>Save Details</Text>
-          </AppPressable>
+          <PressScale>
+            <AppPressable
+              style={styles.saveButton}
+              activeOpacity={0.85}
+              onPress={handleSave}
+            >
+              <Text style={styles.saveButtonText}>Save Details</Text>
+            </AppPressable>
+          </PressScale>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

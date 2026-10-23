@@ -11,6 +11,14 @@ import useCourseProgress from './progress/useCourseProgress';
 import { withStatus, pickQuizQuestions } from './courseUtils';
 import { PURPLE } from './styles';
 import { playSound } from '../../../utils/sounds';
+import { getTeacherLessons } from '../teacher/courseLessons';
+import { getNursingLessons } from '../nursing/courseLessons';
+import { getDoctorLessons } from '../doctor/courseLessons';
+import { getLawyerLessons } from '../lawyer/courseLessons';
+import { getMarineLessons } from '../marine/courseLessons';
+import { getAccountancyLessons } from '../accountancy/courseLessons';
+import { getCivilEngineeringLessons } from '../civil-engineering/courseLessons';
+import { getHospitalityTourismLessons } from '../hospitality-tourism/courseLessons';
 
 import LessonsScreen from './screens/LessonsScreen';
 import LessonScreen from './screens/LessonScreen';
@@ -29,8 +37,28 @@ export default function CourseRunner({ course, navigation }) {
 
   const progress = useCourseProgress(course.id);
   const lessons = useMemo(
-    () => withStatus(course.lessons, progress.completedLessonIds),
-    [course.lessons, progress.completedLessonIds],
+    () =>
+      withStatus(
+        course.id.startsWith('teach-')
+          ? getTeacherLessons(course.lessons)
+          : course.id.startsWith('nurs-')
+            ? getNursingLessons(course.lessons)
+            : course.id.startsWith('med-')
+              ? getDoctorLessons(course.lessons)
+              : course.id.startsWith('law-')
+                ? getLawyerLessons(course.lessons)
+                : course.id.startsWith('mar-')
+                  ? getMarineLessons(course.lessons)
+                  : course.id.startsWith('acct-')
+                    ? getAccountancyLessons(course.lessons)
+                    : course.id.startsWith('civ-')
+                      ? getCivilEngineeringLessons(course.lessons)
+                      : course.id.startsWith('ht-')
+                        ? getHospitalityTourismLessons(course.lessons)
+                        : course.lessons,
+        progress.completedLessonIds,
+      ),
+    [course.id, course.lessons, progress.completedLessonIds],
   );
 
   const [screen, setScreen] = useState('lessons');
