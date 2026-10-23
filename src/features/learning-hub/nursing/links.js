@@ -1,4 +1,4 @@
-import { ref } from '../shared/lessonLinks';
+import { ref, ytVideo } from '../shared/lessonLinks';
 
 const source = (organization, title, url, site = organization) =>
   ref(organization, title, url, site);
@@ -181,7 +181,7 @@ function linksFor(prefix, sourceKeys) {
   );
 }
 
-export const LESSON_LINKS = {
+const lessonLinks = {
   ...linksFor('nurs-profession-ethics', [
     'nursing',
     'nursingPractice',
@@ -282,4 +282,129 @@ export const LESSON_LINKS = {
     references: [SOURCES.prc, SOURCES.ched],
     referencesHeading: 'Further reading',
   },
+};
+
+const professionEthicsVideo = ytVideo(
+  'CGvjk7hgASQ',
+  502,
+  'Principle of Autonomy',
+  'Nursing Profession and Ethics - Fundamentals of Nursing  | @LevelUpRN',
+  'Level Up RN',
+);
+const bodyBasicsVideo = ytVideo(
+  '0JDCViWGn-0',
+  34,
+  'Levels of Organization',
+  'Human Body Systems Overview (Updated 2024)',
+  'Amoeba Sisters',
+);
+const patientCommunicationVideo = ytVideo(
+  'ZomOEH97xIk',
+  0,
+  'Full video',
+  'Therapeutic Communication Techniques | Mental Health Nursing',
+  'NursingSOS',
+);
+const fundamentalsOfCareVideo = ytVideo(
+  'bRp2L0N7ppI',
+  0,
+  'Full video',
+  'ADPIE Nursing Process Fundamentals | 5 Steps Made Simple',
+  'SimpleNursing',
+);
+const infectionPreventionVideo = ytVideo(
+  'r7LbCwyxzug',
+  95,
+  'Mode of Transmission',
+  'The Chain and Stages of Infection - Fundamentals of Nursing - Principles | @LevelUpRN',
+  'Level Up RN',
+);
+const healthPromotionVideo = ytVideo(
+  'xZCEjrj4yWg',
+  0,
+  'Full video',
+  'Nursing Fundamentals: Prevention, Education, and Promotion',
+  'CASS RN',
+);
+const safetyDocumentationVideo = ytVideo(
+  'Uos5uDihnXE',
+  262,
+  'Patient Safety Events',
+  'Quality Improvement, Patient Safety Events, Incident Reporting: Fundamentals of Nursing |@LevelUpRN',
+  'Level Up RN',
+);
+
+function withVideo(lessonId, video, year) {
+  const lesson = lessonLinks[lessonId];
+
+  return {
+    ...lesson,
+    references: [
+      ...lesson.references,
+      {
+        text: `${video.channel}. (${year}). ${video.title} [Video]. YouTube.`,
+        url: `https://youtu.be/${video.id}`,
+      },
+    ],
+    video,
+  };
+}
+
+const videoLessonEntries = [
+  ['nurs-profession-ethics-6', professionEthicsVideo, 2021],
+  [
+    'nurs-profession-ethics-8',
+    ytVideo(
+      professionEthicsVideo.id,
+      474,
+      'Ethical Principles',
+      professionEthicsVideo.title,
+      professionEthicsVideo.channel,
+    ),
+    2021,
+  ],
+  ['nurs-body-basics-2', bodyBasicsVideo, 2024],
+  [
+    'nurs-body-basics-3',
+    ytVideo(bodyBasicsVideo.id, 81, 'Circulatory', bodyBasicsVideo.title, bodyBasicsVideo.channel),
+    2024,
+  ],
+  [
+    'nurs-body-basics-4',
+    ytVideo(bodyBasicsVideo.id, 463, 'Respiratory', bodyBasicsVideo.title, bodyBasicsVideo.channel),
+    2024,
+  ],
+  ['nurs-patient-communication-2', patientCommunicationVideo, 2021],
+  ['nurs-patient-communication-3', patientCommunicationVideo, 2021],
+  ['nurs-patient-communication-5', patientCommunicationVideo, 2021],
+  ['nurs-fundamentals-of-care-2', fundamentalsOfCareVideo, 2025],
+  [
+    'nurs-infection-prevention-2',
+    infectionPreventionVideo,
+    2021,
+  ],
+  [
+    'nurs-infection-prevention-8',
+    ytVideo(
+      infectionPreventionVideo.id,
+      20,
+      'Chain of Infection',
+      infectionPreventionVideo.title,
+      infectionPreventionVideo.channel,
+    ),
+    2021,
+  ],
+  ['nurs-health-promotion-1', healthPromotionVideo, 2022],
+  ['nurs-health-promotion-2', healthPromotionVideo, 2022],
+  ['nurs-safety-documentation-7', safetyDocumentationVideo, 2023],
+];
+
+export const LESSON_LINKS = {
+  ...lessonLinks,
+  ...Object.fromEntries(
+    videoLessonEntries.map(([lessonId, video, year]) => [
+      lessonId,
+      withVideo(lessonId, video, year),
+    ]),
+  ),
 };

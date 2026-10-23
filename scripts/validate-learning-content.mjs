@@ -91,6 +91,7 @@ const REFERENCE_ALLOWED_DOMAINS = {
     'ana.org',
     'prc.gov.ph',
     'ched.gov.ph',
+    'youtu.be',
   ],
   doctor: [
     'who.int',
