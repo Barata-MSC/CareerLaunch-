@@ -1,4 +1,4 @@
-import { ref } from '../shared/lessonLinks';
+import { ref, ytVideo } from '../shared/lessonLinks';
 
 const EDUTOPIA = 'Edutopia';
 const TOPIC_URLS = {
@@ -30,7 +30,7 @@ function linksFor(prefix, topics) {
   );
 }
 
-export const LESSON_LINKS = {
+const lessonLinks = {
   ...linksFor('foundations', [
     ['teachingStrategies', 'Teaching strategies'],
     ['studentEngagement', 'Student engagement'],
@@ -243,5 +243,50 @@ export const LESSON_LINKS = {
       ),
     ],
     referencesHeading: 'Further reading',
+  },
+};
+
+const classroomManagementVideo = ytVideo(
+  'mTBky3sQDH0',
+  0,
+  'Full video',
+  'Edutopia Sessions: Classroom Management for New Teachers',
+  'Edutopia',
+);
+const secondaryAssessmentVideo = ytVideo(
+  '37CTCDTesWA',
+  0,
+  'Full video',
+  'Inviting Participation With Thumbs-Up Responses',
+  'Edutopia',
+);
+
+export const LESSON_LINKS = {
+  ...lessonLinks,
+  'classroom-1': {
+    ...lessonLinks['classroom-1'],
+    references: [
+      ...lessonLinks['classroom-1'].references,
+      ref(
+        'Edutopia',
+        'Edutopia Sessions: Classroom Management for New Teachers [Video]',
+        'https://youtu.be/mTBky3sQDH0',
+        'YouTube',
+      ),
+    ],
+    video: classroomManagementVideo,
+  },
+  'sec-assessment-2': {
+    ...lessonLinks['sec-assessment-2'],
+    references: [
+      ...lessonLinks['sec-assessment-2'].references,
+      ref(
+        'Edutopia',
+        'Inviting Participation With Thumbs-Up Responses [Video]',
+        'https://youtu.be/37CTCDTesWA',
+        'YouTube',
+      ),
+    ],
+    video: secondaryAssessmentVideo,
   },
 };

@@ -10,6 +10,10 @@ const commonJsPlugin = require('@babel/plugin-transform-modules-commonjs');
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const registryPath = path.join(projectRoot, 'src/features/learning-hub/careers/registry.js');
+const teacherCourseLessonsPath = path.join(
+  projectRoot,
+  'src/features/learning-hub/teacher/courseLessons.js',
+);
 const nursingCourseLessonsPath = path.join(
   projectRoot,
   'src/features/learning-hub/nursing/courseLessons.js',
@@ -217,6 +221,7 @@ async function run() {
     ))
     .map(({ course }) => course);
   const coursesWithRuntimeLessons = [
+    'teacher',
     'nursing',
     'doctor',
     'lawyer',
@@ -229,17 +234,19 @@ async function run() {
       ...course,
       lessons: careerId === 'nursing'
         ? loadSourceModule(nursingCourseLessonsPath).getNursingLessons(course.lessons || [])
-        : careerId === 'doctor'
-          ? loadSourceModule(doctorCourseLessonsPath).getDoctorLessons(course.lessons || [])
-          : careerId === 'lawyer'
-            ? loadSourceModule(lawyerCourseLessonsPath).getLawyerLessons(course.lessons || [])
-            : careerId === 'marine'
-              ? loadSourceModule(marineCourseLessonsPath).getMarineLessons(course.lessons || [])
-              : careerId === 'accountancy'
-                ? loadSourceModule(accountancyCourseLessonsPath).getAccountancyLessons(course.lessons || [])
-                : careerId === 'civil-engineering'
-                  ? loadSourceModule(civilEngineeringCourseLessonsPath).getCivilEngineeringLessons(course.lessons || [])
-                  : loadSourceModule(hospitalityTourismCourseLessonsPath).getHospitalityTourismLessons(course.lessons || []),
+        : careerId === 'teacher'
+          ? loadSourceModule(teacherCourseLessonsPath).getTeacherLessons(course.lessons || [])
+          : careerId === 'doctor'
+            ? loadSourceModule(doctorCourseLessonsPath).getDoctorLessons(course.lessons || [])
+            : careerId === 'lawyer'
+              ? loadSourceModule(lawyerCourseLessonsPath).getLawyerLessons(course.lessons || [])
+              : careerId === 'marine'
+                ? loadSourceModule(marineCourseLessonsPath).getMarineLessons(course.lessons || [])
+                : careerId === 'accountancy'
+                  ? loadSourceModule(accountancyCourseLessonsPath).getAccountancyLessons(course.lessons || [])
+                  : careerId === 'civil-engineering'
+                    ? loadSourceModule(civilEngineeringCourseLessonsPath).getCivilEngineeringLessons(course.lessons || [])
+                    : loadSourceModule(hospitalityTourismCourseLessonsPath).getHospitalityTourismLessons(course.lessons || []),
     }))
     : courses;
   const references = new Set();
